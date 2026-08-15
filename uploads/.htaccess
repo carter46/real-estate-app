@@ -1,0 +1,9 @@
+# Deny script execution in uploads
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<FilesMatch "\.(?i:php|phtml|php3|php4|php5|php7|php8|phar|pl|py|jsp|asp|aspx|sh|cgi)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>

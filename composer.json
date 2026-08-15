@@ -1,0 +1,13 @@
+{
+    "name": "sunview/real-estate-app",
+    "description": "PHP + MySQL real estate property management platform (SDC)",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

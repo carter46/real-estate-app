@@ -1,0 +1,42 @@
+/* Small helpers that sit beside Stitch/Tailwind utilities */
+
+.sdc-logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0 0.65rem;
+  background: #370518;
+  color: #fff;
+  font-family: Montserrat, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.img-placeholder {
+  background: linear-gradient(135deg, #e5e2e1 0%, #d7c1c5 50%, #521a2d 160%);
+}
+
+.hero-photo {
+  background-image:
+    linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)),
+    linear-gradient(135deg, #521a2d, #1c1b1b);
+  background-size: cover;
+  background-position: center;
+}
+
+.collection-photo {
+  background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7)),
+    linear-gradient(135deg, #2c2e2e, #521a2d);
+}
+
+details summary::-webkit-details-marker { display: none; }

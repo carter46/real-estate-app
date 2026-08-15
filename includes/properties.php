@@ -1,0 +1,650 @@
+<?php
+/**
+ * Property repository / helpers — Phase 3.
+ */
+
+declare(strict_types=1);
+
+/**
+ * @return list<string>
+ */
+function property_statuses(): array
+{
+    return ['draft', 'available', 'pending', 'under_contract', 'sold', 'private', 'archived'];
+}
+
+function property_generate_reference(): string
+{
+    return 'REF-' . strtoupper(bin2hex(random_bytes(4)));
+}
+
+function property_unique_slug(string $title, ?int $excludeId = null): string
+{
+    $base = slugify($title);
+    $slug = $base;
+    $i = 2;
+    while (property_slug_exists($slug, $excludeId)) {
+        $slug = $base . '-' . $i;
+        $i++;
+    }
+    return $slug;
+}
+
+function property_slug_exists(string $slug, ?int $excludeId = null): bool
+{
+    if ($excludeId) {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE slug = ? AND id != ? LIMIT 1');
+        $stmt->execute([$slug, $excludeId]);
+    } else {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE slug = ? LIMIT 1');
+        $stmt->execute([$slug]);
+    }
+    return (bool) $stmt->fetch();
+}
+
+function property_reference_exists(string $code, ?int $excludeId = null): bool
+{
+    if ($excludeId) {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE reference_code = ? AND id != ? LIMIT 1');
+        $stmt->execute([$code, $excludeId]);
+    } else {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE reference_code = ? LIMIT 1');
+        $stmt->execute([$code]);
+    }
+    return (bool) $stmt->fetch();
+}
+
+function property_mls_exists(string $mls, ?int $excludeId = null): bool
+{
+    if ($excludeId) {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE mls_number = ? AND id != ? LIMIT 1');
+        $stmt->execute([$mls, $excludeId]);
+    } else {
+        $stmt = db()->prepare('SELECT id FROM properties WHERE mls_number = ? LIMIT 1');
+        $stmt->execute([$mls]);
+    }
+    return (bool) $stmt->fetch();
+}
+
+/**
+ * Soft duplicate warning: same normalized address + city.
+ */
+function property_address_duplicate(?string $address, ?string $city, ?int $excludeId = null): ?array
+{
+    $address = trim((string) $address);
+    $city = trim((string) $city);
+    if ($address === '' || $city === '') {
+        return null;
+    }
+
+    $sql = "SELECT id, title, slug, reference_code
+            FROM properties
+            WHERE LOWER(TRIM(address_line)) = LOWER(?)
+              AND LOWER(TRIM(city)) = LOWER(?)
+              AND status != 'archived'";
+    $params = [$address, $city];
+    if ($excludeId) {
+        $sql .= ' AND id != ?';
+        $params[] = $excludeId;
+    }
+    $sql .= ' LIMIT 1';
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    $row = $stmt->fetch();
+    return is_array($row) ? $row : null;
+}
+
+function property_find(int $id): ?array
+{
+    $stmt = db()->prepare(
+        'SELECT p.*, t.slug AS type_slug, t.name AS type_name, a.name AS agent_name
+         FROM properties p
+         LEFT JOIN property_types t ON t.id = p.property_type_id
+         LEFT JOIN agents a ON a.id = p.agent_id
+         WHERE p.id = ?
+         LIMIT 1'
+    );
+    $stmt->execute([$id]);
+    $row = $stmt->fetch();
+    return is_array($row) ? $row : null;
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_list_admin(string $q = '', string $status = '', int $limit = 50, int $offset = 0): array
+{
+    $where = ['1=1'];
+    $params = [];
+
+    if ($q !== '') {
+        $where[] = '(p.title LIKE ? OR p.address_line LIKE ? OR p.city LIKE ? OR p.reference_code LIKE ? OR p.mls_number LIKE ?)';
+        $like = '%' . $q . '%';
+        array_push($params, $like, $like, $like, $like, $like);
+    }
+    if ($status !== '' && in_array($status, property_statuses(), true)) {
+        $where[] = 'p.status = ?';
+        $params[] = $status;
+    }
+
+    $sql = 'SELECT p.*, t.name AS type_name,
+            (SELECT path FROM property_images pi WHERE pi.property_id = p.id AND pi.is_cover = 1 ORDER BY pi.id ASC LIMIT 1) AS cover_path
+            FROM properties p
+            LEFT JOIN property_types t ON t.id = p.property_type_id
+            WHERE ' . implode(' AND ', $where) . '
+            ORDER BY p.updated_at DESC
+            LIMIT ' . (int) $limit . ' OFFSET ' . (int) $offset;
+
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll() ?: [];
+}
+
+function property_count_admin(string $q = '', string $status = ''): int
+{
+    $where = ['1=1'];
+    $params = [];
+    if ($q !== '') {
+        $where[] = '(title LIKE ? OR address_line LIKE ? OR city LIKE ? OR reference_code LIKE ? OR mls_number LIKE ?)';
+        $like = '%' . $q . '%';
+        array_push($params, $like, $like, $like, $like, $like);
+    }
+    if ($status !== '' && in_array($status, property_statuses(), true)) {
+        $where[] = 'status = ?';
+        $params[] = $status;
+    }
+    $stmt = db()->prepare('SELECT COUNT(*) FROM properties WHERE ' . implode(' AND ', $where));
+    $stmt->execute($params);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_types_all(): array
+{
+    return db()->query('SELECT * FROM property_types ORDER BY sort_order, name')->fetchAll() ?: [];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_agents_all(): array
+{
+    return db()->query('SELECT id, name, title, region FROM agents WHERE is_active = 1 ORDER BY sort_order, name')->fetchAll() ?: [];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_amenities_all(): array
+{
+    return db()->query('SELECT * FROM amenities ORDER BY category, sort_order, name')->fetchAll() ?: [];
+}
+
+/**
+ * @return list<int>
+ */
+function property_amenity_ids(int $propertyId): array
+{
+    $stmt = db()->prepare('SELECT amenity_id FROM property_amenity WHERE property_id = ?');
+    $stmt->execute([$propertyId]);
+    return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_images(int $propertyId): array
+{
+    $stmt = db()->prepare(
+        'SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order ASC, id ASC'
+    );
+    $stmt->execute([$propertyId]);
+    return $stmt->fetchAll() ?: [];
+}
+
+/**
+ * Normalize and validate posted property fields.
+ *
+ * @param array<string, mixed> $input
+ * @return array{ok:bool, errors:list<string>, data:array<string,mixed>, warning:?string}
+ */
+function property_validate_input(array $input, ?int $excludeId = null): array
+{
+    $errors = [];
+    $title = trim((string) ($input['title'] ?? ''));
+    if ($title === '') {
+        $errors[] = 'Property title is required.';
+    }
+
+    $status = (string) ($input['status'] ?? 'draft');
+    if (!in_array($status, property_statuses(), true)) {
+        $errors[] = 'Invalid status.';
+    }
+
+    $purpose = (string) ($input['listing_purpose'] ?? 'sale');
+    if (!in_array($purpose, ['sale', 'rent', 'lease'], true)) {
+        $purpose = 'sale';
+    }
+
+    $slugInput = trim((string) ($input['slug'] ?? ''));
+    $slug = $slugInput !== '' ? slugify($slugInput) : property_unique_slug($title !== '' ? $title : 'property', $excludeId);
+    if ($slugInput !== '' && property_slug_exists($slug, $excludeId)) {
+        $errors[] = 'Slug is already in use.';
+    }
+
+    $reference = trim((string) ($input['reference_code'] ?? ''));
+    if ($reference === '') {
+        $reference = property_generate_reference();
+        while (property_reference_exists($reference, $excludeId)) {
+            $reference = property_generate_reference();
+        }
+    } elseif (property_reference_exists($reference, $excludeId)) {
+        $errors[] = 'Reference code is already in use.';
+    }
+
+    $mls = trim((string) ($input['mls_number'] ?? ''));
+    $mls = $mls === '' ? null : $mls;
+    if ($mls !== null && property_mls_exists($mls, $excludeId)) {
+        $errors[] = 'MLS number is already in use.';
+    }
+
+    $typeId = (int) ($input['property_type_id'] ?? 0);
+    $typeId = $typeId > 0 ? $typeId : null;
+
+    $agentId = (int) ($input['agent_id'] ?? 0);
+    $agentId = $agentId > 0 ? $agentId : null;
+
+    $priceOnRequest = !empty($input['price_on_request']) ? 1 : 0;
+    $priceRaw = str_replace([',', '$', ' '], '', (string) ($input['price'] ?? ''));
+    $price = $priceRaw === '' ? null : (float) $priceRaw;
+    if (!$priceOnRequest && $price !== null && $price < 0) {
+        $errors[] = 'Price cannot be negative.';
+    }
+
+    $beds = ($input['bedrooms'] ?? '') === '' ? null : (float) $input['bedrooms'];
+    $baths = ($input['bathrooms'] ?? '') === '' ? null : (float) $input['bathrooms'];
+    $sqft = ($input['sqft'] ?? '') === '' ? null : (int) preg_replace('/\D/', '', (string) $input['sqft']);
+    $lot = ($input['lot_acres'] ?? '') === '' ? null : (float) $input['lot_acres'];
+    $year = ($input['year_built'] ?? '') === '' ? null : (int) $input['year_built'];
+
+    $address = trim((string) ($input['address_line'] ?? ''));
+    $city = trim((string) ($input['city'] ?? ''));
+    $warning = null;
+    $dup = property_address_duplicate($address, $city, $excludeId);
+    if ($dup) {
+        $warning = 'A property with the same address and city already exists: '
+            . (string) ($dup['title'] ?? '') . ' (' . (string) ($dup['reference_code'] ?? '') . ').';
+        if (empty($input['confirm_duplicate'])) {
+            $errors[] = $warning . ' Check “Confirm save despite possible duplicate” to proceed.';
+        }
+    }
+
+    $listedAt = trim((string) ($input['listed_at'] ?? ''));
+    if ($listedAt === '') {
+        $listedAt = null;
+    }
+
+    $amenityIds = [];
+    if (!empty($input['amenities']) && is_array($input['amenities'])) {
+        foreach ($input['amenities'] as $aid) {
+            $amenityIds[] = (int) $aid;
+        }
+        $amenityIds = array_values(array_unique(array_filter($amenityIds)));
+    }
+
+    $data = [
+        'title' => $title,
+        'slug' => $excludeId && $slugInput === '' ? null : $slug, // null means keep existing on edit when empty handled elsewhere
+        'reference_code' => $reference,
+        'mls_number' => $mls,
+        'description' => trim((string) ($input['description'] ?? '')),
+        'property_type_id' => $typeId,
+        'listing_purpose' => $purpose,
+        'status' => $status,
+        'price' => $priceOnRequest ? null : $price,
+        'price_on_request' => $priceOnRequest,
+        'currency' => 'USD',
+        'address_line' => $address,
+        'city' => $city,
+        'region' => trim((string) ($input['region'] ?? '')),
+        'state' => trim((string) ($input['state'] ?? 'CO')) ?: 'CO',
+        'postal_code' => trim((string) ($input['postal_code'] ?? '')),
+        'country' => trim((string) ($input['country'] ?? 'USA')) ?: 'USA',
+        'bedrooms' => $beds,
+        'bathrooms' => $baths,
+        'sqft' => $sqft,
+        'lot_acres' => $lot,
+        'year_built' => $year,
+        'badge' => trim((string) ($input['badge'] ?? '')) ?: null,
+        'is_featured' => !empty($input['is_featured']) ? 1 : 0,
+        'agent_id' => $agentId,
+        'agent_quote' => trim((string) ($input['agent_quote'] ?? '')) ?: null,
+        'listed_at' => $listedAt,
+        'amenity_ids' => $amenityIds,
+        'slug_final' => $slug,
+    ];
+
+    return [
+        'ok' => $errors === [],
+        'errors' => $errors,
+        'data' => $data,
+        'warning' => $warning,
+    ];
+}
+
+/**
+ * @param array<string, mixed> $data from property_validate_input
+ */
+function property_insert(array $data, int $userId): int
+{
+    $stmt = db()->prepare(
+        'INSERT INTO properties (
+            slug, reference_code, mls_number, title, description, property_type_id, listing_purpose,
+            status, price, price_on_request, currency, address_line, city, region, state, postal_code, country,
+            bedrooms, bathrooms, sqft, lot_acres, year_built, badge, is_featured, agent_id, agent_quote,
+            listed_at, created_by
+         ) VALUES (
+            ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+         )'
+    );
+    $stmt->execute([
+        $data['slug_final'],
+        $data['reference_code'],
+        $data['mls_number'],
+        $data['title'],
+        $data['description'] !== '' ? $data['description'] : null,
+        $data['property_type_id'],
+        $data['listing_purpose'],
+        $data['status'],
+        $data['price'],
+        $data['price_on_request'],
+        $data['currency'],
+        $data['address_line'],
+        $data['city'],
+        $data['region'],
+        $data['state'],
+        $data['postal_code'],
+        $data['country'],
+        $data['bedrooms'],
+        $data['bathrooms'],
+        $data['sqft'],
+        $data['lot_acres'],
+        $data['year_built'],
+        $data['badge'],
+        $data['is_featured'],
+        $data['agent_id'],
+        $data['agent_quote'],
+        $data['listed_at'],
+        $userId > 0 ? $userId : null,
+    ]);
+    $id = (int) db()->lastInsertId();
+    property_sync_amenities($id, $data['amenity_ids'] ?? []);
+    return $id;
+}
+
+/**
+ * @param array<string, mixed> $data
+ */
+function property_update(int $id, array $data): void
+{
+    $stmt = db()->prepare(
+        'UPDATE properties SET
+            slug = ?, reference_code = ?, mls_number = ?, title = ?, description = ?, property_type_id = ?,
+            listing_purpose = ?, status = ?, price = ?, price_on_request = ?, currency = ?,
+            address_line = ?, city = ?, region = ?, state = ?, postal_code = ?, country = ?,
+            bedrooms = ?, bathrooms = ?, sqft = ?, lot_acres = ?, year_built = ?, badge = ?,
+            is_featured = ?, agent_id = ?, agent_quote = ?, listed_at = ?
+         WHERE id = ?'
+    );
+    $stmt->execute([
+        $data['slug_final'],
+        $data['reference_code'],
+        $data['mls_number'],
+        $data['title'],
+        $data['description'] !== '' ? $data['description'] : null,
+        $data['property_type_id'],
+        $data['listing_purpose'],
+        $data['status'],
+        $data['price'],
+        $data['price_on_request'],
+        $data['currency'],
+        $data['address_line'],
+        $data['city'],
+        $data['region'],
+        $data['state'],
+        $data['postal_code'],
+        $data['country'],
+        $data['bedrooms'],
+        $data['bathrooms'],
+        $data['sqft'],
+        $data['lot_acres'],
+        $data['year_built'],
+        $data['badge'],
+        $data['is_featured'],
+        $data['agent_id'],
+        $data['agent_quote'],
+        $data['listed_at'],
+        $id,
+    ]);
+    property_sync_amenities($id, $data['amenity_ids'] ?? []);
+}
+
+/**
+ * @param list<int> $amenityIds
+ */
+function property_sync_amenities(int $propertyId, array $amenityIds): void
+{
+    $del = db()->prepare('DELETE FROM property_amenity WHERE property_id = ?');
+    $del->execute([$propertyId]);
+    if ($amenityIds === []) {
+        return;
+    }
+    $ins = db()->prepare('INSERT INTO property_amenity (property_id, amenity_id) VALUES (?, ?)');
+    foreach ($amenityIds as $aid) {
+        $ins->execute([$propertyId, $aid]);
+    }
+}
+
+function property_archive(int $id): void
+{
+    $stmt = db()->prepare("UPDATE properties SET status = 'archived', is_featured = 0 WHERE id = ?");
+    $stmt->execute([$id]);
+}
+
+function property_ensure_single_cover(int $propertyId, ?int $coverImageId = null): void
+{
+    $pdo = db();
+    if ($coverImageId) {
+        $pdo->prepare('UPDATE property_images SET is_cover = 0 WHERE property_id = ?')->execute([$propertyId]);
+        $pdo->prepare('UPDATE property_images SET is_cover = 1 WHERE id = ? AND property_id = ?')
+            ->execute([$coverImageId, $propertyId]);
+        return;
+    }
+
+    $stmt = $pdo->prepare('SELECT id FROM property_images WHERE property_id = ? AND is_cover = 1 LIMIT 1');
+    $stmt->execute([$propertyId]);
+    if ($stmt->fetch()) {
+        return;
+    }
+    $first = $pdo->prepare('SELECT id FROM property_images WHERE property_id = ? ORDER BY sort_order ASC, id ASC LIMIT 1');
+    $first->execute([$propertyId]);
+    $row = $first->fetch();
+    if ($row) {
+        $pdo->prepare('UPDATE property_images SET is_cover = 1 WHERE id = ?')->execute([(int) $row['id']]);
+    }
+}
+
+/**
+ * @return array{0: string, 1: list<mixed>}
+ */
+function property_public_where_sql(array $filters = []): array
+{
+    [$in, $statuses] = public_status_sql_in();
+    $where = ["p.status IN ($in)"];
+    $params = $statuses;
+
+    $q = trim((string) ($filters['q'] ?? ''));
+    if ($q !== '') {
+        $where[] = '(p.title LIKE ? OR p.address_line LIKE ? OR p.city LIKE ? OR p.region LIKE ? OR p.description LIKE ?)';
+        $like = '%' . $q . '%';
+        array_push($params, $like, $like, $like, $like, $like);
+    }
+
+    $location = trim((string) ($filters['location'] ?? ''));
+    if ($location !== '') {
+        $where[] = '(p.city LIKE ? OR p.region LIKE ? OR p.address_line LIKE ?)';
+        $like = '%' . $location . '%';
+        array_push($params, $like, $like, $like);
+    }
+
+    $region = trim((string) ($filters['region'] ?? ''));
+    if ($region !== '') {
+        $where[] = '(p.region LIKE ? OR p.city LIKE ?)';
+        $like = '%' . $region . '%';
+        array_push($params, $like, $like);
+    }
+
+    $type = trim((string) ($filters['type'] ?? ''));
+    if ($type !== '') {
+        $where[] = 't.slug = ?';
+        $params[] = $type;
+    }
+
+    $price = trim((string) ($filters['price'] ?? ''));
+    if ($price === '1-5') {
+        $where[] = 'p.price_on_request = 0 AND p.price >= ? AND p.price < ?';
+        array_push($params, 1000000, 5000000);
+    } elseif ($price === '2-5') {
+        $where[] = 'p.price_on_request = 0 AND p.price >= ? AND p.price < ?';
+        array_push($params, 2000000, 5000000);
+    } elseif ($price === '5-10') {
+        $where[] = 'p.price_on_request = 0 AND p.price >= ? AND p.price < ?';
+        array_push($params, 5000000, 10000000);
+    } elseif ($price === '10+') {
+        $where[] = 'p.price_on_request = 0 AND p.price >= ?';
+        $params[] = 10000000;
+    }
+
+    if (!empty($filters['featured_only'])) {
+        $where[] = 'p.is_featured = 1';
+    }
+
+    return [implode(' AND ', $where), $params];
+}
+
+function property_public_order_sql(string $sort): string
+{
+    return match ($sort) {
+        'price_asc' => 'p.price_on_request ASC, p.price ASC, p.id DESC',
+        'price_desc' => 'p.price_on_request ASC, p.price DESC, p.id DESC',
+        default => 'p.listed_at DESC, p.created_at DESC, p.id DESC',
+    };
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_list_public(array $filters = [], string $sort = 'newest', int $limit = 24, int $offset = 0): array
+{
+    [$where, $params] = property_public_where_sql($filters);
+    $order = property_public_order_sql($sort);
+    $sql = "SELECT p.*, t.name AS type_name, t.slug AS type_slug,
+            (SELECT path FROM property_images pi WHERE pi.property_id = p.id AND pi.is_cover = 1 ORDER BY pi.id ASC LIMIT 1) AS cover_path,
+            (SELECT path FROM property_images pi2 WHERE pi2.property_id = p.id ORDER BY pi2.is_cover DESC, pi2.sort_order ASC, pi2.id ASC LIMIT 1) AS image_path
+            FROM properties p
+            LEFT JOIN property_types t ON t.id = p.property_type_id
+            WHERE $where
+            ORDER BY $order
+            LIMIT " . (int) $limit . ' OFFSET ' . (int) $offset;
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll() ?: [];
+    foreach ($rows as &$row) {
+        if (empty($row['cover_path']) && !empty($row['image_path'])) {
+            $row['cover_path'] = $row['image_path'];
+        }
+    }
+    unset($row);
+    return $rows;
+}
+
+function property_count_public(array $filters = []): int
+{
+    [$where, $params] = property_public_where_sql($filters);
+    $sql = "SELECT COUNT(*) FROM properties p LEFT JOIN property_types t ON t.id = p.property_type_id WHERE $where";
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return (int) $stmt->fetchColumn();
+}
+
+function property_find_public_by_slug(string $slug): ?array
+{
+    [$in, $statuses] = public_status_sql_in();
+    $stmt = db()->prepare(
+        "SELECT p.*, t.name AS type_name, t.slug AS type_slug,
+                a.name AS agent_name, a.title AS agent_title, a.region AS agent_region,
+                a.photo_path AS agent_photo, a.bio AS agent_bio, a.slug AS agent_slug, a.badge AS agent_badge
+         FROM properties p
+         LEFT JOIN property_types t ON t.id = p.property_type_id
+         LEFT JOIN agents a ON a.id = p.agent_id
+         WHERE p.slug = ? AND p.status IN ($in)
+         LIMIT 1"
+    );
+    $stmt->execute(array_merge([$slug], $statuses));
+    $row = $stmt->fetch();
+    return is_array($row) ? $row : null;
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function property_amenities_for(int $propertyId): array
+{
+    $stmt = db()->prepare(
+        'SELECT am.* FROM amenities am
+         INNER JOIN property_amenity pa ON pa.amenity_id = am.id
+         WHERE pa.property_id = ?
+         ORDER BY am.category, am.sort_order, am.name'
+    );
+    $stmt->execute([$propertyId]);
+    return $stmt->fetchAll() ?: [];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function agents_list_public(?string $region = null): array
+{
+    $sql = 'SELECT * FROM agents WHERE is_active = 1';
+    $params = [];
+    if ($region !== null && $region !== '') {
+        $sql .= ' AND region LIKE ?';
+        $params[] = '%' . $region . '%';
+    }
+    $sql .= ' ORDER BY sort_order ASC, name ASC';
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll() ?: [];
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function offices_list_public(): array
+{
+    return db()->query('SELECT * FROM offices WHERE is_active = 1 ORDER BY sort_order, name')->fetchAll() ?: [];
+}
+
+function setting_get(string $key, ?string $default = null): ?string
+{
+    try {
+        $stmt = db()->prepare('SELECT setting_value FROM settings WHERE setting_key = ? LIMIT 1');
+        $stmt->execute([$key]);
+        $val = $stmt->fetchColumn();
+        return $val === false ? $default : (string) $val;
+    } catch (Throwable $e) {
+        return $default;
+    }
+}

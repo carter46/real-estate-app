@@ -1,0 +1,38 @@
+<?php
+/**
+ * Local secrets override — copy to config.local.php (gitignored).
+ *
+ * Never commit real credentials.
+ */
+
+declare(strict_types=1);
+
+return [
+    'app' => [
+        'env' => 'local',
+        'debug' => true,
+        'url' => 'http://localhost/real-estate-app',
+        'name' => 'Sunview Development and Consultancy (SDC)',
+    ],
+
+    'db' => [
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'name' => 'real_estate',
+        'user' => 'root',
+        'pass' => 'YOUR_DB_PASSWORD',
+    ],
+
+    'mail' => [
+        // Use "log" until Brevo/SMTP credentials are ready; then switch to "smtp".
+        'driver' => 'log',
+        'from_email' => 'noreply@example.com',
+        'from_name' => 'SDC',
+        'admin_notify_email' => 'admin@example.com',
+        'smtp_host' => 'smtp-relay.brevo.com',
+        'smtp_port' => 587,
+        'smtp_encryption' => 'tls',
+        'smtp_user' => 'YOUR_BREVO_SMTP_USER',
+        'smtp_pass' => 'YOUR_BREVO_SMTP_KEY',
+    ],
+];

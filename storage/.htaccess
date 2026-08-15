@@ -1,0 +1,2 @@
+# Deny access to storage via web if document root is app root
+Require all denied
