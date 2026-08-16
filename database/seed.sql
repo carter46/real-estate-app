@@ -38,19 +38,19 @@ INSERT INTO `amenities` (`slug`, `name`, `category`, `sort_order`) VALUES
   ('clubhouse', 'Clubhouse', 'community', 80);
 
 -- Agents (from our_experts reference — unique rows)
-INSERT INTO `agents` (`slug`, `name`, `title`, `region`, `bio`, `badge`, `sort_order`, `is_active`) VALUES
+INSERT INTO `agents` (`slug`, `name`, `title`, `region`, `bio`, `badge`, `photo_path`, `sort_order`, `is_active`) VALUES
   ('eleanor-vance', 'Eleanor Vance', 'Managing Broker', 'Aspen Core',
    'With over two decades navigating Aspen''s complex luxury market, Eleanor provides unmatched strategic advisory for ultra-high-net-worth clientele seeking legacy properties.',
-   'Top Producer', 10, 1),
+   'Top Producer', 'assets/img/agent-eleanor-vance.jpg', 10, 1),
   ('julian-thorne', 'Julian Thorne', 'Global Luxury Specialist', 'Vail',
    'Specializing in ski-in/ski-out estates and private ranches. Julian''s international network connects global buyers with Colorado''s most exclusive alpine retreats.',
-   NULL, 20, 1),
+   NULL, 'assets/img/agent-julian-thorne.jpg', 20, 1),
   ('chloe-sterling', 'Chloe Sterling', 'Principal Agent', 'Denver Metro',
    'Chloe brings a data-driven approach to Denver''s high-end urban market, focusing on luxury penthouses and historic Cherry Creek estates with unparalleled precision.',
-   NULL, 30, 1),
+   NULL, 'assets/img/agent-chloe-sterling.jpg', 30, 1),
   ('marcus-wright', 'Marcus Wright', 'Ranch & Land Director', 'Telluride',
    'The definitive authority on large-scale Colorado land acquisitions. Marcus specializes in sporting properties, equestrian estates, and conservation easements.',
-   NULL, 40, 1);
+   NULL, 'assets/img/agent-marcus-wright.jpg', 40, 1);
 
 -- Offices (from contact/footer reference)
 INSERT INTO `offices` (`name`, `address_line`, `city`, `region`, `postal_code`, `sort_order`, `is_active`) VALUES
@@ -71,7 +71,6 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 -- Never place plaintext or known default passwords in this file.
 
 -- Curated unique public properties (one row each; used across home/listings/detail)
--- Gallery rows omitted in seed (add images via admin uploads).
 -- ADMIN SETUP: visit admin/setup.php once to create the first admin password (never seeded).
 
 SET @type_estate := (SELECT id FROM property_types WHERE slug = 'estate' LIMIT 1);
@@ -189,6 +188,24 @@ WHERE p.slug = 'the-glass-house-at-red-mountain'
 UPDATE `properties`
 SET `agent_quote` = 'This residence represents the pinnacle of Red Mountain architecture — light, scale, and privacy in equal measure.'
 WHERE `slug` = 'the-glass-house-at-red-mountain';
+
+-- Seed listing images (files under uploads/properties/{slug}/)
+INSERT INTO `property_images` (`property_id`, `path`, `caption`, `sort_order`, `is_cover`)
+SELECT p.id, v.path, v.caption, v.sort_order, v.is_cover
+FROM `properties` p
+INNER JOIN (
+  SELECT '450-red-mountain-rd' AS slug, 'uploads/properties/450-red-mountain-rd/cover.jpg' AS path, NULL AS caption, 0 AS sort_order, 1 AS is_cover
+  UNION ALL SELECT '1220-vail-valley-dr', 'uploads/properties/1220-vail-valley-dr/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT '88-strawberry-park', 'uploads/properties/88-strawberry-park/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT '1240-red-mountain-road', 'uploads/properties/1240-red-mountain-road/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT '450-gore-creek-drive', 'uploads/properties/450-gore-creek-drive/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT 'eagles-nest-ranch', 'uploads/properties/eagles-nest-ranch/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT 'the-apex-at-snowmass', 'uploads/properties/the-apex-at-snowmass/cover.jpg', NULL, 0, 1
+  UNION ALL SELECT 'the-glass-house-at-red-mountain', 'uploads/properties/the-glass-house-at-red-mountain/cover.jpg', 'EXTERIOR', 0, 1
+  UNION ALL SELECT 'the-glass-house-at-red-mountain', 'uploads/properties/the-glass-house-at-red-mountain/great-room.jpg', 'GREAT ROOM', 10, 0
+  UNION ALL SELECT 'the-glass-house-at-red-mountain', 'uploads/properties/the-glass-house-at-red-mountain/master.jpg', 'PRIMARY SUITE', 20, 0
+  UNION ALL SELECT 'the-glass-house-at-red-mountain', 'uploads/properties/the-glass-house-at-red-mountain/wine.jpg', 'WINE CELLAR', 30, 0
+) AS v ON v.slug = p.slug;
 
 -- ---------------------------------------------------------------------------
 -- ADMIN SETUP NOTE

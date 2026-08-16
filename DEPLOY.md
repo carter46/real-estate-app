@@ -68,6 +68,9 @@ mysql -u USER -p real_estate < database/migrations_release_gate.sql
 
 **Shared hosting (phpMyAdmin):** create the DB in the hosting panel first, open that database in phpMyAdmin, then Import `database/schema.sql`, then `database/seed.sql`. Do not run `CREATE DATABASE` — your user is not allowed to create DBs. Put the panel DB name/user/password in `config.local.php`.
 
+If listings already exist without photos, also import `database/migrations_seed_images.sql` (needs `uploads/properties/{slug}/` demo folders).  
+If agents lack portraits, import `database/migrations_agent_photos.sql` (needs `assets/img/agent-*.jpg`).
+
 **CLI (full privileges):**
 
 ```bash

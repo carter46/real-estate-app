@@ -6,7 +6,7 @@ $navVariant = 'content';
 $activeNav = 'about';
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20">
+<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.25), rgba(28,27,27,0.7)), url('<?= e(base_url('assets/img/about-hero.jpg')) ?>');">
   <div class="relative z-10 text-center px-margin-mobile py-24">
     <p class="font-subheading text-subheading uppercase tracking-widest text-primary-fixed-dim mb-6">Since Our Founding</p>
     <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary max-w-4xl mx-auto drop-shadow-lg">
@@ -23,7 +23,10 @@ require __DIR__ . '/includes/header.php';
       <p class="font-body-lg text-body-lg text-on-surface-variant font-light mb-6"><?= e(site_name()) ?> presents properties with editorial clarity—heritage, discretion, and market expertise define our approach to luxury real estate advisory.</p>
       <p class="font-body-lg text-body-lg text-on-surface-variant font-light">From alpine estates to metro residences, we guide acquisitions and sales with an eye for architectural significance and lasting value.</p>
     </div>
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="aspect-[3/4] bg-cover bg-center" style="background-image: url('<?= e(base_url('assets/img/about-secondary-1.jpg')) ?>');" role="img" aria-label="Colorado mountain residence"></div>
+      <div class="aspect-[3/4] bg-cover bg-center mt-10" style="background-image: url('<?= e(base_url('assets/img/about-secondary-2.jpg')) ?>');" role="img" aria-label="Alpine interior detail"></div>
+      <div class="col-span-2 grid grid-cols-2 gap-8 mt-8">
       <div>
         <div class="font-headline-md text-headline-md text-primary mb-2">40+</div>
         <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Years of Combined Expertise</p>
@@ -39,6 +42,7 @@ require __DIR__ . '/includes/header.php';
       <div>
         <div class="font-headline-md text-headline-md text-primary mb-2">1</div>
         <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Source of Truth — MySQL</p>
+      </div>
       </div>
     </div>
   </div>

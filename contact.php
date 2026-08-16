@@ -96,7 +96,7 @@ $labelClass = 'absolute -top-5 left-0 font-label-sm text-label-sm text-on-surfac
 
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="relative w-full min-h-[42vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20">
+<section class="relative w-full min-h-[42vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.25), rgba(28,27,27,0.7)), url('<?= e(base_url('assets/img/contact-hero.jpg')) ?>');">
   <div class="relative z-10 text-center px-margin-mobile py-20">
     <span class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-widest mb-6 opacity-90 block">Reach Out</span>
     <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary mb-6 drop-shadow-md">Connect With Our Experts</h1>
@@ -130,7 +130,18 @@ require __DIR__ . '/includes/header.php';
             <p class="font-body-md text-on-surface-variant">Office directory will appear when seeded.</p>
           <?php else: ?>
             <?php foreach ($offices as $office): ?>
+              <?php
+                $officeImg = match ((string) ($office['name'] ?? '')) {
+                    'Vail Village' => 'assets/img/office-vail.jpg',
+                    'Beaver Creek' => 'assets/img/office-beaver-creek.jpg',
+                    'Aspen Core' => 'assets/img/office-aspen.jpg',
+                    default => '',
+                };
+              ?>
               <div class="group border-b border-outline-variant/30 pb-4">
+                <?php if ($officeImg !== ''): ?>
+                  <div class="w-full h-32 rounded-lg bg-cover bg-center mb-4 overflow-hidden" style="background-image: url('<?= e(base_url($officeImg)) ?>');" role="img" aria-label="<?= e((string) $office['name']) ?>"></div>
+                <?php endif; ?>
                 <h3 class="font-subheading text-subheading text-on-surface group-hover:text-primary transition-colors mb-2"><?= e((string) $office['name']) ?></h3>
                 <p class="font-body-md text-body-md text-on-surface-variant">
                   <?php if (!empty($office['address_line'])): ?>

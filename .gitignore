@@ -4,9 +4,26 @@
 # Composer dependencies — installed by the host on deploy (composer install)
 /vendor/
 
-# Uploads (runtime-generated; keep directory structure)
+# Runtime admin uploads ignored; demo listing folders under uploads/properties/{slug}/ ARE committed
 /uploads/properties/*
 !/uploads/properties/.gitkeep
+!/uploads/properties/450-red-mountain-rd/
+!/uploads/properties/450-red-mountain-rd/**
+!/uploads/properties/1220-vail-valley-dr/
+!/uploads/properties/1220-vail-valley-dr/**
+!/uploads/properties/88-strawberry-park/
+!/uploads/properties/88-strawberry-park/**
+!/uploads/properties/1240-red-mountain-road/
+!/uploads/properties/1240-red-mountain-road/**
+!/uploads/properties/450-gore-creek-drive/
+!/uploads/properties/450-gore-creek-drive/**
+!/uploads/properties/eagles-nest-ranch/
+!/uploads/properties/eagles-nest-ranch/**
+!/uploads/properties/the-apex-at-snowmass/
+!/uploads/properties/the-apex-at-snowmass/**
+!/uploads/properties/the-glass-house-at-red-mountain/
+!/uploads/properties/the-glass-house-at-red-mountain/**
+
 /uploads/branding/*
 !/uploads/branding/.gitkeep
 !/uploads/branding/.htaccess

@@ -33,15 +33,15 @@ try {
 }
 
 $collections = [
-    ['label' => 'Aspen', 'region' => 'Aspen'],
-    ['label' => 'Vail', 'region' => 'Vail'],
-    ['label' => 'Beaver Creek', 'region' => 'Beaver Creek'],
+    ['label' => 'Aspen', 'region' => 'Aspen', 'image' => 'assets/img/collection-aspen.jpg'],
+    ['label' => 'Vail', 'region' => 'Vail', 'image' => 'assets/img/collection-vail.jpg'],
+    ['label' => 'Beaver Creek', 'region' => 'Beaver Creek', 'image' => 'assets/img/collection-beaver-creek.jpg'],
 ];
 
 require __DIR__ . '/includes/header.php';
 ?>
 <!-- 2. Hero -->
-<section class="relative min-h-[78vh] flex items-end hero-photo">
+<section class="relative min-h-[78vh] flex items-end hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/home-hero.jpg')) ?>');">
   <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-32 pt-24">
     <div class="w-12 h-0.5 bg-primary-fixed-dim mb-6"></div>
     <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-primary max-w-3xl mb-4">
@@ -74,7 +74,7 @@ require __DIR__ . '/includes/header.php';
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <?php foreach ($collections as $collection): ?>
-        <a href="<?= e(base_url('properties.php?region=' . rawurlencode($collection['region']))) ?>" class="group relative min-h-[22rem] flex items-end p-6 text-on-primary overflow-hidden collection-photo no-underline">
+        <a href="<?= e(base_url('properties.php?region=' . rawurlencode($collection['region']))) ?>" class="group relative min-h-[22rem] flex items-end p-6 text-on-primary overflow-hidden collection-photo no-underline" style="background-image: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7)), url('<?= e(base_url($collection['image'])) ?>');">
           <div class="relative z-10">
             <p class="font-label-sm text-label-sm uppercase tracking-widest text-primary-fixed-dim mb-2">Discover</p>
             <p class="font-headline-md text-[28px]"><?= e($collection['label']) ?></p>
@@ -123,7 +123,7 @@ require __DIR__ . '/includes/header.php';
       <p class="font-body-lg text-body-lg text-on-surface-variant font-light mb-8">Our advisors guide acquisitions and sales with discretion, clarity, and an eye for architectural significance.</p>
       <a href="<?= e(base_url('about.php')) ?>" class="inline-flex font-label-sm text-label-sm uppercase tracking-widest text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-on-primary transition-colors">Read Our Latest Market Report</a>
     </div>
-    <div class="relative min-h-[28rem] img-placeholder">
+    <div class="relative min-h-[28rem] bg-cover bg-center" style="background-image: url('<?= e(base_url('assets/img/editorial-expertise.jpg')) ?>');">
       <div class="absolute left-4 bottom-4 bg-surface-container-lowest border border-outline-variant/40 p-5 shadow-md">
         <p class="font-display-lg text-[32px] text-on-surface">$2B+</p>
         <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">In Luxury Sales Volume</p>
