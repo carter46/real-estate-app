@@ -21,11 +21,12 @@ Copy the `real-estate-app/` tree to the server.
 
 **Do not deploy / commit:**
 
-- `config.local.php` (create on server)
-- `vendor/` (rebuild with Composer on server, or sync after `composer install --no-dev`)
-- `uploads/properties/*` contents from another environment unless intentional
+- `config.local.php` (create on server with production secrets)
+- `uploads/properties/*` and `uploads/branding/*` contents from another environment unless intentional
 - `storage/logs/*`, `storage/rate_limits/*` runtime files
 - `.git/` (optional)
+
+**Shared hosting (no Composer on server):** run `composer install --no-dev` on a local machine, then **commit and upload `vendor/`** with the app so PHPMailer is present. Do not leave `vendor/` web-executable as app code — Apache/Nginx rules still deny direct web access to `/vendor/`.
 
 **Never delete** sibling `references/` unless explicitly requested by the project owner.
 
@@ -71,22 +72,25 @@ mysql -u USER -p < database/seed.sql
 - No admin password is seeded. Create the first admin via `/admin/setup.php` once.
 - After setup completes, further setup visits are blocked by the app.
 
-## 5. Composer
+## 5. Composer / `vendor/`
+
+On a machine with Composer (local PC or CI):
 
 ```bash
 cd /path/to/real-estate-app
 composer install --no-dev --optimize-autoloader
 ```
 
-If `composer.lock` is present, use it for reproducible installs. If absent, Composer resolves from `composer.json` (pin/commit a lock when available).
+For **shared hosting without Composer**, commit the resulting `vendor/` directory and upload it with the app (`vendor/` is no longer gitignored). SMTP needs PHPMailer under `vendor/`. The `log` mail driver can run without PHPMailer for local smoke tests only.
 
-SMTP mail requires PHPMailer (`vendor/`). The `log` mail driver can run without Composer for local smoke tests only.
+If `composer.lock` is present, use it for reproducible installs. If absent, pin/commit a lock when available.
 
 ## 6. Permissions
 
 Web / PHP user must **write**:
 
 - `uploads/properties/`
+- `uploads/branding/`
 - `storage/logs/`
 - `storage/rate_limits/`
 

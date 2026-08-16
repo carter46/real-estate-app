@@ -24,10 +24,11 @@ Hard fidelity rules: see [`docs/UI_FIDELITY.md`](docs/UI_FIDELITY.md).
    mysql -u root -p < database/schema.sql
    mysql -u root -p < database/seed.sql
    ```
-3. Install dependencies:
+3. Install dependencies (on a machine that has Composer):
    ```bash
    composer install
    ```
+   For shared hosting without Composer, commit `vendor/` after install and upload it with the app (see [`DEPLOY.md`](DEPLOY.md)).
 4. Point the web server document root at this folder.
 5. Checks:
    ```bash

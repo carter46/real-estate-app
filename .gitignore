@@ -1,10 +1,10 @@
 # Local secrets — never commit
 /config.local.php
 
-# Composer
-/vendor/
+# Composer: vendor/ IS tracked for shared hosting (no Composer on server).
+# Run `composer install --no-dev` locally, then commit vendor/ before deploy.
 
-# Uploads (keep directory structure via .gitkeep)
+# Uploads (runtime-generated; keep directory structure)
 /uploads/properties/*
 !/uploads/properties/.gitkeep
 /uploads/branding/*
@@ -18,7 +18,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Logs / cache
+# Logs / rate limits (runtime-generated)
 *.log
 /storage/logs/*
 !/storage/logs/.gitkeep
