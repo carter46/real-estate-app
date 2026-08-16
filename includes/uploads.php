@@ -230,3 +230,69 @@ function branding_upload_image(array $file, string $kind, ?string $previousRelat
     return ['ok' => true, 'error' => null, 'path' => $relative];
 }
 
+/**
+ * Upload homepage / collection image for a region under uploads/regions/.
+ *
+ * @return array{ok:bool, error:?string, path:?string}
+ */
+function region_upload_image(array $file, ?string $previousRelativePath = null): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return ['ok' => false, 'error' => 'No file uploaded.', 'path' => null];
+    }
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        return ['ok' => false, 'error' => 'Upload failed.', 'path' => null];
+    }
+
+    $max = (int) app_config('uploads.max_bytes', 10 * 1024 * 1024);
+    if (($file['size'] ?? 0) > $max) {
+        return ['ok' => false, 'error' => 'File exceeds maximum size.', 'path' => null];
+    }
+
+    $tmp = (string) ($file['tmp_name'] ?? '');
+    if ($tmp === '' || !is_uploaded_file($tmp)) {
+        return ['ok' => false, 'error' => 'Invalid upload.', 'path' => null];
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = (string) $finfo->file($tmp);
+    $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!in_array($mime, $allowed, true)) {
+        return ['ok' => false, 'error' => 'Region images must be JPEG, PNG, or WebP.', 'path' => null];
+    }
+
+    $imageInfo = @getimagesize($tmp);
+    if ($imageInfo === false || empty($imageInfo[0]) || empty($imageInfo[1])) {
+        return ['ok' => false, 'error' => 'File is not a valid image.', 'path' => null];
+    }
+
+    $extMap = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+    $ext = $extMap[$mime] ?? 'jpg';
+
+    $dir = APP_ROOT . '/uploads/regions';
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+        return ['ok' => false, 'error' => 'Could not create regions upload directory.', 'path' => null];
+    }
+
+    $filename = 'region-' . bin2hex(random_bytes(8)) . '.' . $ext;
+    $dest = $dir . '/' . $filename;
+    if (!move_uploaded_file($tmp, $dest)) {
+        return ['ok' => false, 'error' => 'Could not store uploaded file.', 'path' => null];
+    }
+
+    $relative = 'uploads/regions/' . $filename;
+    if (
+        $previousRelativePath !== null
+        && $previousRelativePath !== ''
+        && str_starts_with($previousRelativePath, 'uploads/regions/')
+    ) {
+        property_delete_image_file($previousRelativePath);
+    }
+
+    return ['ok' => true, 'error' => null, 'path' => $relative];
+}
+

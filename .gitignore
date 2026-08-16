@@ -28,6 +28,10 @@
 !/uploads/branding/.gitkeep
 !/uploads/branding/.htaccess
 
+/uploads/regions/*
+!/uploads/regions/.gitkeep
+!/uploads/regions/.htaccess
+
 # OS / IDE
 .DS_Store
 Thumbs.db

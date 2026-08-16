@@ -156,8 +156,16 @@ function taxonomy_region_usage_count(int $id): int
 /**
  * @return array{ok:bool, error:?string, id:?int}
  */
-function taxonomy_region_save(?int $id, string $name, string $slug, bool $isActive): array
-{
+function taxonomy_region_save(
+    ?int $id,
+    string $name,
+    string $slug,
+    bool $isActive,
+    bool $isFeatured = false,
+    ?int $sortOrder = null,
+    ?string $imagePath = null,
+    bool $clearImage = false
+): array {
     $name = trim($name);
     $slug = slugify($slug !== '' ? $slug : $name);
     if ($name === '') {
@@ -182,9 +190,28 @@ function taxonomy_region_save(?int $id, string $name, string $slug, bool $isActi
     if ($id) {
         $prev = taxonomy_region_find($id);
         $oldName = is_array($prev) ? (string) ($prev['name'] ?? '') : '';
+        $nextSort = $sortOrder !== null ? $sortOrder : (int) ($prev['sort_order'] ?? 0);
+        $nextImage = is_array($prev) ? (string) ($prev['image_path'] ?? '') : '';
+        if ($clearImage) {
+            if ($nextImage !== '' && str_starts_with($nextImage, 'uploads/regions/')) {
+                property_delete_image_file($nextImage);
+            }
+            $nextImage = '';
+        } elseif ($imagePath !== null && $imagePath !== '') {
+            $nextImage = $imagePath;
+        }
+
         db()->prepare(
-            'UPDATE regions SET name = ?, slug = ?, is_active = ? WHERE id = ?'
-        )->execute([$name, $slug, $isActive ? 1 : 0, $id]);
+            'UPDATE regions SET name = ?, slug = ?, sort_order = ?, is_active = ?, is_featured = ?, image_path = ? WHERE id = ?'
+        )->execute([
+            $name,
+            $slug,
+            $nextSort,
+            $isActive ? 1 : 0,
+            $isFeatured ? 1 : 0,
+            $nextImage !== '' ? $nextImage : null,
+            $id,
+        ]);
         // Keep property.region text in sync when renaming.
         if ($oldName !== '' && $oldName !== $name) {
             db()->prepare('UPDATE properties SET region = ? WHERE region = ?')->execute([$name, $oldName]);
@@ -192,16 +219,23 @@ function taxonomy_region_save(?int $id, string $name, string $slug, bool $isActi
         return ['ok' => true, 'error' => null, 'id' => $id];
     }
 
-    $sortOrder = taxonomy_next_sort_order('regions');
+    $sortOrder = $sortOrder !== null ? $sortOrder : taxonomy_next_sort_order('regions');
     db()->prepare(
-        'INSERT INTO regions (name, slug, sort_order, is_active) VALUES (?, ?, ?, ?)'
-    )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0]);
+        'INSERT INTO regions (name, slug, sort_order, is_active, is_featured, image_path) VALUES (?, ?, ?, ?, ?, ?)'
+    )->execute([
+        $name,
+        $slug,
+        $sortOrder,
+        $isActive ? 1 : 0,
+        $isFeatured ? 1 : 0,
+        ($imagePath !== null && $imagePath !== '') ? $imagePath : null,
+    ]);
     return ['ok' => true, 'error' => null, 'id' => (int) db()->lastInsertId()];
 }
 
 function taxonomy_region_deactivate(int $id): void
 {
-    db()->prepare('UPDATE regions SET is_active = 0 WHERE id = ?')->execute([$id]);
+    db()->prepare('UPDATE regions SET is_active = 0, is_featured = 0 WHERE id = ?')->execute([$id]);
 }
 
 /**
@@ -216,6 +250,28 @@ function regions_all(bool $activeOnly = false): array
     $sql .= ' ORDER BY sort_order, name';
     try {
         return db()->query($sql)->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Active featured regions for homepage Exclusive Collections (ordered).
+ *
+ * @return list<array<string, mixed>>
+ */
+function regions_featured_home(int $limit = 12): array
+{
+    $limit = max(1, min(24, $limit));
+    try {
+        $stmt = db()->prepare(
+            'SELECT * FROM regions
+             WHERE is_active = 1 AND is_featured = 1
+             ORDER BY sort_order ASC, name ASC
+             LIMIT ' . (int) $limit
+        );
+        $stmt->execute();
+        return $stmt->fetchAll() ?: [];
     } catch (Throwable $e) {
         return [];
     }
@@ -244,6 +300,8 @@ function regions_for_select(?string $currentName = null): array
         'name' => $currentName,
         'sort_order' => 0,
         'is_active' => 0,
+        'is_featured' => 0,
+        'image_path' => null,
     ]);
     return $rows;
 }

@@ -27,14 +27,14 @@ INSERT INTO `property_types` (`slug`, `name`, `sort_order`) VALUES
   ('single_family', 'Single Family', 50),
   ('land', 'Land', 60);
 
-INSERT INTO `regions` (`slug`, `name`, `sort_order`, `is_active`) VALUES
-  ('aspen', 'Aspen', 10, 1),
-  ('vail', 'Vail', 20, 1),
-  ('beaver-creek', 'Beaver Creek', 30, 1),
-  ('telluride', 'Telluride', 40, 1),
-  ('snowmass', 'Snowmass', 50, 1),
-  ('steamboat', 'Steamboat', 60, 1),
-  ('denver-metro', 'Denver Metro', 70, 1);
+INSERT INTO `regions` (`slug`, `name`, `sort_order`, `is_active`, `is_featured`, `image_path`) VALUES
+  ('aspen', 'Aspen', 10, 1, 1, 'assets/img/collection-aspen.jpg'),
+  ('vail', 'Vail', 20, 1, 1, 'assets/img/collection-vail.jpg'),
+  ('beaver-creek', 'Beaver Creek', 30, 1, 1, 'assets/img/collection-beaver-creek.jpg'),
+  ('telluride', 'Telluride', 40, 1, 0, NULL),
+  ('snowmass', 'Snowmass', 50, 1, 0, NULL),
+  ('steamboat', 'Steamboat', 60, 1, 0, NULL),
+  ('denver-metro', 'Denver Metro', 70, 1, 0, NULL);
 
 -- Amenities (from reference add form)
 INSERT INTO `amenities` (`slug`, `name`, `category`, `sort_order`) VALUES

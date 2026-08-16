@@ -90,9 +90,12 @@ CREATE TABLE `regions` (
   `name` VARCHAR(120) NOT NULL,
   `sort_order` INT NOT NULL DEFAULT 0,
   `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `is_featured` TINYINT(1) NOT NULL DEFAULT 0,
+  `image_path` VARCHAR(500) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_regions_slug` (`slug`),
-  KEY `idx_regions_active` (`is_active`, `sort_order`)
+  KEY `idx_regions_active` (`is_active`, `sort_order`),
+  KEY `idx_regions_featured` (`is_featured`, `is_active`, `sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------

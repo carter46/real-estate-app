@@ -1,6 +1,6 @@
 <?php
 /**
- * Regions CMS — view / add / edit / deactivate (no hard delete).
+ * Regions CMS — view / add / edit / deactivate + homepage featured + image.
  */
 
 declare(strict_types=1);
@@ -38,24 +38,59 @@ if (is_post()) {
         }
 
         $id = (int) ($_POST['id'] ?? 0) ?: null;
-        $result = taxonomy_region_save(
-            $id,
-            (string) ($_POST['name'] ?? ''),
-            (string) ($_POST['slug'] ?? ''),
-            !empty($_POST['is_active'])
-        );
-        if (!$result['ok']) {
-            $errors[] = (string) $result['error'];
+        $sortRaw = trim((string) ($_POST['sort_order'] ?? ''));
+        $sortOrder = $sortRaw === '' ? null : (int) $sortRaw;
+        $isFeatured = !empty($_POST['is_featured']);
+        $clearImage = !empty($_POST['clear_image']);
+        $imagePath = null;
+
+        $prevImage = '';
+        if ($id) {
+            $prev = taxonomy_region_find($id);
+            $prevImage = is_array($prev) ? (string) ($prev['image_path'] ?? '') : '';
+        }
+
+        $file = $_FILES['image'] ?? null;
+        if (is_array($file) && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $up = region_upload_image($file, str_starts_with($prevImage, 'uploads/regions/') ? $prevImage : null);
+            if (!$up['ok']) {
+                $errors[] = (string) $up['error'];
+            } else {
+                $imagePath = (string) $up['path'];
+                $clearImage = false;
+            }
+        }
+
+        if ($errors === []) {
+            $result = taxonomy_region_save(
+                $id,
+                (string) ($_POST['name'] ?? ''),
+                (string) ($_POST['slug'] ?? ''),
+                !empty($_POST['is_active']),
+                $isFeatured,
+                $sortOrder,
+                $imagePath,
+                $clearImage
+            );
+            if (!$result['ok']) {
+                $errors[] = (string) $result['error'];
+            } else {
+                flash_set('region_ok', $id ? 'Region updated.' : 'Region created.');
+                redirect('admin/regions.php');
+            }
+        }
+
+        if ($errors !== []) {
             $editing = [
                 'id' => $id,
                 'name' => $_POST['name'] ?? '',
                 'slug' => $_POST['slug'] ?? '',
+                'sort_order' => $sortOrder ?? ($editing['sort_order'] ?? 0),
                 'is_active' => !empty($_POST['is_active']) ? 1 : 0,
+                'is_featured' => $isFeatured ? 1 : 0,
+                'image_path' => $imagePath ?? ($editing['image_path'] ?? $prevImage),
             ];
             $openModal = true;
-        } else {
-            flash_set('region_ok', $id ? 'Region updated.' : 'Region created.');
-            redirect('admin/regions.php');
         }
     }
 }
@@ -69,7 +104,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
   <div>
     <span class="admin-eyebrow">Taxonomy</span>
     <h1 class="admin-page-title">Regions</h1>
-    <p class="admin-page-lead">Destinations used on property forms and public filters. Deactivate to hide from new listings without changing existing data.</p>
+    <p class="admin-page-lead">Destinations for listings and filters. Mark regions as featured and add an image to show them on the homepage Exclusive Collections section (ordered by sort).</p>
   </div>
   <button type="button" class="admin-btn" data-modal-open="region-modal">Add region</button>
 </div>
@@ -80,16 +115,27 @@ require dirname(__DIR__) . '/includes/admin-header.php';
 <div class="admin-panel">
   <h2>All regions</h2>
   <?php if ($rows === []): ?>
-    <p class="admin-note">No regions yet. Import <code>migrations_regions.sql</code> or use “Add region”.</p>
+    <p class="admin-note">No regions yet. Import <code>migrations_regions.sql</code> (and <code>migrations_regions_home.sql</code> if upgrading) or use “Add region”.</p>
   <?php else: ?>
     <table class="admin-table">
-      <thead><tr><th>Name</th><th>Slug</th><th>Sort</th><th>Status</th><th>In use</th><th></th></tr></thead>
+      <thead><tr><th></th><th>Name</th><th>Sort</th><th>Homepage</th><th>Status</th><th>In use</th><th></th></tr></thead>
       <tbody>
       <?php foreach ($rows as $row): ?>
+        <?php
+          $thumb = trim((string) ($row['image_path'] ?? ''));
+          $thumbUrl = $thumb !== '' ? media_url($thumb) : '';
+        ?>
         <tr>
+          <td style="width:3.5rem;">
+            <?php if ($thumbUrl !== ''): ?>
+              <img src="<?= e($thumbUrl) ?>" alt="" style="width:2.75rem;height:2.75rem;object-fit:cover;border-radius:4px;background:#eee;">
+            <?php else: ?>
+              <span class="admin-note">—</span>
+            <?php endif; ?>
+          </td>
           <td><?= e((string) $row['name']) ?></td>
-          <td><?= e((string) $row['slug']) ?></td>
           <td><?= e((string) $row['sort_order']) ?></td>
+          <td><?= !empty($row['is_featured']) ? 'Featured' : '—' ?></td>
           <td><?= !empty($row['is_active']) ? 'Active' : 'Inactive' ?></td>
           <td><?= e((string) taxonomy_region_usage_count((int) $row['id'])) ?></td>
           <td>
@@ -129,7 +175,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
       <h2 id="region-modal-title"><?= $editing ? 'Edit region' : 'Add region' ?></h2>
       <button type="button" class="admin-modal__close" data-modal-close aria-label="Close">&times;</button>
     </div>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
       <?= csrf_field() ?>
       <input type="hidden" name="action" value="save">
       <?php if ($editing && !empty($editing['id'])): ?>
@@ -142,6 +188,26 @@ require dirname(__DIR__) . '/includes/admin-header.php';
       <div class="admin-field">
         <label for="slug">Slug</label>
         <input id="slug" name="slug" value="<?= e((string) ($editing['slug'] ?? '')) ?>" placeholder="auto from name">
+      </div>
+      <div class="admin-field">
+        <label for="sort_order">Display order</label>
+        <input id="sort_order" name="sort_order" type="number" value="<?= e((string) ($editing['sort_order'] ?? '')) ?>" placeholder="auto on create">
+        <p class="admin-note">Lower numbers appear first on the homepage featured row.</p>
+      </div>
+      <div class="admin-field">
+        <label><input type="checkbox" name="is_featured" value="1" <?= !empty($editing['is_featured']) ? 'checked' : '' ?>> Show on homepage (Exclusive Collections)</label>
+      </div>
+      <div class="admin-field">
+        <label for="image">Collection image</label>
+        <?php
+          $editImg = trim((string) ($editing['image_path'] ?? ''));
+          if ($editImg !== ''):
+        ?>
+          <p style="margin:0 0 0.5rem;"><img src="<?= e(media_url($editImg)) ?>" alt="" style="max-height:96px;border-radius:4px;"></p>
+          <label><input type="checkbox" name="clear_image" value="1"> Remove current image</label>
+        <?php endif; ?>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+        <p class="admin-note">JPEG, PNG, or WebP. Recommended wide landscape photo.</p>
       </div>
       <div class="admin-field">
         <label><input type="checkbox" name="is_active" value="1" <?= !isset($editing['is_active']) || !empty($editing['is_active']) ? 'checked' : '' ?>> Active</label>
