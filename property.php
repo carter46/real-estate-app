@@ -11,7 +11,7 @@ $slug = trim((string) ($_GET['slug'] ?? ''));
 if ($slug === '') {
     http_response_code(404);
     $pageTitle = 'Property not found';
-    $navVariant = 'home';
+    $activeNav = 'properties';
     require __DIR__ . '/includes/header.php';
     echo '<p class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 font-body-lg text-on-surface-variant">Property not found.</p>';
     require __DIR__ . '/includes/footer.php';
@@ -34,7 +34,7 @@ try {
 if (!$property) {
     http_response_code(404);
     $pageTitle = 'Property not found';
-    $navVariant = 'home';
+    $activeNav = 'properties';
     require __DIR__ . '/includes/header.php';
     echo '<p class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 font-body-lg text-on-surface-variant">This property is not available.</p>';
     require __DIR__ . '/includes/footer.php';
@@ -59,8 +59,7 @@ $priceLabel = format_price(
 );
 $locationEyebrow = trim(($property['city'] ?? '') . (($property['state'] ?? '') !== '' ? ', ' . $property['state'] : ''));
 $pageTitle = (string) $property['title'] . ' — ' . site_name();
-$navVariant = 'home';
-$activeNav = 'buy';
+$activeNav = 'properties';
 
 $byCat = [];
 foreach ($amenities as $am) {

@@ -46,8 +46,7 @@ foreach ($rows as $row) {
 }
 
 $pageTitle = "Colorado's Finest Estates — " . site_name();
-$navVariant = 'home';
-$activeNav = 'buy';
+$activeNav = 'properties';
 require __DIR__ . '/includes/header.php';
 ?>
 <section class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pt-16 pb-8">

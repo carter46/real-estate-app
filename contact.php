@@ -8,7 +8,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/bootstrap.php';
 
 $pageTitle = 'Contact — ' . site_name();
-$navVariant = 'content';
 $activeNav = 'contact';
 $propertySlug = trim((string) ($_GET['property'] ?? ''));
 $linkedProperty = null;

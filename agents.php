@@ -19,7 +19,6 @@ try {
 
 $regions = ['Aspen Core', 'Vail', 'Denver Metro', 'Telluride'];
 $pageTitle = 'Our Experts — ' . site_name();
-$navVariant = 'home';
 $activeNav = 'agents';
 require __DIR__ . '/includes/header.php';
 ?>

@@ -8,8 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/bootstrap.php';
 
 $pageTitle = site_name() . ' — Luxury Mountain Living';
-$navVariant = 'home';
-$activeNav = 'buy';
+$activeNav = 'home';
 
 $featured = [];
 $dbOk = true;
@@ -41,8 +40,8 @@ $collections = [
 require __DIR__ . '/includes/header.php';
 ?>
 <!-- 2. Hero -->
-<section class="relative min-h-[78vh] flex items-end hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/home-hero.jpg')) ?>');">
-  <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-32 pt-24">
+<section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/home-hero.jpg')) ?>');">
+  <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 text-center flex flex-col items-center">
     <div class="w-12 h-0.5 bg-primary-fixed-dim mb-6"></div>
     <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-primary max-w-3xl mb-4">
       Luxury Mountain Living, <em class="italic">Redefined.</em>
@@ -50,7 +49,7 @@ require __DIR__ . '/includes/header.php';
     <p class="font-body-lg text-body-lg text-on-primary/85 font-light max-w-xl mb-8">
       Discover exclusive Colorado estates curated by <?= e(site_name()) ?>.
     </p>
-    <div class="flex flex-wrap gap-3">
+    <div class="flex flex-wrap gap-3 justify-center">
       <a href="<?= e(base_url('properties.php')) ?>" class="px-8 py-3 bg-surface text-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary-fixed transition-colors">Explore Properties</a>
       <a href="<?= e(base_url('agents.php')) ?>" class="px-8 py-3 border border-on-primary/50 text-on-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-on-primary/10 transition-colors">Meet Our Agents</a>
     </div>
