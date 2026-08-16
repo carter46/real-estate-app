@@ -4,7 +4,7 @@
 # Composer dependencies — installed by the host on deploy (composer install)
 /vendor/
 
-# Runtime admin uploads ignored; demo listing folders under uploads/properties/{slug}/ ARE committed
+# Runtime admin uploads ignored; committed demo + parent-company import folders under uploads/properties/
 /uploads/properties/*
 !/uploads/properties/.gitkeep
 !/uploads/properties/450-red-mountain-rd/
@@ -23,6 +23,8 @@
 !/uploads/properties/the-apex-at-snowmass/**
 !/uploads/properties/the-glass-house-at-red-mountain/
 !/uploads/properties/the-glass-house-at-red-mountain/**
+!/uploads/properties/cc-*/
+!/uploads/properties/cc-*/**
 
 /uploads/branding/*
 !/uploads/branding/.gitkeep
@@ -31,6 +33,10 @@
 /uploads/regions/*
 !/uploads/regions/.gitkeep
 !/uploads/regions/.htaccess
+!/uploads/regions/*.jpg
+!/uploads/regions/*.jpeg
+!/uploads/regions/*.png
+!/uploads/regions/*.webp
 
 # OS / IDE
 .DS_Store

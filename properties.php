@@ -20,7 +20,7 @@ if (!in_array($sort, ['newest', 'price_asc', 'price_desc'], true)) {
     $sort = 'newest';
 }
 $page = max(1, (int) ($_GET['page'] ?? 1));
-$perPage = 12;
+$perPage = 20;
 $offset = ($page - 1) * $perPage;
 
 $agentFilter = null;
