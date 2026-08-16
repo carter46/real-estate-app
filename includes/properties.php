@@ -418,10 +418,24 @@ function property_validate_input(array $input, ?int $excludeId = null): array
     $warning = null;
     $dup = property_address_duplicate($address, $city, $excludeId);
     if ($dup) {
-        $warning = 'A property with the same address and city already exists: '
-            . (string) ($dup['title'] ?? '') . ' (' . (string) ($dup['reference_code'] ?? '') . ').';
-        if (empty($input['confirm_duplicate'])) {
-            $errors[] = $warning . ' Check “Confirm save despite possible duplicate” to proceed.';
+        $addressChanged = true;
+        if ($excludeId) {
+            $existing = property_find($excludeId);
+            if (is_array($existing)) {
+                $prevAddress = trim((string) ($existing['address_line'] ?? ''));
+                $prevCity = trim((string) ($existing['city'] ?? ''));
+                $addressChanged = strcasecmp($prevAddress, $address) !== 0
+                    || strcasecmp($prevCity, $city) !== 0;
+            }
+        }
+        // Shared community addresses (e.g. multiple floor plans) should not block a normal edit.
+        // Only require confirmation on create, or when address/city is changed to match another listing.
+        if ($addressChanged) {
+            $warning = 'A property with the same address and city already exists: '
+                . (string) ($dup['title'] ?? '') . ' (' . (string) ($dup['reference_code'] ?? '') . ').';
+            if (empty($input['confirm_duplicate'])) {
+                $errors[] = $warning . ' Check “Confirm save despite possible duplicate” to proceed.';
+            }
         }
     }
 
