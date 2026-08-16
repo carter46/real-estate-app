@@ -13,6 +13,7 @@ $filters = [
     'region' => trim((string) ($_GET['region'] ?? '')),
     'type' => trim((string) ($_GET['type'] ?? '')),
     'price' => trim((string) ($_GET['price'] ?? '')),
+    'agent_id' => max(0, (int) ($_GET['agent_id'] ?? 0)),
 ];
 $sort = (string) ($_GET['sort'] ?? 'newest');
 if (!in_array($sort, ['newest', 'price_asc', 'price_desc'], true)) {
@@ -21,6 +22,22 @@ if (!in_array($sort, ['newest', 'price_asc', 'price_desc'], true)) {
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $perPage = 12;
 $offset = ($page - 1) * $perPage;
+
+$agentFilter = null;
+if ($filters['agent_id'] > 0) {
+    try {
+        $stmt = db()->prepare('SELECT id, name FROM agents WHERE id = ? AND is_active = 1 LIMIT 1');
+        $stmt->execute([$filters['agent_id']]);
+        $row = $stmt->fetch();
+        $agentFilter = is_array($row) ? $row : null;
+        if ($agentFilter === null) {
+            $filters['agent_id'] = 0;
+        }
+    } catch (Throwable $e) {
+        $filters['agent_id'] = 0;
+        $agentFilter = null;
+    }
+}
 
 $total = 0;
 $rows = [];
@@ -53,7 +70,14 @@ require __DIR__ . '/includes/header.php';
 <section class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pt-16 pb-8">
   <p class="font-subheading text-subheading uppercase tracking-widest text-primary mb-3">Curated Portfolio</p>
   <h1 class="font-display-lg text-display-lg-mobile lg:text-[48px] text-on-surface mb-3">Colorado's Finest Estates</h1>
-  <p class="font-body-lg text-body-lg text-on-surface-variant font-light max-w-2xl">Search and filter live inventory from the SDC database.</p>
+  <?php if ($agentFilter): ?>
+    <p class="font-body-lg text-body-lg text-on-surface-variant font-light max-w-2xl">
+      Listings with <strong class="text-on-surface font-normal"><?= e((string) $agentFilter['name']) ?></strong>.
+      <a class="text-primary hover:underline ml-2" href="<?= e(base_url('properties.php')) ?>">Clear agent filter</a>
+    </p>
+  <?php else: ?>
+    <p class="font-body-lg text-body-lg text-on-surface-variant font-light max-w-2xl">Search and filter live inventory from the SDC database.</p>
+  <?php endif; ?>
 </section>
 
 <form method="get" action="<?= e(base_url('properties.php')) ?>" class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-8 flex flex-wrap gap-4 items-end border-b border-outline-variant/40">
@@ -87,6 +111,7 @@ require __DIR__ . '/includes/header.php';
   </div>
   <?php if ($filters['q'] !== ''): ?><input type="hidden" name="q" value="<?= e($filters['q']) ?>"><?php endif; ?>
   <?php if ($filters['location'] !== ''): ?><input type="hidden" name="location" value="<?= e($filters['location']) ?>"><?php endif; ?>
+  <?php if ($filters['agent_id'] > 0): ?><input type="hidden" name="agent_id" value="<?= e((string) $filters['agent_id']) ?>"><?php endif; ?>
   <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest inline-flex items-center gap-2">
     Refine Search <span class="material-symbols-outlined text-[18px]">tune</span>
   </button>
@@ -95,9 +120,12 @@ require __DIR__ . '/includes/header.php';
 <div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-6 flex flex-wrap justify-between gap-4 items-center">
   <p class="font-body-md text-body-md text-on-surface">Showing <strong><?= e((string) $total) ?></strong> Exclusive Properties</p>
   <form method="get" class="flex items-center gap-2">
-    <?php foreach ($filters as $k => $v): if ($v !== ''): ?>
-      <input type="hidden" name="<?= e($k) ?>" value="<?= e($v) ?>">
-    <?php endif; endforeach; ?>
+    <?php foreach ($filters as $k => $v): ?>
+      <?php if ($v === '' || $v === 0 || $v === null) {
+          continue;
+      } ?>
+      <input type="hidden" name="<?= e($k) ?>" value="<?= e((string) $v) ?>">
+    <?php endforeach; ?>
     <span class="material-symbols-outlined text-on-surface-variant">sort</span>
     <select name="sort" onchange="this.form.submit()" class="border-0 border-b border-on-surface bg-transparent font-body-md py-1">
       <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Newest</option>
@@ -111,7 +139,13 @@ require __DIR__ . '/includes/header.php';
   <?php if (!$dbOk): ?>
     <p class="text-on-surface-variant">Listings unavailable.</p>
   <?php elseif ($rows === []): ?>
-    <p class="text-on-surface-variant py-16">No properties match these filters.</p>
+    <p class="text-on-surface-variant py-16">
+      <?php if ($agentFilter): ?>
+        No public listings are assigned to <?= e((string) $agentFilter['name']) ?> yet.
+      <?php else: ?>
+        No properties match these filters.
+      <?php endif; ?>
+    </p>
   <?php else: ?>
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <?php if ($featuredRow): $property = $featuredRow; require __DIR__ . '/includes/property-card-featured.php'; endif; ?>
@@ -120,7 +154,7 @@ require __DIR__ . '/includes/header.php';
     <?php if ($offset + count($rows) < $total): ?>
       <div class="mt-12 text-center">
         <a class="inline-flex items-center gap-2 px-8 py-3 border border-primary text-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors"
-           href="<?= e(base_url('properties.php?' . http_build_query(array_filter(array_merge($filters, ['sort' => $sort, 'page' => $page + 1]))))) ?>">
+           href="<?= e(base_url('properties.php?' . http_build_query(array_filter(array_merge($filters, ['sort' => $sort, 'page' => $page + 1]), static fn ($v) => $v !== '' && $v !== 0 && $v !== null)))) ?>">
           Load More Estates <span class="material-symbols-outlined">arrow_downward</span>
         </a>
       </div>

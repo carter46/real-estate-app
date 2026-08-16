@@ -276,13 +276,6 @@ require __DIR__ . '/includes/header.php';
             <p class="mt-6 font-label-sm text-label-sm text-on-surface-variant">Ref <?= e((string) $property['reference_code']) ?><?= !empty($property['mls_number']) ? ' · MLS# ' . e((string) $property['mls_number']) : '' ?></p>
           </div>
 
-          <div class="bg-surface-container-low border border-outline-variant/20 overflow-hidden h-64 relative img-placeholder">
-            <div class="absolute bottom-4 left-4 bg-surface px-4 py-2 shadow-sm border border-outline-variant/20 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary text-[16px]">location_on</span>
-              <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider"><?= e((string) ($property['city'] ?? 'Map')) ?></span>
-            </div>
-          </div>
-
           <div id="inquiry" class="bg-surface-container-lowest border border-outline-variant/30 p-6">
             <p class="font-subheading text-subheading text-primary mb-3 uppercase tracking-widest">Inquire</p>
             <h3 class="font-headline-md text-[24px] text-on-surface mb-4">Request a private viewing</h3>

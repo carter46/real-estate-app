@@ -721,6 +721,12 @@ function property_public_where_sql(array $filters = []): array
         array_push($params, $like, $like);
     }
 
+    $agentId = (int) ($filters['agent_id'] ?? 0);
+    if ($agentId > 0) {
+        $where[] = 'p.agent_id = ?';
+        $params[] = $agentId;
+    }
+
     $type = trim((string) ($filters['type'] ?? ''));
     if ($type !== '') {
         $where[] = 't.slug = ?';

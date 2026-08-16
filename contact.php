@@ -129,18 +129,7 @@ require __DIR__ . '/includes/header.php';
             <p class="font-body-md text-on-surface-variant">Office directory will appear when seeded.</p>
           <?php else: ?>
             <?php foreach ($offices as $office): ?>
-              <?php
-                $officeImg = match ((string) ($office['name'] ?? '')) {
-                    'Vail Village' => 'assets/img/office-vail.jpg',
-                    'Beaver Creek' => 'assets/img/office-beaver-creek.jpg',
-                    'Aspen Core' => 'assets/img/office-aspen.jpg',
-                    default => '',
-                };
-              ?>
               <div class="group border-b border-outline-variant/30 pb-4">
-                <?php if ($officeImg !== ''): ?>
-                  <div class="w-full h-32 rounded-lg bg-cover bg-center mb-4 overflow-hidden" style="background-image: url('<?= e(base_url($officeImg)) ?>');" role="img" aria-label="<?= e((string) $office['name']) ?>"></div>
-                <?php endif; ?>
                 <h3 class="font-subheading text-subheading text-on-surface group-hover:text-primary transition-colors mb-2"><?= e((string) $office['name']) ?></h3>
                 <p class="font-body-md text-body-md text-on-surface-variant">
                   <?php if (!empty($office['address_line'])): ?>
