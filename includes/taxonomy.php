@@ -114,3 +114,120 @@ function taxonomy_amenity_deactivate(int $id): void
 {
     db()->prepare('UPDATE amenities SET is_active = 0 WHERE id = ?')->execute([$id]);
 }
+
+function taxonomy_region_find(int $id): ?array
+{
+    $stmt = db()->prepare('SELECT * FROM regions WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $row = $stmt->fetch();
+    return is_array($row) ? $row : null;
+}
+
+function taxonomy_region_usage_count(int $id): int
+{
+    $row = taxonomy_region_find($id);
+    if ($row === null) {
+        return 0;
+    }
+    $name = (string) ($row['name'] ?? '');
+    if ($name === '') {
+        return 0;
+    }
+    $stmt = db()->prepare('SELECT COUNT(*) FROM properties WHERE region = ?');
+    $stmt->execute([$name]);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
+ * @return array{ok:bool, error:?string, id:?int}
+ */
+function taxonomy_region_save(?int $id, string $name, string $slug, int $sortOrder, bool $isActive): array
+{
+    $name = trim($name);
+    $slug = slugify($slug !== '' ? $slug : $name);
+    if ($name === '') {
+        return ['ok' => false, 'error' => 'Name is required.', 'id' => null];
+    }
+    if (strlen($name) > 120 || strlen($slug) > 80) {
+        return ['ok' => false, 'error' => 'Name or slug is too long.', 'id' => null];
+    }
+
+    $check = db()->prepare('SELECT id FROM regions WHERE slug = ? AND id != ? LIMIT 1');
+    $check->execute([$slug, $id ?? 0]);
+    if ($check->fetch()) {
+        return ['ok' => false, 'error' => 'Slug already in use.', 'id' => null];
+    }
+
+    $nameCheck = db()->prepare('SELECT id FROM regions WHERE name = ? AND id != ? LIMIT 1');
+    $nameCheck->execute([$name, $id ?? 0]);
+    if ($nameCheck->fetch()) {
+        return ['ok' => false, 'error' => 'Region name already exists.', 'id' => null];
+    }
+
+    if ($id) {
+        $prev = taxonomy_region_find($id);
+        $oldName = is_array($prev) ? (string) ($prev['name'] ?? '') : '';
+        db()->prepare(
+            'UPDATE regions SET name = ?, slug = ?, sort_order = ?, is_active = ? WHERE id = ?'
+        )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0, $id]);
+        // Keep property.region text in sync when renaming.
+        if ($oldName !== '' && $oldName !== $name) {
+            db()->prepare('UPDATE properties SET region = ? WHERE region = ?')->execute([$name, $oldName]);
+        }
+        return ['ok' => true, 'error' => null, 'id' => $id];
+    }
+
+    db()->prepare(
+        'INSERT INTO regions (name, slug, sort_order, is_active) VALUES (?, ?, ?, ?)'
+    )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0]);
+    return ['ok' => true, 'error' => null, 'id' => (int) db()->lastInsertId()];
+}
+
+function taxonomy_region_deactivate(int $id): void
+{
+    db()->prepare('UPDATE regions SET is_active = 0 WHERE id = ?')->execute([$id]);
+}
+
+/**
+ * @return list<array<string, mixed>>
+ */
+function regions_all(bool $activeOnly = false): array
+{
+    $sql = 'SELECT * FROM regions';
+    if ($activeOnly) {
+        $sql .= ' WHERE is_active = 1';
+    }
+    $sql .= ' ORDER BY sort_order, name';
+    try {
+        return db()->query($sql)->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Active regions plus current name (even if deactivated / unknown) for edit forms.
+ *
+ * @return list<array<string, mixed>>
+ */
+function regions_for_select(?string $currentName = null): array
+{
+    $rows = regions_all(true);
+    $currentName = trim((string) $currentName);
+    if ($currentName === '') {
+        return $rows;
+    }
+    foreach ($rows as $row) {
+        if ((string) ($row['name'] ?? '') === $currentName) {
+            return $rows;
+        }
+    }
+    array_unshift($rows, [
+        'id' => 0,
+        'slug' => slugify($currentName),
+        'name' => $currentName,
+        'sort_order' => 0,
+        'is_active' => 0,
+    ]);
+    return $rows;
+}

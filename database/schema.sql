@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS `inquiries`;
 DROP TABLE IF EXISTS `properties`;
 DROP TABLE IF EXISTS `amenities`;
 DROP TABLE IF EXISTS `property_types`;
+DROP TABLE IF EXISTS `regions`;
 DROP TABLE IF EXISTS `agents`;
 DROP TABLE IF EXISTS `offices`;
 DROP TABLE IF EXISTS `settings`;
@@ -78,6 +79,20 @@ CREATE TABLE `property_types` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_property_types_slug` (`slug`),
   KEY `idx_property_types_active` (`is_active`, `sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- Regions (destinations used on listings / filters)
+-- ---------------------------------------------------------------------------
+CREATE TABLE `regions` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(80) NOT NULL,
+  `name` VARCHAR(120) NOT NULL,
+  `sort_order` INT NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_regions_slug` (`slug`),
+  KEY `idx_regions_active` (`is_active`, `sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------

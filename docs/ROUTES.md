@@ -27,6 +27,7 @@ Document root = `real-estate-app/`.
 | `/admin/property-form.php` | Create/edit + gallery |
 | `/admin/property-archive.php` | Soft archive |
 | `/admin/property-types.php` | Property types CRUD (deactivate) |
+| `/admin/regions.php` | Regions / destinations CRUD (deactivate) |
 | `/admin/amenities.php` | Amenities CRUD (deactivate) |
 | `/admin/inquiries.php` | Inquiries |
 | `/admin/settings.php` | Website branding SSoT |

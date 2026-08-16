@@ -47,6 +47,7 @@ foreach ($rows as $row) {
 
 $pageTitle = "Colorado's Finest Estates — " . site_name();
 $activeNav = 'properties';
+$regionOptions = regions_all(true);
 require __DIR__ . '/includes/header.php';
 ?>
 <section class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pt-16 pb-8">
@@ -60,7 +61,8 @@ require __DIR__ . '/includes/header.php';
     <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant block mb-2" for="region">Destination</label>
     <select id="region" name="region" class="border border-outline-variant/60 bg-surface px-3 py-2 font-body-md">
       <option value="">All Destinations</option>
-      <?php foreach (['Aspen', 'Vail', 'Telluride', 'Steamboat', 'Beaver Creek', 'Snowmass', 'Denver Metro'] as $dest): ?>
+      <?php foreach ($regionOptions as $destRow): ?>
+        <?php $dest = (string) ($destRow['name'] ?? ''); ?>
         <option value="<?= e($dest) ?>" <?= $filters['region'] === $dest ? 'selected' : '' ?>><?= e($dest) ?></option>
       <?php endforeach; ?>
     </select>

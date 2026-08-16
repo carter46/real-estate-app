@@ -11,6 +11,7 @@ DELETE FROM `inquiries`;
 DELETE FROM `properties`;
 DELETE FROM `amenities`;
 DELETE FROM `property_types`;
+DELETE FROM `regions`;
 DELETE FROM `agents`;
 DELETE FROM `offices`;
 DELETE FROM `settings`;
@@ -25,6 +26,15 @@ INSERT INTO `property_types` (`slug`, `name`, `sort_order`) VALUES
   ('chalet', 'Chalet', 40),
   ('single_family', 'Single Family', 50),
   ('land', 'Land', 60);
+
+INSERT INTO `regions` (`slug`, `name`, `sort_order`, `is_active`) VALUES
+  ('aspen', 'Aspen', 10, 1),
+  ('vail', 'Vail', 20, 1),
+  ('beaver-creek', 'Beaver Creek', 30, 1),
+  ('telluride', 'Telluride', 40, 1),
+  ('snowmass', 'Snowmass', 50, 1),
+  ('steamboat', 'Steamboat', 60, 1),
+  ('denver-metro', 'Denver Metro', 70, 1);
 
 -- Amenities (from reference add form)
 INSERT INTO `amenities` (`slug`, `name`, `category`, `sort_order`) VALUES

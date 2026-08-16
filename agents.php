@@ -17,7 +17,12 @@ try {
     error_log('[SDC] agents: ' . $e->getMessage());
 }
 
-$regions = ['Aspen Core', 'Vail', 'Denver Metro', 'Telluride'];
+$regions = [];
+try {
+    $regions = regions_all(true);
+} catch (Throwable $e) {
+    $regions = [];
+}
 $pageTitle = 'Our Experts — ' . site_name();
 $activeNav = 'agents';
 require __DIR__ . '/includes/header.php';
@@ -34,7 +39,8 @@ require __DIR__ . '/includes/header.php';
   <select id="region" name="region" onchange="this.form.submit()" class="w-full appearance-none bg-surface-container border-b border-on-background/20 font-body-md text-body-md text-on-surface py-3 pl-4 pr-10 focus:outline-none focus:border-primary transition-colors cursor-pointer">
     <option value="">All Regions</option>
     <?php foreach ($regions as $r): ?>
-      <option value="<?= e($r) ?>" <?= $region === $r ? 'selected' : '' ?>><?= e($r) ?></option>
+      <?php $name = (string) ($r['name'] ?? ''); ?>
+      <option value="<?= e($name) ?>" <?= $region === $name ? 'selected' : '' ?>><?= e($name) ?></option>
     <?php endforeach; ?>
   </select>
   </div>

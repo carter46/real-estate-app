@@ -157,7 +157,7 @@ $adminPageTitle = $isEdit ? 'Edit Property' : 'Add New Property';
 $adminActiveNav = 'properties';
 require dirname(__DIR__) . '/includes/admin-header.php';
 
-$regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowmass', 'Steamboat'];
+$regions = regions_for_select((string) ($form['region'] ?? ''));
 $viewSlug = $isEdit ? trim((string) ($property['slug'] ?? $form['slug'] ?? '')) : '';
 $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((string) ($form['status'] ?? $property['status'] ?? 'draft'));
 ?>
@@ -282,8 +282,9 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
                 <label for="region">Region</label>
                 <select id="region" name="region">
                     <option value="">Select region</option>
-                    <?php foreach ($regions as $region): ?>
-                        <option value="<?= e($region) ?>" <?= (string) $form['region'] === $region ? 'selected' : '' ?>><?= e($region) ?></option>
+                    <?php foreach ($regions as $regionRow): ?>
+                        <?php $regionName = (string) ($regionRow['name'] ?? ''); ?>
+                        <option value="<?= e($regionName) ?>" <?= (string) $form['region'] === $regionName ? 'selected' : '' ?>><?= e($regionName) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
