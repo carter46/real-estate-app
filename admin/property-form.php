@@ -435,12 +435,12 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
                         <?= csrf_field() ?>
                         <input type="hidden" name="image_id" value="<?= $imgId ?>">
                         <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Room label / caption">
-                        <button class="admin-btn admin-btn--ghost admin-btn--sm" type="submit" name="image_action" value="caption">Save caption</button>
+                        <button class="admin-gallery__btn" type="submit" name="image_action" value="caption">Save caption</button>
                     </form>
                     <div class="admin-gallery__toolbar">
-                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Cover</button>
-                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>">Remove</button>
-                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>">Undo</button>
+                      <button class="admin-gallery__btn admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Cover</button>
+                      <button class="admin-gallery__btn admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>"<?= $isPending ? ' hidden' : '' ?>>Remove</button>
+                      <button class="admin-gallery__btn admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>"<?= $isPending ? '' : ' hidden' ?>>Undo</button>
                     </div>
                 </div>
             </figure>
@@ -464,40 +464,80 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
 </section>
 <script>
 (function () {
+  var form = document.getElementById('property-main-form');
+  var gallery = document.getElementById('admin-gallery');
+  if (!form || !gallery) return;
+
   var box = document.getElementById('pending-image-deletes');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'pending-image-deletes';
+    box.hidden = true;
+    form.appendChild(box);
+  }
+
   var coverInput = document.getElementById('cover-image-id');
+  if (!coverInput) {
+    coverInput = document.createElement('input');
+    coverInput.type = 'hidden';
+    coverInput.name = 'cover_image_id';
+    coverInput.id = 'cover-image-id';
+    coverInput.value = '0';
+    form.appendChild(coverInput);
+  }
+
   var note = document.getElementById('gallery-pending-note');
-  if (!box || !coverInput) return;
 
   function syncNote() {
-    var deletes = box.querySelectorAll('input[name="delete_image_ids[]"]').length;
     if (!note) return;
-    if (deletes > 0) {
-      note.hidden = false;
-      note.classList.add('is-visible');
-      note.textContent = 'Gallery changes (cover / deletions) are applied when you save this property.';
+    var deletes = box.querySelectorAll('input[name="delete_image_ids[]"]').length;
+    note.hidden = false;
+    note.textContent = deletes > 0
+      ? 'Images marked Remove will be deleted when you save. Use Undo to keep one.'
+      : 'Cover / Remove marks apply when you Save Draft or Publish. Uploads save immediately.';
+  }
+
+  function findBtn(item, sel) {
+    return item ? item.querySelector(sel) : null;
+  }
+
+  function setPendingUi(item, pending) {
+    if (!item) return;
+    var delBtn = findBtn(item, '.admin-gallery__delete-btn');
+    var undoBtn = findBtn(item, '.admin-gallery__undo-btn');
+    var coverBtn = findBtn(item, '.admin-gallery__cover-btn');
+    if (pending) {
+      item.classList.add('is-pending-delete');
+      if (delBtn) delBtn.hidden = true;
+      if (undoBtn) undoBtn.hidden = false;
+      if (coverBtn) coverBtn.hidden = true;
     } else {
-      note.hidden = false;
-      note.classList.add('is-visible');
-      note.textContent = 'Cover and delete marks apply when you Save Draft or Publish. Uploads save immediately.';
+      item.classList.remove('is-pending-delete');
+      if (delBtn) delBtn.hidden = false;
+      if (undoBtn) undoBtn.hidden = true;
+      if (coverBtn && !item.classList.contains('is-cover')) coverBtn.hidden = false;
     }
   }
 
   function setCover(id) {
-    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    var item = gallery.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
     if (!item || item.classList.contains('is-pending-delete')) return;
-    document.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
+    gallery.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
       el.classList.remove('is-cover');
+      var btn = findBtn(el, '.admin-gallery__cover-btn');
+      if (btn && !el.classList.contains('is-pending-delete')) btn.hidden = false;
     });
     item.classList.add('is-cover');
+    var coverBtn = findBtn(item, '.admin-gallery__cover-btn');
+    if (coverBtn) coverBtn.hidden = true;
     coverInput.value = String(id);
     syncNote();
   }
 
   function markDelete(id) {
-    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    var item = gallery.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
     if (!item || item.classList.contains('is-pending-delete')) return;
-    item.classList.add('is-pending-delete');
+    setPendingUi(item, true);
     if (!box.querySelector('input[data-image-id="' + id + '"]')) {
       var input = document.createElement('input');
       input.type = 'hidden';
@@ -507,12 +547,11 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
       box.appendChild(input);
     }
     if (coverInput.value === String(id)) {
-      var next = document.querySelector('.admin-gallery__item:not(.is-pending-delete)');
-      if (next) {
-        setCover(next.getAttribute('data-image-id'));
-      } else {
+      var next = gallery.querySelector('.admin-gallery__item:not(.is-pending-delete)');
+      if (next) setCover(next.getAttribute('data-image-id'));
+      else {
         coverInput.value = '0';
-        document.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
+        gallery.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
           el.classList.remove('is-cover');
         });
       }
@@ -521,35 +560,45 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
   }
 
   function undoDelete(id) {
-    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
-    if (item) item.classList.remove('is-pending-delete');
+    var item = gallery.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    setPendingUi(item, false);
     box.querySelectorAll('input[data-image-id="' + id + '"]').forEach(function (el) { el.remove(); });
     syncNote();
   }
 
-  var gallery = document.getElementById('admin-gallery');
-  if (gallery) {
-    gallery.addEventListener('click', function (e) {
-      var cover = e.target.closest('[data-gallery-cover]');
-      if (cover) {
-        e.preventDefault();
-        setCover(cover.getAttribute('data-gallery-cover'));
-        return;
-      }
-      var del = e.target.closest('[data-gallery-delete]');
-      if (del) {
-        e.preventDefault();
-        markDelete(del.getAttribute('data-gallery-delete'));
-        return;
-      }
-      var undo = e.target.closest('[data-gallery-undo]');
-      if (undo) {
-        e.preventDefault();
-        undoDelete(undo.getAttribute('data-gallery-undo'));
-      }
-    });
-  }
+  gallery.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var cover = t.closest('[data-gallery-cover]');
+    if (cover) {
+      e.preventDefault();
+      e.stopPropagation();
+      setCover(cover.getAttribute('data-gallery-cover'));
+      return;
+    }
+    var del = t.closest('[data-gallery-delete]');
+    if (del) {
+      e.preventDefault();
+      e.stopPropagation();
+      markDelete(del.getAttribute('data-gallery-delete'));
+      return;
+    }
+    var undo = t.closest('[data-gallery-undo]');
+    if (undo) {
+      e.preventDefault();
+      e.stopPropagation();
+      undoDelete(undo.getAttribute('data-gallery-undo'));
+    }
+  });
 
+  // Sync initial pending state from PHP marks
+  gallery.querySelectorAll('.admin-gallery__item.is-pending-delete').forEach(function (item) {
+    setPendingUi(item, true);
+  });
+  gallery.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (item) {
+    var btn = findBtn(item, '.admin-gallery__cover-btn');
+    if (btn) btn.hidden = true;
+  });
   syncNote();
 })();
 </script>
