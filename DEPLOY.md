@@ -26,7 +26,9 @@ Copy the `real-estate-app/` tree to the server.
 - `storage/logs/*`, `storage/rate_limits/*` runtime files
 - `.git/` (optional)
 
-**Shared hosting (no Composer on server):** run `composer install --no-dev` on a local machine, then **commit and upload `vendor/`** with the app so PHPMailer is present. Do not leave `vendor/` web-executable as app code — Apache/Nginx rules still deny direct web access to `/vendor/`.
+**Git / panel deploys that run Composer** (e.g. Hostinger Git): do **not** commit `vendor/`. Leave `composer.json` in the repo and let the host run `composer install`. A hand-rolled or BOM-corrupted `vendor/` will break deploy.
+
+**Hosts with no Composer:** build `vendor/` with a real `composer install --no-dev` on a machine that has Composer, then upload that tree separately (do not invent `installed.json` by hand).
 
 **Never delete** sibling `references/` unless explicitly requested by the project owner.
 
@@ -81,7 +83,7 @@ cd /path/to/real-estate-app
 composer install --no-dev --optimize-autoloader
 ```
 
-For **shared hosting without Composer**, commit the resulting `vendor/` directory and upload it with the app (`vendor/` is no longer gitignored). SMTP needs PHPMailer under `vendor/`. The `log` mail driver can run without PHPMailer for local smoke tests only.
+Your staging host already runs Composer on deploy — keep `vendor/` out of git (see `.gitignore`) so install is clean. SMTP needs PHPMailer under `vendor/` after that install. The `log` mail driver can run without PHPMailer for smoke tests only.
 
 If `composer.lock` is present, use it for reproducible installs. If absent, pin/commit a lock when available.
 

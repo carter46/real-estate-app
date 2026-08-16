@@ -1,8 +1,8 @@
 # Local secrets — never commit
 /config.local.php
 
-# Composer: vendor/ IS tracked for shared hosting (no Composer on server).
-# Run `composer install --no-dev` locally, then commit vendor/ before deploy.
+# Composer dependencies — installed by the host on deploy (composer install)
+/vendor/
 
 # Uploads (runtime-generated; keep directory structure)
 /uploads/properties/*
@@ -18,8 +18,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Logs / rate limits (runtime-generated)
-*.log
+# Logs / rate limits
 /storage/logs/*
 !/storage/logs/.gitkeep
 /storage/rate_limits/*
