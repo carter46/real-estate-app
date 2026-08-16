@@ -5,7 +5,7 @@ $pageTitle = 'About Us — ' . site_name();
 $activeNav = 'about';
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.25), rgba(28,27,27,0.7)), url('<?= e(base_url('assets/img/beautiful-shot-rocky-mountains-cloudy-sky.jpg')) ?>');">
+<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.5), rgba(28,27,27,0.85)), url('<?= e(base_url('assets/img/beautiful-shot-rocky-mountains-cloudy-sky.jpg')) ?>');">
   <div class="relative z-10 text-center px-margin-mobile py-24">
     <p class="font-subheading text-subheading uppercase tracking-widest text-primary-fixed-dim mb-6">Since Our Founding</p>
     <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary max-w-4xl mx-auto drop-shadow-lg">
@@ -24,7 +24,7 @@ require __DIR__ . '/includes/header.php';
     </div>
     <div class="grid grid-cols-2 gap-4">
       <div class="aspect-[3/4] bg-cover bg-center" style="background-image: url('<?= e(base_url('assets/img/about-secondary-1.jpg')) ?>');" role="img" aria-label="Colorado mountain residence"></div>
-      <div class="aspect-[3/4] bg-cover bg-center mt-10" style="background-image: url('<?= e(base_url('assets/img/about-secondary-2.jpg')) ?>');" role="img" aria-label="Alpine interior detail"></div>
+      <div class="aspect-[3/4] bg-cover bg-center mt-10" style="background-image: url('<?= e(base_url('assets/img/country-musicians-lifestyle-indoors.jpg')) ?>');" role="img" aria-label="Interior lifestyle"></div>
       <div class="col-span-2 grid grid-cols-2 gap-8 mt-8">
       <div>
         <div class="font-headline-md text-headline-md text-primary mb-2">40+</div>

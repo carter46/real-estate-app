@@ -37,6 +37,13 @@ if ($favicon !== ''):
 body:has(#site-nav:checked) {
   overflow: hidden;
 }
+#site-nav:checked ~ aside[aria-label="Mobile navigation"] {
+  transform: translateX(0);
+}
+#site-nav:checked ~ label[for="site-nav"].fixed {
+  opacity: 1;
+  pointer-events: auto;
+}
 </style>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">

@@ -284,7 +284,7 @@ require __DIR__ . '/includes/header.php';
 
           <div id="inquiry" class="bg-surface-container-lowest border border-outline-variant/30 p-6">
             <p class="font-subheading text-subheading text-primary mb-3 uppercase tracking-widest">Inquire</p>
-            <h3 class="font-headline-md text-[24px] text-on-surface mb-4">Request a private viewing</h3>
+            <h3 class="font-headline-md text-[24px] text-on-surface mb-4">Request a private purchase</h3>
             <?php if ($inquirySuccess): ?>
               <p class="font-body-md text-on-surface-variant">Inquiry received. An SDC advisor will follow up shortly.</p>
             <?php else: ?>

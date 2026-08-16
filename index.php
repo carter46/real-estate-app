@@ -41,7 +41,7 @@ try {
 require __DIR__ . '/includes/header.php';
 ?>
 <!-- 2. Hero -->
-<section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/3d-rendering-contemporary.jpg')) ?>');">
+<section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.55), rgba(28,27,27,0.88)), url('<?= e(base_url('assets/img/3d-rendering-contemporary.jpg')) ?>');">
   <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 text-center flex flex-col items-center">
     <div class="w-12 h-0.5 bg-primary-fixed-dim mb-6"></div>
     <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-primary max-w-3xl mb-4">
