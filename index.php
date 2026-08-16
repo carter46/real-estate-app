@@ -44,8 +44,8 @@ require __DIR__ . '/includes/header.php';
 <section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.55), rgba(28,27,27,0.88)), url('<?= e(base_url('assets/img/3d-rendering-contemporary.jpg')) ?>');">
   <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 text-center flex flex-col items-center">
     <div class="w-12 h-0.5 bg-primary-fixed-dim mb-6"></div>
-    <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-primary max-w-3xl mb-4">
-      Luxury Mountain Living, <em class="italic">Redefined.</em>
+    <h1 class="font-display-lg text-[2rem] sm:text-[2.5rem] lg:text-[3.25rem] leading-[1.15] text-on-primary max-w-2xl mb-4">
+      Quiet Luxury. <em class="italic">Distinctive Homes.</em>
     </h1>
     <p class="font-body-lg text-body-lg text-on-primary/85 font-light max-w-xl mb-8">
       Discover exclusive Colorado estates curated by <?= e(site_name()) ?>.
