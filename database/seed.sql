@@ -62,14 +62,17 @@ INSERT INTO `offices` (`name`, `address_line`, `city`, `region`, `postal_code`, 
 INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
   ('site_phone', '800.555.0123'),
   ('site_email', 'info@example.com'),
-  ('site_name', 'Sunview Development and Consultancy (SDC)');
+  ('site_name', 'Sunview Development and Consultancy (SDC)'),
+  ('site_logo_path', NULL),
+  ('site_favicon_path', NULL),
+  ('mail_from_name', NULL);
 
 -- NOTE: Admin setup is detected ONLY from the users table (no settings flag).
--- Phase 2 admin/setup.php creates the first admin password via password_hash().
 -- Never place plaintext or known default passwords in this file.
 
 -- Curated unique public properties (one row each; used across home/listings/detail)
--- Gallery rows omitted in seed (no remote download in Phase 1). Add images via admin in Phase 3 / localize in Phase 6.
+-- Gallery rows omitted in seed (add images via admin uploads).
+-- ADMIN SETUP: visit admin/setup.php once to create the first admin password (never seeded).
 
 SET @type_estate := (SELECT id FROM property_types WHERE slug = 'estate' LIMIT 1);
 SET @type_chalet := (SELECT id FROM property_types WHERE slug = 'chalet' LIMIT 1);
@@ -188,12 +191,9 @@ SET `agent_quote` = 'This residence represents the pinnacle of Red Mountain arch
 WHERE `slug` = 'the-glass-house-at-red-mountain';
 
 -- ---------------------------------------------------------------------------
--- ADMIN SETUP NOTE (Phase 2)
+-- ADMIN SETUP NOTE
 -- ---------------------------------------------------------------------------
 -- No rows are inserted into `users`.
--- Phase 2 will provide admin/setup.php to:
---   1) Allow creation of the first admin when users has no active admin with password_hash
---      (see includes/auth.php admin_setup_required() — users table is the only source of truth).
---   2) Hash the password with password_hash() / PASSWORD_DEFAULT.
---   3) Set users.setup_completed_at.
+-- Visit admin/setup.php once to create the first admin:
+--   password_hash() / PASSWORD_DEFAULT; sets users.setup_completed_at.
 -- Never place plaintext or known default passwords in this file.

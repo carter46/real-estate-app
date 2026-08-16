@@ -39,7 +39,8 @@ function public_status_sql_in(): array
 {
     $statuses = public_property_statuses();
     if ($statuses === []) {
-        return ['NULL', []];
+        // Impossible value so IN (?) never matches (avoids invalid IN () / IN (NULL)).
+        return ['?', ['__no_public_status__']];
     }
 
     $placeholders = implode(', ', array_fill(0, count($statuses), '?'));

@@ -47,9 +47,10 @@ if (is_post()) {
             redirect('admin/inquiries.php?id=' . $id);
         }
         $to = (string) $inquiry['email'];
-        $subject = 'Re: your inquiry — SDC';
-        $html = '<p>' . nl2br(e($reply)) . '</p><p>— Sunview Development and Consultancy (SDC)</p>';
-        $result = send_mail($to, $subject, $html, $reply . "\n\n— SDC");
+        $brand = site_name();
+        $subject = 'Re: your inquiry — ' . $brand;
+        $html = '<p>' . nl2br(e($reply)) . '</p><p>— ' . e($brand) . '</p>';
+        $result = send_mail($to, $subject, $html, $reply . "\n\n— " . $brand);
         $notes = trim((string) ($inquiry['admin_notes'] ?? ''));
         $notes .= ($notes !== '' ? "\n\n" : '') . '[' . date('Y-m-d H:i') . "] Reply sent:\n" . $reply;
         inquiry_save_notes($id, $notes);
@@ -59,7 +60,7 @@ if (is_post()) {
         if ($result['ok']) {
             flash_set('inquiry_ok', 'Reply emailed to client.');
         } else {
-            flash_set('inquiry_error', 'Notes saved, but email failed: ' . (string) ($result['error'] ?? 'unknown'));
+            flash_set('inquiry_error', 'Notes saved, but email failed. Check mail configuration and logs.');
         }
         redirect('admin/inquiries.php?id=' . $id);
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Property listings + search/filter results (same visual card system).
+ * Property listings — Stitch filter/grid structure + DB data.
  */
 
 declare(strict_types=1);
@@ -18,30 +18,23 @@ $sort = (string) ($_GET['sort'] ?? 'newest');
 if (!in_array($sort, ['newest', 'price_asc', 'price_desc'], true)) {
     $sort = 'newest';
 }
-
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $perPage = 12;
 $offset = ($page - 1) * $perPage;
 
 $total = 0;
 $rows = [];
+$types = [];
 $dbOk = true;
 try {
     $total = property_count_public($filters);
     $rows = property_list_public($filters, $sort, $perPage, $offset);
+    $types = property_types_all(true);
 } catch (Throwable $e) {
     $dbOk = false;
     error_log('[SDC] listings: ' . $e->getMessage());
 }
 
-$types = [];
-try {
-    $types = property_types_all();
-} catch (Throwable $e) {
-    $types = [];
-}
-
-// Signature / featured card: first featured in result set, else none
 $featuredRow = null;
 $standardRows = [];
 foreach ($rows as $row) {
@@ -52,88 +45,85 @@ foreach ($rows as $row) {
     }
 }
 
-$pageTitle = 'Colorado\'s Finest Estates — ' . (string) app_config('app.name');
+$pageTitle = "Colorado's Finest Estates — " . site_name();
 $navVariant = 'home';
+$activeNav = 'buy';
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="listings-hero">
-    <p class="eyebrow">Curated Portfolio</p>
-    <h1 class="display" style="font-size:clamp(2rem,4vw,3rem);">Colorado's Finest Estates</h1>
-    <p class="lead">Search and filter live inventory from the SDC database.</p>
+<section class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pt-16 pb-8">
+  <p class="font-subheading text-subheading uppercase tracking-widest text-primary mb-3">Curated Portfolio</p>
+  <h1 class="font-display-lg text-display-lg-mobile lg:text-[48px] text-on-surface mb-3">Colorado's Finest Estates</h1>
+  <p class="font-body-lg text-body-lg text-on-surface-variant font-light max-w-2xl">Search and filter live inventory from the SDC database.</p>
 </section>
 
-<form class="filters" method="get" action="<?= e(base_url('properties.php')) ?>">
-    <div>
-        <label for="region">Destination</label>
-        <select id="region" name="region">
-            <option value="">All Destinations</option>
-            <?php foreach (['Aspen', 'Vail', 'Telluride', 'Steamboat', 'Beaver Creek', 'Snowmass', 'Denver Metro'] as $dest): ?>
-                <option value="<?= e($dest) ?>" <?= $filters['region'] === $dest ? 'selected' : '' ?>><?= e($dest) ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <div>
-        <label for="price">Price</label>
-        <select id="price" name="price">
-            <option value="">Price Range</option>
-            <option value="2-5" <?= $filters['price'] === '2-5' ? 'selected' : '' ?>>$2M–$5M</option>
-            <option value="5-10" <?= $filters['price'] === '5-10' ? 'selected' : '' ?>>$5M–$10M</option>
-            <option value="10+" <?= $filters['price'] === '10+' ? 'selected' : '' ?>>$10M+</option>
-        </select>
-    </div>
-    <div>
-        <label for="type">Property Type</label>
-        <select id="type" name="type">
-            <option value="">Property Type</option>
-            <?php foreach ($types as $t): ?>
-                <option value="<?= e((string) $t['slug']) ?>" <?= $filters['type'] === $t['slug'] ? 'selected' : '' ?>><?= e((string) $t['name']) ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <?php if ($filters['q'] !== ''): ?>
-        <input type="hidden" name="q" value="<?= e($filters['q']) ?>">
-    <?php endif; ?>
-    <?php if ($filters['location'] !== ''): ?>
-        <input type="hidden" name="location" value="<?= e($filters['location']) ?>">
-    <?php endif; ?>
-    <button class="btn" type="submit">Refine Search</button>
+<form method="get" action="<?= e(base_url('properties.php')) ?>" class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-8 flex flex-wrap gap-4 items-end border-b border-outline-variant/40">
+  <div>
+    <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant block mb-2" for="region">Destination</label>
+    <select id="region" name="region" class="border border-outline-variant/60 bg-surface px-3 py-2 font-body-md">
+      <option value="">All Destinations</option>
+      <?php foreach (['Aspen', 'Vail', 'Telluride', 'Steamboat', 'Beaver Creek', 'Snowmass', 'Denver Metro'] as $dest): ?>
+        <option value="<?= e($dest) ?>" <?= $filters['region'] === $dest ? 'selected' : '' ?>><?= e($dest) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div>
+    <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant block mb-2" for="price">Price</label>
+    <select id="price" name="price" class="border border-outline-variant/60 bg-surface px-3 py-2 font-body-md">
+      <option value="">Price Range</option>
+      <option value="2-5" <?= $filters['price'] === '2-5' ? 'selected' : '' ?>>$2M–$5M</option>
+      <option value="5-10" <?= $filters['price'] === '5-10' ? 'selected' : '' ?>>$5M–$10M</option>
+      <option value="10+" <?= $filters['price'] === '10+' ? 'selected' : '' ?>>$10M+</option>
+    </select>
+  </div>
+  <div>
+    <label class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant block mb-2" for="type">Property Type</label>
+    <select id="type" name="type" class="border border-outline-variant/60 bg-surface px-3 py-2 font-body-md">
+      <option value="">Property Type</option>
+      <?php foreach ($types as $t): ?>
+        <option value="<?= e((string) $t['slug']) ?>" <?= $filters['type'] === $t['slug'] ? 'selected' : '' ?>><?= e((string) $t['name']) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <?php if ($filters['q'] !== ''): ?><input type="hidden" name="q" value="<?= e($filters['q']) ?>"><?php endif; ?>
+  <?php if ($filters['location'] !== ''): ?><input type="hidden" name="location" value="<?= e($filters['location']) ?>"><?php endif; ?>
+  <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-widest inline-flex items-center gap-2">
+    Refine Search <span class="material-symbols-outlined text-[18px]">tune</span>
+  </button>
 </form>
 
-<div class="results-meta">
-    <p>Showing <strong><?= e((string) $total) ?></strong> Exclusive Properties</p>
-    <form method="get" action="">
-        <?php foreach ($filters as $k => $v): ?>
-            <?php if ($v !== ''): ?><input type="hidden" name="<?= e($k) ?>" value="<?= e($v) ?>"><?php endif; ?>
-        <?php endforeach; ?>
-        <label for="sort">Sort</label>
-        <select id="sort" name="sort" onchange="this.form.submit()">
-            <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Newest</option>
-            <option value="price_desc" <?= $sort === 'price_desc' ? 'selected' : '' ?>>Price High→Low</option>
-            <option value="price_asc" <?= $sort === 'price_asc' ? 'selected' : '' ?>>Price Low→High</option>
-        </select>
-    </form>
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-6 flex flex-wrap justify-between gap-4 items-center">
+  <p class="font-body-md text-body-md text-on-surface">Showing <strong><?= e((string) $total) ?></strong> Exclusive Properties</p>
+  <form method="get" class="flex items-center gap-2">
+    <?php foreach ($filters as $k => $v): if ($v !== ''): ?>
+      <input type="hidden" name="<?= e($k) ?>" value="<?= e($v) ?>">
+    <?php endif; endforeach; ?>
+    <span class="material-symbols-outlined text-on-surface-variant">sort</span>
+    <select name="sort" onchange="this.form.submit()" class="border-0 border-b border-on-surface bg-transparent font-body-md py-1">
+      <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Newest</option>
+      <option value="price_desc" <?= $sort === 'price_desc' ? 'selected' : '' ?>>Price High→Low</option>
+      <option value="price_asc" <?= $sort === 'price_asc' ? 'selected' : '' ?>>Price Low→High</option>
+    </select>
+  </form>
 </div>
 
-<div class="container" style="padding-bottom:4rem;">
-    <?php if (!$dbOk): ?>
-        <p class="empty">Listings unavailable. Check database configuration.</p>
-    <?php elseif ($rows === []): ?>
-        <p class="empty">No properties match these filters.</p>
-    <?php else: ?>
-        <div class="cards-grid">
-            <?php if ($featuredRow): ?>
-                <?php $property = $featuredRow; require __DIR__ . '/includes/property-card-featured.php'; ?>
-            <?php endif; ?>
-            <?php foreach ($standardRows as $property): ?>
-                <?php require __DIR__ . '/includes/property-card-list.php'; ?>
-            <?php endforeach; ?>
-        </div>
-        <?php if ($offset + count($rows) < $total): ?>
-            <div class="section-cta" style="text-align:center;">
-                <a class="btn btn--ghost" href="<?= e(base_url('properties.php?' . http_build_query(array_filter(array_merge($filters, ['sort' => $sort, 'page' => $page + 1]))))) ?>">Load More Estates</a>
-            </div>
-        <?php endif; ?>
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-20">
+  <?php if (!$dbOk): ?>
+    <p class="text-on-surface-variant">Listings unavailable.</p>
+  <?php elseif ($rows === []): ?>
+    <p class="text-on-surface-variant py-16">No properties match these filters.</p>
+  <?php else: ?>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <?php if ($featuredRow): $property = $featuredRow; require __DIR__ . '/includes/property-card-featured.php'; endif; ?>
+      <?php foreach ($standardRows as $property): require __DIR__ . '/includes/property-card-list.php'; endforeach; ?>
+    </div>
+    <?php if ($offset + count($rows) < $total): ?>
+      <div class="mt-12 text-center">
+        <a class="inline-flex items-center gap-2 px-8 py-3 border border-primary text-primary font-label-sm text-label-sm uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors"
+           href="<?= e(base_url('properties.php?' . http_build_query(array_filter(array_merge($filters, ['sort' => $sort, 'page' => $page + 1]))))) ?>">
+          Load More Estates <span class="material-symbols-outlined">arrow_downward</span>
+        </a>
+      </div>
     <?php endif; ?>
+  <?php endif; ?>
 </div>
-<?php
-require __DIR__ . '/includes/footer.php';
+<?php require __DIR__ . '/includes/footer.php';

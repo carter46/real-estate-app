@@ -11,7 +11,14 @@ $config = require APP_ROOT . '/config.php';
 
 date_default_timezone_set($config['app']['timezone'] ?? 'UTC');
 
-if (($config['app']['env'] ?? 'production') !== 'production' && !empty($config['app']['debug'])) {
+$env = (string) ($config['app']['env'] ?? 'production');
+$debug = !empty($config['app']['debug']);
+if ($env === 'production') {
+    $debug = false;
+    $config['app']['debug'] = false;
+}
+
+if ($env !== 'production' && $debug) {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
 } else {
@@ -25,14 +32,20 @@ if (is_readable($autoload)) {
 }
 
 require_once APP_ROOT . '/includes/helpers.php';
+require_once APP_ROOT . '/includes/security_headers.php';
 require_once APP_ROOT . '/includes/db.php';
+require_once APP_ROOT . '/includes/settings.php';
 require_once APP_ROOT . '/includes/visibility.php';
 require_once APP_ROOT . '/includes/csrf.php';
+require_once APP_ROOT . '/includes/rate_limit.php';
 require_once APP_ROOT . '/includes/auth.php';
 require_once APP_ROOT . '/includes/mailer.php';
 require_once APP_ROOT . '/includes/properties.php';
+require_once APP_ROOT . '/includes/taxonomy.php';
 require_once APP_ROOT . '/includes/uploads.php';
 require_once APP_ROOT . '/includes/inquiries.php';
+
+security_headers_send();
 
 // Start session early so CSRF / flash work on public and admin requests.
 auth_session_start();

@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin layout header — IA matches references/admin_* (full Stitch polish in Phase 6).
+ * Admin layout header — IA matches references/admin_*; token chrome via admin.css.
  *
  * @var string $adminPageTitle
  * @var string $adminActiveNav  overview|properties|inquiries
@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 $adminPageTitle = $adminPageTitle ?? 'Admin';
 $adminActiveNav = $adminActiveNav ?? 'overview';
-$appName = (string) app_config('app.name', 'SDC');
+$appName = site_name();
 $user = auth_user();
 ?>
 <!DOCTYPE html>
@@ -19,6 +19,9 @@ $user = auth_user();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($adminPageTitle) ?> — <?= e($appName) ?></title>
+    <?php $favicon = site_favicon_url(); if ($favicon !== ''): ?>
+    <link rel="icon" href="<?= e($favicon) ?>">
+    <?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -38,7 +41,10 @@ $user = auth_user();
         <?php if ($user): ?>
             <span class="admin-topbar__user"><?= e((string) ($user['name'] ?: $user['email'])) ?></span>
         <?php endif; ?>
-        <a class="admin-topbar__link" href="<?= e(base_url('admin/logout.php')) ?>">Sign out</a>
+        <form class="admin-logout-form" method="post" action="<?= e(base_url('admin/logout.php')) ?>">
+            <?= csrf_field() ?>
+            <button class="admin-topbar__link" type="submit">Sign out</button>
+        </form>
     </div>
 </header>
 <div class="admin-shell">

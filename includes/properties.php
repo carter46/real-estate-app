@@ -161,9 +161,39 @@ function property_count_admin(string $q = '', string $status = ''): int
 /**
  * @return list<array<string, mixed>>
  */
-function property_types_all(): array
+function property_types_all(bool $activeOnly = false): array
 {
-    return db()->query('SELECT * FROM property_types ORDER BY sort_order, name')->fetchAll() ?: [];
+    $sql = 'SELECT * FROM property_types';
+    if ($activeOnly) {
+        $sql .= ' WHERE is_active = 1';
+    }
+    $sql .= ' ORDER BY sort_order, name';
+    return db()->query($sql)->fetchAll() ?: [];
+}
+
+/**
+ * Active types plus current type id (even if deactivated) for edit forms.
+ *
+ * @return list<array<string, mixed>>
+ */
+function property_types_for_select(?int $currentId = null): array
+{
+    $rows = property_types_all(true);
+    if ($currentId === null || $currentId <= 0) {
+        return $rows;
+    }
+    foreach ($rows as $row) {
+        if ((int) $row['id'] === $currentId) {
+            return $rows;
+        }
+    }
+    $stmt = db()->prepare('SELECT * FROM property_types WHERE id = ? LIMIT 1');
+    $stmt->execute([$currentId]);
+    $extra = $stmt->fetch();
+    if (is_array($extra)) {
+        array_unshift($rows, $extra);
+    }
+    return $rows;
 }
 
 /**
@@ -177,9 +207,50 @@ function property_agents_all(): array
 /**
  * @return list<array<string, mixed>>
  */
-function property_amenities_all(): array
+function property_amenities_all(bool $activeOnly = false): array
 {
-    return db()->query('SELECT * FROM amenities ORDER BY category, sort_order, name')->fetchAll() ?: [];
+    $sql = 'SELECT * FROM amenities';
+    if ($activeOnly) {
+        $sql .= ' WHERE is_active = 1';
+    }
+    $sql .= ' ORDER BY category, sort_order, name';
+    return db()->query($sql)->fetchAll() ?: [];
+}
+
+/**
+ * Active amenities plus any selected (even if deactivated) for edit forms.
+ *
+ * @param list<int> $selectedIds
+ * @return list<array<string, mixed>>
+ */
+function property_amenities_for_select(array $selectedIds = []): array
+{
+    $rows = property_amenities_all(true);
+    $have = [];
+    foreach ($rows as $row) {
+        $have[(int) $row['id']] = true;
+    }
+    foreach ($selectedIds as $aid) {
+        $aid = (int) $aid;
+        if ($aid <= 0 || isset($have[$aid])) {
+            continue;
+        }
+        $stmt = db()->prepare('SELECT * FROM amenities WHERE id = ? LIMIT 1');
+        $stmt->execute([$aid]);
+        $extra = $stmt->fetch();
+        if (is_array($extra)) {
+            $rows[] = $extra;
+            $have[$aid] = true;
+        }
+    }
+    usort($rows, static function ($a, $b) {
+        $c = strcmp((string) ($a['category'] ?? ''), (string) ($b['category'] ?? ''));
+        if ($c !== 0) {
+            return $c;
+        }
+        return ((int) ($a['sort_order'] ?? 0)) <=> ((int) ($b['sort_order'] ?? 0));
+    });
+    return $rows;
 }
 
 /**
@@ -216,10 +287,17 @@ function property_validate_input(array $input, ?int $excludeId = null): array
     $title = trim((string) ($input['title'] ?? ''));
     if ($title === '') {
         $errors[] = 'Property title is required.';
+    } elseif (strlen($title) > 255) {
+        $errors[] = 'Property title must be 255 characters or fewer.';
     }
 
     $status = (string) ($input['status'] ?? 'draft');
-    if (!in_array($status, property_statuses(), true)) {
+    if ($status === 'archived') {
+        $existing = $excludeId ? property_find($excludeId) : null;
+        if (!$existing || ($existing['status'] ?? '') !== 'archived') {
+            $errors[] = 'Use Archive to set archived status.';
+        }
+    } elseif (!in_array($status, property_statuses(), true)) {
         $errors[] = 'Invalid status.';
     }
 
@@ -230,6 +308,9 @@ function property_validate_input(array $input, ?int $excludeId = null): array
 
     $slugInput = trim((string) ($input['slug'] ?? ''));
     $slug = $slugInput !== '' ? slugify($slugInput) : property_unique_slug($title !== '' ? $title : 'property', $excludeId);
+    if (strlen($slug) > 191) {
+        $errors[] = 'Slug must be 191 characters or fewer.';
+    }
     if ($slugInput !== '' && property_slug_exists($slug, $excludeId)) {
         $errors[] = 'Slug is already in use.';
     }
@@ -268,6 +349,27 @@ function property_validate_input(array $input, ?int $excludeId = null): array
     $sqft = ($input['sqft'] ?? '') === '' ? null : (int) preg_replace('/\D/', '', (string) $input['sqft']);
     $lot = ($input['lot_acres'] ?? '') === '' ? null : (float) $input['lot_acres'];
     $year = ($input['year_built'] ?? '') === '' ? null : (int) $input['year_built'];
+    $yearMax = (int) date('Y') + 2;
+    if ($beds !== null && ($beds < 0 || $beds > 50)) {
+        $errors[] = 'Bedrooms must be between 0 and 50.';
+    }
+    if ($baths !== null && ($baths < 0 || $baths > 50)) {
+        $errors[] = 'Bathrooms must be between 0 and 50.';
+    }
+    if ($sqft !== null && ($sqft < 0 || $sqft > 1000000)) {
+        $errors[] = 'Square footage is out of range.';
+    }
+    if ($lot !== null && ($lot < 0 || $lot > 100000)) {
+        $errors[] = 'Lot acres is out of range.';
+    }
+    if ($year !== null && ($year < 1800 || $year > $yearMax)) {
+        $errors[] = 'Year built is out of range.';
+    }
+
+    $description = trim((string) ($input['description'] ?? ''));
+    if (strlen($description) > 65000) {
+        $errors[] = 'Description is too long.';
+    }
 
     $address = trim((string) ($input['address_line'] ?? ''));
     $city = trim((string) ($input['city'] ?? ''));
@@ -299,7 +401,7 @@ function property_validate_input(array $input, ?int $excludeId = null): array
         'slug' => $excludeId && $slugInput === '' ? null : $slug, // null means keep existing on edit when empty handled elsewhere
         'reference_code' => $reference,
         'mls_number' => $mls,
-        'description' => trim((string) ($input['description'] ?? '')),
+        'description' => $description,
         'property_type_id' => $typeId,
         'listing_purpose' => $purpose,
         'status' => $status,
@@ -635,16 +737,4 @@ function agents_list_public(?string $region = null): array
 function offices_list_public(): array
 {
     return db()->query('SELECT * FROM offices WHERE is_active = 1 ORDER BY sort_order, name')->fetchAll() ?: [];
-}
-
-function setting_get(string $key, ?string $default = null): ?string
-{
-    try {
-        $stmt = db()->prepare('SELECT setting_value FROM settings WHERE setting_key = ? LIMIT 1');
-        $stmt->execute([$key]);
-        $val = $stmt->fetchColumn();
-        return $val === false ? $default : (string) $val;
-    } catch (Throwable $e) {
-        return $default;
-    }
 }

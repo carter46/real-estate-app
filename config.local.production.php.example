@@ -1,0 +1,49 @@
+<?php
+/**
+ * PRODUCTION secrets override — copy to config.local.php on the server.
+ *
+ * Never commit real credentials.
+ * For local development use config.local.php.example instead (env=local, debug=true).
+ */
+
+declare(strict_types=1);
+
+return [
+    'app' => [
+        'env' => 'production',
+        'debug' => false,
+        'url' => 'https://YOUR_DOMAIN', // no trailing slash
+        'name' => 'Sunview Development and Consultancy (SDC)',
+        'timezone' => 'America/Denver',
+    ],
+
+    'db' => [
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'name' => 'real_estate',
+        'user' => 'sdc_app',
+        'pass' => 'STRONG_DB_PASSWORD',
+        'charset' => 'utf8mb4',
+    ],
+
+    'mail' => [
+        'driver' => 'smtp', // or 'log' on staging only
+        'from_email' => 'noreply@YOUR_DOMAIN',
+        'from_name' => 'SDC',
+        'admin_notify_email' => 'leads@YOUR_DOMAIN',
+        'smtp_host' => 'smtp-relay.brevo.com',
+        'smtp_port' => 587,
+        'smtp_encryption' => 'tls',
+        'smtp_user' => 'YOUR_BREVO_SMTP_USER',
+        'smtp_pass' => 'YOUR_BREVO_SMTP_KEY',
+    ],
+
+    'security' => [
+        'cookie_secure' => true, // or null to auto-detect HTTPS
+        'trust_forwarded_proto' => false, // true only behind trusted TLS proxy
+        'health_token' => 'GENERATE_A_LONG_RANDOM_TOKEN',
+        'login_max_attempts' => 5,
+        'login_lockout_seconds' => 900,
+        'inquiry_max_per_hour' => 5,
+    ],
+];

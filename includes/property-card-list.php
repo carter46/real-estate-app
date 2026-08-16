@@ -29,10 +29,10 @@ $sqft = $property['sqft'] ?? null;
 $slug = (string) ($property['slug'] ?? '');
 $href = $slug !== '' ? base_url('property.php?slug=' . rawurlencode($slug)) : '#';
 $badgeClass = (stripos($badge, 'just') !== false)
-    ? 'bg-secondary-container text-on-secondary-container'
+    ? 'bg-secondary text-on-secondary'
     : 'bg-primary text-on-primary';
 ?>
-<article class="group bg-surface-container-lowest border border-outline-variant/40 overflow-hidden hover:shadow-md transition-shadow duration-500 relative">
+<article class="group bg-surface-container-lowest border border-outline-variant/40 overflow-hidden hover:shadow-md transition-shadow duration-300 relative">
   <a href="<?= e($href) ?>" class="block relative overflow-hidden aspect-[4/3]">
     <?php if ($cover !== ''): ?>
       <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="<?= e(media_url($cover)) ?>" alt="<?= e($title) ?>"/>
@@ -41,19 +41,19 @@ $badgeClass = (stripos($badge, 'just') !== false)
     <?php endif; ?>
   </a>
   <?php if ($badge !== ''): ?>
-    <span class="absolute top-4 left-4 <?= e($badgeClass) ?> font-label-sm text-label-sm uppercase tracking-widest px-3 py-1 z-10"><?= e($badge) ?></span>
+    <span class="absolute top-4 left-4 <?= e($badgeClass) ?> font-label-sm text-label-sm uppercase tracking-widest px-3 py-1"><?= e($badge) ?></span>
   <?php endif; ?>
-  <button type="button" disabled class="absolute top-4 right-4 w-9 h-9 bg-surface/90 flex items-center justify-center text-primary z-10" aria-label="Save property">
+  <button type="button" disabled class="absolute top-4 right-4 w-9 h-9 bg-surface/90 flex items-center justify-center text-primary border border-outline-variant/40" aria-label="Save property">
     <span class="material-symbols-outlined text-[18px]">favorite</span>
   </button>
   <div class="p-5">
-    <p class="font-headline-md text-[22px] text-on-surface mb-1"><?= e($priceLabel) ?></p>
-    <h3 class="font-headline-md text-[22px] mb-1"><a class="no-underline text-on-surface hover:text-primary" href="<?= e($href) ?>"><?= e($title) ?></a></h3>
-    <p class="font-body-md text-body-md uppercase tracking-wider text-on-surface-variant text-[12px] mb-4"><?= e($locality) ?></p>
-    <div class="grid grid-cols-3 gap-2 border-t border-outline-variant/40 pt-4">
-      <div><div class="font-headline-md text-[20px]"><?= e($beds !== null ? (string) $beds : '—') ?></div><div class="font-label-sm text-label-sm uppercase text-on-surface-variant">Beds</div></div>
-      <div><div class="font-headline-md text-[20px]"><?= e($baths !== null ? (string) $baths : '—') ?></div><div class="font-label-sm text-label-sm uppercase text-on-surface-variant">Baths</div></div>
-      <div><div class="font-headline-md text-[20px]"><?= e($sqft !== null ? number_format((int) $sqft) : '—') ?></div><div class="font-label-sm text-label-sm uppercase text-on-surface-variant">Sq Ft</div></div>
+    <p class="font-display-lg text-[22px] text-on-surface mb-1"><?= e($priceLabel) ?></p>
+    <h3 class="font-headline-md text-[22px] text-on-surface mb-1"><a class="no-underline hover:text-primary" href="<?= e($href) ?>"><?= e($title) ?></a></h3>
+    <p class="font-body-md text-body-md uppercase tracking-widest text-on-surface-variant text-[12px] mb-4"><?= e($locality) ?></p>
+    <div class="grid grid-cols-3 gap-2 border-t border-outline-variant/30 pt-4">
+      <div><p class="font-display-lg text-[20px]"><?= e($beds !== null ? (string) $beds : '—') ?></p><p class="font-label-sm text-label-sm uppercase text-on-surface-variant">Beds</p></div>
+      <div><p class="font-display-lg text-[20px]"><?= e($baths !== null ? (string) $baths : '—') ?></p><p class="font-label-sm text-label-sm uppercase text-on-surface-variant">Baths</p></div>
+      <div><p class="font-display-lg text-[20px]"><?= e($sqft !== null ? number_format((int) $sqft) : '—') ?></p><p class="font-label-sm text-label-sm uppercase text-on-surface-variant">Sq Ft</p></div>
     </div>
   </div>
 </article>

@@ -17,7 +17,7 @@ require __DIR__ . '/stitch-head.php';
   <div class="h-20 max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
     <div class="flex items-center gap-6">
       <a href="<?= e(base_url('index.php')) ?>" class="flex items-center gap-3 no-underline">
-        <img src="<?= e(base_url('assets/img/logo-sdc.svg')) ?>" alt="Sunview Development and Consultancy (SDC)" class="h-10 w-auto object-contain"/>
+        <img src="<?= e(site_logo_url()) ?>" alt="<?= e(site_name()) ?>" class="h-10 w-auto object-contain"/>
       </a>
       <form action="<?= e(base_url('properties.php')) ?>" method="get" class="hidden lg:flex items-center bg-surface-container px-4 py-2 rounded-full border border-outline-variant/30 text-on-surface-variant">
         <span class="material-symbols-outlined text-[20px] mr-2">search</span>

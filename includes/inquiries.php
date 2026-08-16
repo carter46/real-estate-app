@@ -36,15 +36,26 @@ function inquiry_validate(array $input, string $type = 'contact'): array
     }
     if ($first === '') {
         $errors[] = 'First name is required.';
+    } elseif (strlen($first) > 80) {
+        $errors[] = 'First name must be 80 characters or fewer.';
     }
     if ($last === '') {
         $errors[] = 'Last name is required.';
+    } elseif (strlen($last) > 80) {
+        $errors[] = 'Last name must be 80 characters or fewer.';
     }
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'A valid email address is required.';
+    } elseif (strlen($email) > 191) {
+        $errors[] = 'Email is too long.';
+    }
+    if ($phone !== '' && strlen($phone) > 40) {
+        $errors[] = 'Phone must be 40 characters or fewer.';
     }
     if ($message === '') {
         $errors[] = 'Message is required.';
+    } elseif (strlen($message) > 5000) {
+        $errors[] = 'Message must be 5000 characters or fewer.';
     }
     if ($type === 'property_inquiry' && !$propertyId) {
         $errors[] = 'Property is required for this inquiry.';
@@ -171,9 +182,10 @@ function inquiry_notify_admin(array $inquiry): array
 
     $name = trim(($inquiry['first_name'] ?? '') . ' ' . ($inquiry['last_name'] ?? ''));
     $type = (string) ($inquiry['type'] ?? 'contact');
+    $brand = site_name();
     $subject = $type === 'property_inquiry'
-        ? 'SDC property inquiry #' . (int) ($inquiry['id'] ?? 0)
-        : 'SDC contact inquiry #' . (int) ($inquiry['id'] ?? 0);
+        ? $brand . ' property inquiry #' . (int) ($inquiry['id'] ?? 0)
+        : $brand . ' contact inquiry #' . (int) ($inquiry['id'] ?? 0);
 
     $propertyLine = '';
     if (!empty($inquiry['property_id'])) {
@@ -222,11 +234,12 @@ function inquiry_ack_client(array $inquiry): array
         return ['ok' => false, 'error' => 'Invalid client email.'];
     }
     $name = trim(($inquiry['first_name'] ?? '') . ' ' . ($inquiry['last_name'] ?? ''));
-    $subject = 'We received your message — SDC';
-    $text = "Hello {$name},\n\nThank you for contacting Sunview Development and Consultancy (SDC). "
-        . "An advisor will respond shortly.\n\n— SDC\n";
+    $brand = site_name();
+    $subject = 'We received your message — ' . $brand;
+    $text = "Hello {$name},\n\nThank you for contacting {$brand}. "
+        . "An advisor will respond shortly.\n\n— {$brand}\n";
     $html = '<p>Hello ' . e($name) . ',</p>'
-        . '<p>Thank you for contacting <strong>Sunview Development and Consultancy (SDC)</strong>. An advisor will respond shortly.</p>'
-        . '<p>— SDC</p>';
+        . '<p>Thank you for contacting <strong>' . e($brand) . '</strong>. An advisor will respond shortly.</p>'
+        . '<p>— ' . e($brand) . '</p>';
     return send_mail($email, $subject, $html, $text);
 }

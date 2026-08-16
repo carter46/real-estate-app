@@ -2,14 +2,14 @@
 /**
  * Stitch-matched head assets (Tailwind CDN + reference tokens).
  * Source of truth: references/*/code.html Tailwind config (not DESIGN.md prose).
- * Compiled/local CSS can replace CDN in Phase 8 hardening if desired.
+ * Compiled/local CSS can replace CDN later if desired (see DEPLOY.md §10).
  *
  * @var string|null $pageTitle
  */
 
 declare(strict_types=1);
 
-$pageTitle = $pageTitle ?? (string) app_config('app.name', 'SDC');
+$pageTitle = $pageTitle ?? site_name();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +17,12 @@ $pageTitle = $pageTitle ?? (string) app_config('app.name', 'SDC');
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title><?= e($pageTitle) ?></title>
+<?php
+$favicon = site_favicon_url();
+if ($favicon !== ''):
+?>
+<link rel="icon" href="<?= e($favicon) ?>"/>
+<?php endif; ?>
 <style>
 @layer base {
   html, body { margin: 0; padding: 0; }

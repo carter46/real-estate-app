@@ -77,13 +77,25 @@ Do **not** merge these into one generic card. `includes/property-card.php` throw
 | faq | `faq.php` | accordion | static (unless later CMS) |
 | admin_* | `admin/*` | admin-shell, tables, forms | properties, inquiries, users |
 
-## Phase 6 asset plan
+## Phase 6 status (public UI) — accepted for production v1
 
-- Replace Tailwind CDN with built/local CSS matching reference tokens  
-- Self-host or keep Google Fonts (Libre Caslon Text, Montserrat) with privacy note  
-- Material Symbols: self-host subset or SVG  
-- Localize `lh3.googleusercontent.com` images into `uploads/` + `assets/img/`  
-- SDC logo/copy replace BHHS reference branding without changing layout structure  
+**Done:**
+
+- Public pages use `includes/stitch-head.php` — Tailwind CDN + **exact** reference token config from homepage `code.html`
+- Header / footer / card variants / search bar / page bodies use Stitch utility classes
+- SDC logo at `assets/img/logo-sdc.svg` (reference BHHS branding not used in app chrome)
+- `assets/css/public-overrides.css` for placeholders, hero/collection gradients, clamps
+- Admin keeps token-aligned `admin.css` shell
+
+**Optional later (not required to go live):**
+
+- Replace Tailwind CDN with built/local CSS  
+- Self-host Google Fonts / Material Symbols  
+- Localize remote demo images into `uploads/` when desired  
+- Interactive map on property detail (layout slot preserved)  
+- Strict Content-Security-Policy after CDN/fonts are local  
+
+See [`DEPLOY.md`](../DEPLOY.md) §10.
 
 ## Application rules documented for Phase 3+
 

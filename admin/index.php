@@ -1,7 +1,6 @@
 <?php
 /**
  * Dashboard Overview — protected admin shell with live counts.
- * Visual IA matches references/admin_overview; full Stitch polish in Phase 6.
  */
 
 declare(strict_types=1);
@@ -26,7 +25,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
 ?>
 <span class="admin-eyebrow">Portfolio</span>
 <h1 class="admin-page-title">Dashboard Overview</h1>
-<p class="admin-page-lead">Live counts from MySQL for Sunview Development and Consultancy (SDC).</p>
+<p class="admin-page-lead">Live counts from MySQL for <?= e(site_name()) ?>.</p>
 
 <?php if ($flashOk): ?>
     <div class="admin-alert admin-alert--ok"><?= e($flashOk) ?></div>
@@ -63,8 +62,8 @@ require dirname(__DIR__) . '/includes/admin-header.php';
 <section class="admin-panel">
     <h2>Quick links</h2>
     <p class="admin-note">
-        Property CRUD arrives in Phase 3. Inquiry workflow arrives in Phase 5.
-        This shell is session-protected; unauthenticated users cannot reach it by URL alone.
+        Use Manage Properties for CRUD and gallery uploads. Inquiries covers contact and property leads.
+        For readiness checks run <code>php bin/smoke.php</code> or open <code>health.php</code> (admin / token / local debug).
     </p>
 </section>
 <?php

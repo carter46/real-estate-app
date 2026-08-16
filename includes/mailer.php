@@ -31,8 +31,10 @@ function send_mail(string|array $to, string $subject, string $htmlBody, string $
 
     if ($driver === 'log') {
         $line = sprintf(
-            "[%s] MAIL to=%s subject=%s\n%s\n",
+            "[%s] MAIL from=%s <%s> to=%s subject=%s\n%s\n",
             date('c'),
+            site_mail_from_name(),
+            (string) app_config('mail.from_email', 'noreply@example.com'),
             implode(',', $valid),
             $subject,
             $textBody !== '' ? $textBody : strip_tags($htmlBody)
@@ -79,7 +81,7 @@ function send_mail(string|array $to, string $subject, string $htmlBody, string $
 
         $mail->setFrom(
             (string) app_config('mail.from_email', 'noreply@example.com'),
-            (string) app_config('mail.from_name', 'SDC')
+            site_mail_from_name()
         );
 
         foreach ($valid as $email) {
@@ -95,6 +97,6 @@ function send_mail(string|array $to, string $subject, string $htmlBody, string $
         return ['ok' => true, 'error' => null];
     } catch (MailException | Throwable $e) {
         error_log('[SDC] mail error: ' . $e->getMessage());
-        return ['ok' => false, 'error' => $e->getMessage()];
+        return ['ok' => false, 'error' => 'Email delivery failed. Check mail configuration and logs.'];
     }
 }

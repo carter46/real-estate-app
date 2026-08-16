@@ -1,6 +1,6 @@
 <?php
 /**
- * Homepage property card — Stitch field order + utility classes.
+ * Homepage property card — Stitch field order & layout classes.
  *
  * @var array<string, mixed> $property
  */
@@ -30,7 +30,7 @@ $sqft = $property['sqft'] ?? null;
 $slug = (string) ($property['slug'] ?? '');
 $href = $slug !== '' ? base_url('property.php?slug=' . rawurlencode($slug)) : '#';
 ?>
-<article class="group bg-surface-container-lowest border border-outline-variant/40 overflow-hidden hover:shadow-lg transition-shadow duration-500">
+<article class="group bg-surface-container-lowest border border-outline-variant/40 overflow-hidden hover:shadow-lg transition-shadow duration-300">
   <div class="relative overflow-hidden">
     <a href="<?= e($href) ?>" class="block">
       <?php if ($cover !== ''): ?>
@@ -47,7 +47,7 @@ $href = $slug !== '' ? base_url('property.php?slug=' . rawurlencode($slug)) : '#
     </button>
   </div>
   <div class="p-6">
-    <p class="font-headline-md text-[24px] text-on-surface mb-2"><?= e($priceLabel) ?></p>
+    <p class="font-display-lg text-[24px] text-on-surface mb-2"><?= e($priceLabel) ?></p>
     <p class="font-subheading text-label-sm uppercase tracking-widest text-on-surface-variant mb-4"><?= e($locationLine) ?></p>
     <div class="flex flex-wrap gap-4 text-on-surface-variant font-body-md text-body-md">
       <span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">bed</span><?= e($beds !== null ? (string) $beds : '—') ?> Beds</span>

@@ -18,56 +18,65 @@ try {
 }
 
 $regions = ['Aspen Core', 'Vail', 'Denver Metro', 'Telluride'];
-$pageTitle = 'Our Experts — ' . (string) app_config('app.name');
+$pageTitle = 'Our Experts — ' . site_name();
 $navVariant = 'home';
+$activeNav = 'agents';
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="listings-hero">
-    <p class="eyebrow">Advisors</p>
-    <h1 class="display" style="font-size:clamp(2rem,4vw,3rem);">Our Experts</h1>
-    <p class="lead">Meet the SDC specialists guiding Colorado’s most discerning buyers and sellers.</p>
+<section class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pt-16 pb-8">
+  <span class="font-subheading text-subheading text-primary uppercase tracking-widest mb-4 block">Meet the Network</span>
+  <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-surface mb-6">Our Experts</h1>
+  <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl font-light">Meet the SDC specialists guiding Colorado’s most discerning buyers and sellers.</p>
 </section>
 
-<form class="filters" method="get" action="">
-    <div>
-        <label for="region">Region</label>
-        <select id="region" name="region" onchange="this.form.submit()">
-            <option value="">All Regions</option>
-            <?php foreach ($regions as $r): ?>
-                <option value="<?= e($r) ?>" <?= $region === $r ? 'selected' : '' ?>><?= e($r) ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+<form method="get" action="" class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-12">
+  <div class="max-w-sm">
+  <label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-2 block" for="region">Region Filter</label>
+  <select id="region" name="region" onchange="this.form.submit()" class="w-full appearance-none bg-surface-container border-b border-on-background/20 font-body-md text-body-md text-on-surface py-3 pl-4 pr-10 focus:outline-none focus:border-primary transition-colors cursor-pointer">
+    <option value="">All Regions</option>
+    <?php foreach ($regions as $r): ?>
+      <option value="<?= e($r) ?>" <?= $region === $r ? 'selected' : '' ?>><?= e($r) ?></option>
+    <?php endforeach; ?>
+  </select>
+  </div>
 </form>
 
-<div class="container" style="padding-bottom:4rem;">
-    <?php if (!$dbOk): ?>
-        <p class="empty">Agents unavailable.</p>
-    <?php elseif ($agents === []): ?>
-        <p class="empty">No agents found for this filter.</p>
-    <?php else: ?>
-        <div class="agents-grid">
-            <?php foreach ($agents as $agent): ?>
-                <article class="agent-tile">
-                    <?php if (!empty($agent['photo_path'])): ?>
-                        <img class="agent-tile__photo" src="<?= e(media_url((string) $agent['photo_path'])) ?>" alt="">
-                    <?php else: ?>
-                        <div class="agent-tile__photo" aria-hidden="true"></div>
-                    <?php endif; ?>
-                    <?php if (!empty($agent['badge'])): ?>
-                        <p class="eyebrow"><?= e((string) $agent['badge']) ?></p>
-                    <?php endif; ?>
-                    <h3><?= e((string) $agent['name']) ?></h3>
-                    <p><?= e(trim(($agent['title'] ?? '') . (($agent['region'] ?? '') !== '' ? ' · ' . $agent['region'] : ''))) ?></p>
-                    <p><?= e((string) ($agent['bio'] ?? '')) ?></p>
-                    <div class="hero__actions" style="margin-top:1rem;">
-                        <a class="btn btn--ghost" href="<?= e(base_url('contact.php')) ?>">Contact</a>
-                        <a class="btn" href="<?= e(base_url('properties.php?q=' . rawurlencode((string) ($agent['region'] ?? '')))) ?>">View Listings</a>
-                    </div>
-                </article>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop pb-20">
+  <?php if (!$dbOk): ?>
+    <p class="font-body-md text-on-surface-variant">Agents unavailable.</p>
+  <?php elseif ($agents === []): ?>
+    <p class="font-body-md text-on-surface-variant">No agents found for this filter.</p>
+  <?php else: ?>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-gutter gap-y-16">
+      <?php foreach ($agents as $agent): ?>
+        <article class="group">
+          <div class="relative aspect-[3/4] overflow-hidden mb-6 img-placeholder">
+            <?php if (!empty($agent['photo_path'])): ?>
+              <img class="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105" src="<?= e(media_url((string) $agent['photo_path'])) ?>" alt="">
+            <?php endif; ?>
+            <?php if (!empty($agent['badge'])): ?>
+              <div class="absolute bottom-4 right-4 bg-primary px-3 py-1 text-on-primary font-label-sm text-[10px] uppercase tracking-widest opacity-0 translate-y-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0"><?= e((string) $agent['badge']) ?></div>
+            <?php endif; ?>
+          </div>
+          <h3 class="font-headline-md text-[24px] text-on-surface mb-1"><?= e((string) $agent['name']) ?></h3>
+          <p class="font-subheading text-[12px] text-on-surface-variant uppercase tracking-wider mb-4 border-b border-on-background/10 pb-4">
+            <?= e(trim(($agent['title'] ?? '') . (($agent['region'] ?? '') !== '' ? ', ' . $agent['region'] : ''))) ?>
+          </p>
+          <p class="font-body-md text-[14px] text-on-surface-variant line-clamp-3 mb-6"><?= e((string) ($agent['bio'] ?? '')) ?></p>
+          <div class="flex gap-6">
+            <a class="group/link inline-flex items-center gap-1 no-underline" href="<?= e(base_url('contact.php')) ?>">
+              <span class="font-label-sm text-label-sm text-on-surface transition-colors group-hover/link:text-primary">Contact</span>
+              <span class="material-symbols-outlined text-[16px] text-primary">arrow_forward</span>
+            </a>
+            <a class="group/link inline-flex items-center gap-1 no-underline" href="<?= e(base_url('properties.php?q=' . rawurlencode((string) ($agent['region'] ?? '')))) ?>">
+              <span class="font-label-sm text-label-sm text-on-surface transition-colors group-hover/link:text-primary">View Listings</span>
+              <span class="material-symbols-outlined text-[16px] text-primary">arrow_forward</span>
+            </a>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
 </div>
 <?php
 require __DIR__ . '/includes/footer.php';

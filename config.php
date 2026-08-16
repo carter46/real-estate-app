@@ -11,8 +11,8 @@ declare(strict_types=1);
 $config = [
     'app' => [
         'name' => 'Sunview Development and Consultancy (SDC)',
-        'env' => 'local', // local | staging | production
-        // Prefer false in committed defaults; enable via config.local.php when developing.
+        // Safe defaults for deploy; override to local/debug only in config.local.php.
+        'env' => 'production', // local | staging | production
         'debug' => false,
         'url' => 'http://localhost/real-estate-app',
         'timezone' => 'America/Denver',
@@ -44,6 +44,15 @@ $config = [
         'session_name' => 'sdc_re_session',
         'csrf_token_key' => '_csrf_token',
         'password_algo' => PASSWORD_DEFAULT,
+        // null = auto-detect HTTPS; set true behind TLS; set false only for plain HTTP local.
+        'cookie_secure' => null,
+        // Only enable if a trusted reverse proxy sets X-Forwarded-Proto.
+        'trust_forwarded_proto' => false,
+        'login_max_attempts' => 5,
+        'login_lockout_seconds' => 900,
+        'inquiry_max_per_hour' => 5,
+        // Optional shared secret for web health checks (leave empty to require admin or CLI).
+        'health_token' => '',
     ],
 
     'uploads' => [

@@ -33,7 +33,7 @@ if (is_post()) {
     }
 }
 
-$appName = (string) app_config('app.name', 'SDC');
+$appName = site_name();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +51,7 @@ $appName = (string) app_config('app.name', 'SDC');
     <div class="admin-auth__card">
         <span class="admin-eyebrow">Admin Console</span>
         <h1>Sign in</h1>
-        <p class="lead">Sunview Development and Consultancy (SDC) portfolio manager.</p>
+        <p class="lead"><?= e(site_name()) ?> portfolio manager.</p>
 
         <?php if ($ok): ?>
             <div class="admin-alert admin-alert--ok"><?= e($ok) ?></div>

@@ -1,54 +1,63 @@
-# Real Estate App — Phase 1 Foundation (SDC)
+# Real Estate App — SDC
 
 **Sunview Development and Consultancy (SDC)** — PHP + MySQL property management platform.
 
 Visual reference lives in `../references/` (**read-only**). Do not modify Stitch assets.
 
-Hard fidelity rules: see [`docs/UI_FIDELITY.md`](docs/UI_FIDELITY.md).
+Hard fidelity rules: see [`docs/UI_FIDELITY.md`](docs/UI_FIDELITY.md).  
+**Deploy:** see [`DEPLOY.md`](DEPLOY.md) · routes: [`docs/ROUTES.md`](docs/ROUTES.md) · QA: [`docs/PHASE7_QA.md`](docs/PHASE7_QA.md).
+
+**Phases 1–8 complete** (foundation → auth → CRUD → public → inquiries → Stitch UI → hardening → deploy readiness).
 
 ## Requirements
 
-- PHP 8.1+
+- PHP 8.1+ (`pdo_mysql`, `fileinfo`, `gd` recommended)
 - MySQL 8+ (or MariaDB 10.4+)
 - Composer
 
-## Setup
+## Setup (local)
 
-1. Copy `config.local.php.example` to `config.local.php` and set DB (and later mail) credentials.  
-   Local defaults use `mail.driver = log` and `app.debug = true`.
-2. Create/import the database:
+1. Copy `config.local.php.example` → `config.local.php` (local env, DB, `mail.driver=log`).  
+   For production, use `config.local.production.php.example` instead — see [`DEPLOY.md`](DEPLOY.md).
+2. Import the database:
    ```bash
    mysql -u root -p < database/schema.sql
    mysql -u root -p < database/seed.sql
    ```
-3. Install PHP dependencies:
+3. Install dependencies:
    ```bash
    composer install
    ```
-4. Point your web server at this `real-estate-app/` folder.
-5. Open `index.php` — it reports config, DB, and PHPMailer status (without leaking raw DB errors).
+4. Point the web server document root at this folder.
+5. Checks:
+   ```bash
+   php bin/smoke.php
+   php health.php
+   ```
 
 ## Security notes
 
-- Secrets belong only in `config.local.php` (gitignored).
+- Secrets only in `config.local.php` (gitignored).
 - **No admin password is seeded.** First visit: `admin/setup.php`, then `admin/login.php`.
-- Uploads live under `uploads/properties/` with script execution blocked via `.htaccess`.
+- Logout is POST + CSRF. Login and inquiries are rate-limited.
+- Uploads under `uploads/properties/` with script execution blocked.
+- Root `.htaccess` / Nginx examples deny `database/`, `storage/`, `vendor/`, `bin/`.
 - `references/` must never be modified by this application.
 
-## Admin (Phase 2–3)
+## Admin
 
-- `admin/setup.php` — one-time admin password creation  
+- `admin/setup.php` — one-time admin creation  
 - `admin/login.php` / `admin/logout.php`  
-- `admin/index.php` — protected dashboard with live counts  
-- `admin/properties.php` / `property-form.php` / `property-archive.php` — property CRUD + gallery  
-- Sidebar: Dashboard Overview · Manage Properties · Inquiries · Exit to Site  
+- `admin/index.php` — dashboard  
+- `admin/properties.php` / `property-form.php` / `property-archive.php`  
+- `admin/inquiries.php` — leads + email reply  
 
-## Phase boundary
+## Public UI
 
-Contact/inquiry email is Phase 5 (done). Full Stitch pixel polish is Phase 6.
+Tailwind CDN + reference tokens via `includes/stitch-head.php` (accepted for v1). Optional compile/self-host later — see `DEPLOY.md` §10.
 
 ### Mail
 
-- Default local driver: `log` (writes `storage/logs/mail.log`)
-- For Brevo/SMTP: set `mail.driver=smtp` and credentials in `config.local.php`
-- Admin notifications go to `mail.admin_notify_email`
+- Local default: `log` → `storage/logs/mail.log`
+- Production: `mail.driver=smtp` + Brevo/SMTP in `config.local.php`
+- Admin notifications → `mail.admin_notify_email`

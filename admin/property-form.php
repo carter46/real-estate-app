@@ -19,10 +19,10 @@ if ($isEdit && !$property) {
     redirect('admin/properties.php');
 }
 
-$types = property_types_all();
+$types = property_types_for_select($isEdit && $property ? (int) ($property['property_type_id'] ?? 0) : null);
 $agents = property_agents_all();
-$amenities = property_amenities_all();
 $selectedAmenities = $isEdit ? property_amenity_ids($id) : [];
+$amenities = property_amenities_for_select($selectedAmenities);
 $images = $isEdit ? property_images($id) : [];
 $errors = [];
 $warning = null;
@@ -215,7 +215,8 @@ $regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowm
                 <label for="status">Current Status</label>
                 <select id="status" name="status">
                     <?php foreach (property_statuses() as $st): ?>
-                        <option value="<?= e($st) ?>" <?= (string) $form['status'] === $st ? 'selected' : '' ?>><?= e(ucwords(str_replace('_', ' ', $st))) ?></option>
+                        <?php if ($st === 'archived' && (string) $form['status'] !== 'archived') { continue; } ?>
+                        <option value="<?= e($st) ?>" <?= (string) $form['status'] === $st ? 'selected' : '' ?>><?= e(ucwords(str_replace('_', ' ', $st))) ?><?= $st === 'archived' ? ' (use Archive action)' : '' ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

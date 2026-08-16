@@ -12,7 +12,11 @@ $adminActiveNav = $adminActiveNav ?? 'overview';
 $items = [
     'overview' => ['label' => 'Dashboard Overview', 'href' => 'admin/index.php', 'icon' => 'dashboard'],
     'properties' => ['label' => 'Manage Properties', 'href' => 'admin/properties.php', 'icon' => 'home_work'],
+    'types' => ['label' => 'Property Types', 'href' => 'admin/property-types.php', 'icon' => 'category'],
+    'amenities' => ['label' => 'Amenities', 'href' => 'admin/amenities.php', 'icon' => 'checklist'],
     'inquiries' => ['label' => 'Inquiries', 'href' => 'admin/inquiries.php', 'icon' => 'mail'],
+    'settings' => ['label' => 'Website Settings', 'href' => 'admin/settings.php', 'icon' => 'settings'],
+    'profile' => ['label' => 'Account', 'href' => 'admin/profile.php', 'icon' => 'person'],
 ];
 ?>
 <aside class="admin-sidebar" aria-label="Admin">

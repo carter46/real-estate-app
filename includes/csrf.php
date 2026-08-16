@@ -47,3 +47,12 @@ function csrf_verify(?string $token = null): bool
 
     return hash_equals($sessionToken, $provided);
 }
+
+/** Rotate CSRF token after privileged auth events (login / setup). */
+function csrf_rotate(): void
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        return;
+    }
+    $_SESSION[csrf_token_key()] = bin2hex(random_bytes(32));
+}

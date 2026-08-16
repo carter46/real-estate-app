@@ -24,13 +24,43 @@ function base_url(string $path = ''): string
     return $path === '' ? $base : $base . '/' . $path;
 }
 
+/**
+ * Redirect only to same-app relative paths (or absolute URLs under app.url).
+ * Rejects open redirects via external hosts.
+ */
 function redirect(string $path): never
 {
-    if (!preg_match('#^https?://#i', $path)) {
-        $path = base_url($path);
-    }
-    header('Location: ' . $path);
+    $target = redirect_safe_url($path);
+    header('Location: ' . $target);
     exit;
+}
+
+function redirect_safe_url(string $path): string
+{
+    $path = trim($path);
+    $appBase = rtrim((string) app_config('app.url', ''), '/');
+
+    if ($path === '') {
+        return $appBase !== '' ? $appBase . '/' : '/';
+    }
+
+    // Protocol-relative or absolute external URLs are rejected unless under app.url.
+    if (preg_match('#^(https?:)?//#i', $path) === 1) {
+        if (preg_match('#^https?://#i', $path) !== 1) {
+            return $appBase !== '' ? $appBase . '/' : '/';
+        }
+        if ($appBase !== '' && str_starts_with(strtolower($path), strtolower($appBase))) {
+            return $path;
+        }
+        return $appBase !== '' ? $appBase . '/' : '/';
+    }
+
+    // Relative path only
+    if (str_contains($path, "\n") || str_contains($path, "\r") || str_starts_with($path, '//')) {
+        return $appBase !== '' ? $appBase . '/' : '/';
+    }
+
+    return base_url(ltrim($path, '/'));
 }
 
 function flash_set(string $key, string $message): void
@@ -65,7 +95,7 @@ function format_price(?float $price, bool $onRequest = false, string $currency =
 
 /**
  * Resolve a media path for <img src>.
- * Absolute http(s) URLs pass through; relative paths are prefixed with base_url().
+ * Absolute http(s) only; protocol-relative // rejected. Relative paths use base_url().
  */
 function media_url(?string $path): string
 {
@@ -73,8 +103,15 @@ function media_url(?string $path): string
     if ($path === '') {
         return '';
     }
-    if (preg_match('#^(https?:)?//#i', $path) === 1) {
+    if (preg_match('#^//#', $path) === 1) {
+        return '';
+    }
+    if (preg_match('#^https?://#i', $path) === 1) {
         return $path;
+    }
+    // Block path traversal in relative media
+    if (str_contains($path, '..')) {
+        return '';
     }
     return base_url(ltrim($path, '/'));
 }
@@ -87,4 +124,18 @@ function request_method(): string
 function is_post(): bool
 {
     return request_method() === 'POST';
+}
+
+/**
+ * Append a line to storage/logs/app.log (and PHP error_log).
+ */
+function app_log(string $channel, string $message): void
+{
+    $line = sprintf('[%s] [%s] %s', date('c'), $channel, $message);
+    error_log('[SDC] ' . $channel . ': ' . $message);
+    $logDir = APP_ROOT . '/storage/logs';
+    if (!is_dir($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+    @file_put_contents($logDir . '/app.log', $line . "\n", FILE_APPEND | LOCK_EX);
 }

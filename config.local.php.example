@@ -3,6 +3,7 @@
  * Local secrets override — copy to config.local.php (gitignored).
  *
  * Never commit real credentials.
+ * Production template: config.local.production.php.example — see DEPLOY.md.
  */
 
 declare(strict_types=1);
@@ -34,5 +35,11 @@ return [
         'smtp_encryption' => 'tls',
         'smtp_user' => 'YOUR_BREVO_SMTP_USER',
         'smtp_pass' => 'YOUR_BREVO_SMTP_KEY',
+    ],
+
+    'security' => [
+        'cookie_secure' => false, // local HTTP; set true (or null auto) on HTTPS
+        'trust_forwarded_proto' => false,
+        'health_token' => '', // optional: ?token= for health.php without admin login
     ],
 ];

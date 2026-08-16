@@ -74,8 +74,10 @@ CREATE TABLE `property_types` (
   `slug` VARCHAR(80) NOT NULL,
   `name` VARCHAR(120) NOT NULL,
   `sort_order` INT NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_property_types_slug` (`slug`)
+  UNIQUE KEY `uq_property_types_slug` (`slug`),
+  KEY `idx_property_types_active` (`is_active`, `sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -151,7 +153,7 @@ CREATE TABLE `properties` (
 CREATE TABLE `property_images` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `property_id` INT UNSIGNED NOT NULL,
-  `path` VARCHAR(500) NOT NULL COMMENT 'Relative upload path or temporary remote URL until Phase 6',
+  `path` VARCHAR(500) NOT NULL COMMENT 'Relative upload path under uploads/ (or absolute https URL if used)',
   `alt_text` VARCHAR(255) NULL DEFAULT NULL,
   `caption` VARCHAR(160) NULL DEFAULT NULL COMMENT 'Room/label overlay e.g. GREAT ROOM (Glass House gallery)',
   `sort_order` INT NOT NULL DEFAULT 0,
@@ -176,8 +178,10 @@ CREATE TABLE `amenities` (
   `name` VARCHAR(120) NOT NULL,
   `category` ENUM('interior', 'exterior', 'community', 'other') NOT NULL DEFAULT 'other',
   `sort_order` INT NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_amenities_slug` (`slug`)
+  UNIQUE KEY `uq_amenities_slug` (`slug`),
+  KEY `idx_amenities_active` (`is_active`, `category`, `sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `property_amenity` (

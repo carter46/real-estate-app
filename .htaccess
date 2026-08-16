@@ -1,0 +1,14 @@
+# Deny sensitive paths when document root is this app folder (Apache).
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+  <FilesMatch "(?i)^(config\.local\.php|composer\.(json|lock)|composer\.phar|\.env.*|.*\.md)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(database|storage|vendor|bin)(/|$) - [F,L]
+  RewriteRule (^|/)\.git - [F,L]
+</IfModule>

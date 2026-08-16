@@ -1,9 +1,30 @@
 <?php
 /**
- * Authentication helpers — Phase 2.
+ * Authentication helpers — Phase 2 / hardened Phase 7.
  */
 
 declare(strict_types=1);
+
+function auth_is_https(): bool
+{
+    $forced = app_config('security.cookie_secure', null);
+    if ($forced === true || $forced === false || $forced === 1 || $forced === 0 || $forced === '1' || $forced === '0') {
+        return (bool) $forced;
+    }
+
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        return true;
+    }
+
+    if (!empty(app_config('security.trust_forwarded_proto', false))) {
+        $proto = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+        if ($proto === 'https') {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 function auth_session_start(): void
 {
@@ -13,11 +34,13 @@ function auth_session_start(): void
 
     $name = (string) app_config('security.session_name', 'sdc_re_session');
     session_name($name);
+    @ini_set('session.use_strict_mode', '1');
+    @ini_set('session.use_only_cookies', '1');
 
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
-        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'secure' => auth_is_https(),
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
@@ -39,11 +62,43 @@ function auth_check(): bool
         return false;
     }
 
-    // Idle timeout: 8 hours
     $last = (int) ($_SESSION['auth_last_activity'] ?? 0);
     if ($last > 0 && (time() - $last) > 28800) {
         auth_logout();
         return false;
+    }
+
+    // Re-validate active admin periodically (every 5 minutes).
+    $checked = (int) ($_SESSION['auth_user_checked_at'] ?? 0);
+    if ($checked === 0 || (time() - $checked) > 300) {
+        try {
+            $stmt = db()->prepare(
+                "SELECT id, email, name, role, is_active
+                 FROM users WHERE id = ? LIMIT 1"
+            );
+            $stmt->execute([(int) $user['id']]);
+            $row = $stmt->fetch();
+            if (
+                !is_array($row)
+                || (int) ($row['is_active'] ?? 0) !== 1
+                || ($row['role'] ?? '') !== 'admin'
+            ) {
+                auth_logout();
+                return false;
+            }
+            $_SESSION['auth_user'] = [
+                'id' => (int) $row['id'],
+                'email' => (string) $row['email'],
+                'name' => (string) ($row['name'] ?? ''),
+                'role' => (string) $row['role'],
+            ];
+            $_SESSION['auth_user_checked_at'] = time();
+        } catch (Throwable $e) {
+            app_log('auth', 'auth_check revalidate failed: ' . $e->getMessage());
+            // Fail closed on DB errors for admin pages
+            auth_logout();
+            return false;
+        }
     }
 
     $_SESSION['auth_last_activity'] = time();
@@ -94,6 +149,17 @@ function auth_attempt_login(string $email, string $password): array
         return ['ok' => false, 'error' => 'Email and password are required.', 'user' => null];
     }
 
+    $max = (int) app_config('security.login_max_attempts', 5);
+    $window = (int) app_config('security.login_lockout_seconds', 900);
+    $limit = rate_limit_hit('login', $max, $window);
+    if (!$limit['allowed']) {
+        return [
+            'ok' => false,
+            'error' => 'Too many sign-in attempts. Try again in ' . (int) $limit['retry_after'] . ' seconds.',
+            'user' => null,
+        ];
+    }
+
     $stmt = db()->prepare(
         "SELECT id, email, name, role, password_hash, is_active
          FROM users
@@ -103,13 +169,14 @@ function auth_attempt_login(string $email, string $password): array
     $stmt->execute([$email]);
     $row = $stmt->fetch();
 
-    // Constant-time-ish failure path
     $hash = is_array($row) ? (string) ($row['password_hash'] ?? '') : '';
     $valid = $hash !== '' && password_verify($password, $hash);
 
     if (!is_array($row) || !$valid || (int) ($row['is_active'] ?? 0) !== 1 || ($row['role'] ?? '') !== 'admin') {
         return ['ok' => false, 'error' => 'Invalid email or password.', 'user' => null];
     }
+
+    rate_limit_clear('login');
 
     auth_login_user([
         'id' => (int) $row['id'],
@@ -138,6 +205,8 @@ function auth_login_user(array $user): void
         'role' => (string) $user['role'],
     ];
     $_SESSION['auth_last_activity'] = time();
+    $_SESSION['auth_user_checked_at'] = time();
+    csrf_rotate();
 }
 
 function auth_logout(): void
@@ -219,7 +288,7 @@ function auth_create_first_admin(string $name, string $email, string $password, 
 
         return ['ok' => true, 'error' => null];
     } catch (Throwable $e) {
-        error_log('[SDC] admin setup failed: ' . $e->getMessage());
+        app_log('auth', 'admin setup failed: ' . $e->getMessage());
         return ['ok' => false, 'error' => 'Could not create admin account. Check database connection.'];
     }
 }
