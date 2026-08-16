@@ -57,6 +57,17 @@ if (is_readable($autoload)) {
     require_once $autoload;
 }
 
+// Bundled PHPMailer (preferred for SMTP / mail transport when vendor is missing).
+if (!class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
+    $pm = APP_ROOT . '/PHPMailer';
+    foreach (['Exception.php', 'SMTP.php', 'PHPMailer.php'] as $file) {
+        $path = $pm . '/' . $file;
+        if (is_readable($path)) {
+            require_once $path;
+        }
+    }
+}
+
 require_once APP_ROOT . '/includes/helpers.php';
 require_once APP_ROOT . '/includes/security_headers.php';
 require_once APP_ROOT . '/includes/db.php';

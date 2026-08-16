@@ -1,6 +1,6 @@
 <?php
 /**
- * Centralized mailer — Brevo Transactional API primary, PHP mail() fallback.
+ * Centralized mailer — Brevo API primary when configured; SMTP / PHP mail fallbacks.
  */
 
 declare(strict_types=1);
@@ -9,13 +9,31 @@ use PHPMailer\PHPMailer\Exception as MailException;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
+ * True when a usable Brevo API key is present.
+ */
+function mail_brevo_configured(): bool
+{
+    $key = trim((string) app_config('mail.brevo_api_key', ''));
+    return $key !== '' && $key !== 'YOUR_BREVO_API_KEY';
+}
+
+/**
+ * True when SMTP host is set (enough to attempt SMTP delivery).
+ */
+function mail_smtp_configured(): bool
+{
+    return trim((string) app_config('mail.smtp_host', '')) !== '';
+}
+
+/**
  * Send an email using configured transport.
  *
  * Drivers:
  * - log: write to storage/logs/mail.log (staging / local)
- * - brevo: Brevo REST API, then PHP mail() on failure
- * - mail: PHP mail() / PHPMailer isMail() only
- * - smtp: optional legacy SMTP (not used for Brevo)
+ * - brevo: Brevo REST API when key is set; otherwise SMTP (if configured) or PHPMailer —
+ *          never waits on Brevo when the API key is missing
+ * - mail: PHPMailer using the PHP mail() transport (isMail)
+ * - smtp: PHPMailer SMTP
  *
  * @param list<string>|string $to
  * @return array{ok: bool, error: ?string}
@@ -55,20 +73,36 @@ function send_mail(string|array $to, string $subject, string $htmlBody, string $
     }
 
     if ($driver === 'brevo') {
-        $brevo = send_mail_via_brevo($valid, $subject, $htmlBody, $text);
-        if ($brevo['ok']) {
-            return $brevo;
+        if (mail_brevo_configured()) {
+            $brevo = send_mail_via_brevo($valid, $subject, $htmlBody, $text);
+            if ($brevo['ok']) {
+                return $brevo;
+            }
+            mail_log('BREVO FAIL then fallback reason=' . ($brevo['error'] ?? 'unknown') . ' to=' . implode(',', $valid) . ' subject=' . $subject);
+        } else {
+            mail_log('BREVO SKIP (api key not configured) to=' . implode(',', $valid) . ' subject=' . $subject);
         }
-        mail_log('BREVO FALLBACK_TO_PHP reason=' . ($brevo['error'] ?? 'unknown') . ' to=' . implode(',', $valid) . ' subject=' . $subject);
+
+        if (mail_smtp_configured()) {
+            mail_log('FALLBACK_TO_SMTP to=' . implode(',', $valid) . ' subject=' . $subject);
+            $smtp = send_mail_via_smtp($valid, $subject, $htmlBody, $text);
+            if ($smtp['ok']) {
+                mail_log('SMTP OK to=' . implode(',', $valid) . ' subject=' . $subject);
+                return $smtp;
+            }
+            mail_log('SMTP FAIL to=' . implode(',', $valid) . ' subject=' . $subject . ' error=' . ($smtp['error'] ?? 'unknown'));
+        }
+
+        mail_log('FALLBACK_TO_PHPMAILER_MAIL to=' . implode(',', $valid) . ' subject=' . $subject);
         $fallback = send_mail_via_php($valid, $subject, $htmlBody, $text);
         if ($fallback['ok']) {
-            mail_log('PHP_MAIL OK after Brevo failure to=' . implode(',', $valid) . ' subject=' . $subject);
+            mail_log('PHPMailer isMail OK to=' . implode(',', $valid) . ' subject=' . $subject);
             return $fallback;
         }
-        mail_log('PHP_MAIL FAIL after Brevo failure to=' . implode(',', $valid) . ' subject=' . $subject . ' error=' . ($fallback['error'] ?? 'unknown'));
+        mail_log('PHPMailer isMail FAIL to=' . implode(',', $valid) . ' subject=' . $subject . ' error=' . ($fallback['error'] ?? 'unknown'));
         return [
             'ok' => false,
-            'error' => 'Email delivery failed (Brevo and PHP mail). Check storage/logs/mail.log.',
+            'error' => 'Email delivery failed. Check storage/logs/mail.log (Brevo / SMTP / PHPMailer).',
         ];
     }
 
@@ -77,6 +111,9 @@ function send_mail(string|array $to, string $subject, string $htmlBody, string $
     }
 
     if ($driver === 'smtp') {
+        if (!mail_smtp_configured()) {
+            return ['ok' => false, 'error' => 'mail.smtp_host is not set.'];
+        }
         return send_mail_via_smtp($valid, $subject, $htmlBody, $text);
     }
 
@@ -338,64 +375,73 @@ function send_mail_via_brevo(array $recipients, string $subject, string $htmlBod
 }
 
 /**
- * PHP mail() via PHPMailer when available, otherwise native mail().
+ * Ensure PHPMailer classes are loaded (Composer vendor or bundled PHPMailer/).
+ */
+function mail_ensure_phpmailer(): bool
+{
+    if (class_exists(PHPMailer::class)) {
+        return true;
+    }
+    $pm = APP_ROOT . '/PHPMailer';
+    foreach (['Exception.php', 'SMTP.php', 'PHPMailer.php'] as $file) {
+        $path = $pm . '/' . $file;
+        if (is_readable($path)) {
+            require_once $path;
+        }
+    }
+    return class_exists(PHPMailer::class);
+}
+
+/**
+ * Send via PHPMailer using the PHP mail() transport (isMail).
+ * Requires the bundled PHPMailer library — does not use raw mail() alone.
  *
  * @param list<string> $recipients
  * @return array{ok: bool, error: ?string}
  */
 function send_mail_via_php(array $recipients, string $subject, string $htmlBody, string $textBody): array
 {
+    if (!mail_ensure_phpmailer()) {
+        mail_log('PHPMailer missing — place files in PHPMailer/ or run composer install');
+        return ['ok' => false, 'error' => 'PHPMailer is not available. Deploy the PHPMailer/ folder or run composer install.'];
+    }
+
     $fromEmail = (string) app_config('mail.from_email', 'noreply@example.com');
     $fromName = site_mail_from_name();
 
-    if (class_exists(PHPMailer::class)) {
-        try {
-            $mail = new PHPMailer(true);
-            $mail->CharSet = 'UTF-8';
-            $mail->isMail();
-            $mail->setFrom($fromEmail, $fromName);
-            foreach ($recipients as $email) {
-                $mail->addAddress($email);
-            }
-            $mail->Subject = $subject;
-            $mail->isHTML(true);
-            $mail->Body = $htmlBody;
-            $mail->AltBody = $textBody;
-            $mail->send();
-            return ['ok' => true, 'error' => null];
-        } catch (MailException | Throwable $e) {
-            error_log('[SDC] PHPMailer mail() error: ' . $e->getMessage());
-            // fall through to native mail()
+    try {
+        $mail = new PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isMail();
+        $mail->setFrom($fromEmail, $fromName);
+        foreach ($recipients as $email) {
+            $mail->addAddress($email);
         }
-    }
-
-    $toHeader = implode(', ', $recipients);
-    $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-    $headers = [
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8',
-        'From: ' . sprintf('%s <%s>', addslashes($fromName), $fromEmail),
-        'Reply-To: ' . $fromEmail,
-    ];
-    $ok = @mail($toHeader, $encodedSubject, $htmlBody, implode("\r\n", $headers));
-    if ($ok) {
+        $mail->Subject = $subject;
+        $mail->isHTML(true);
+        $mail->Body = $htmlBody;
+        $mail->AltBody = $textBody;
+        $mail->send();
+        mail_log('PHPMailer isMail OK to=' . implode(',', $recipients) . ' subject=' . $subject);
         return ['ok' => true, 'error' => null];
+    } catch (MailException | Throwable $e) {
+        mail_log('PHPMailer isMail FAIL to=' . implode(',', $recipients) . ' subject=' . $subject . ' error=' . $e->getMessage());
+        return ['ok' => false, 'error' => 'PHPMailer mail transport failed: ' . $e->getMessage()];
     }
-    return ['ok' => false, 'error' => 'PHP mail() failed.'];
 }
 
 /**
- * Optional legacy SMTP (not used for Brevo — prefer mail.driver=brevo).
+ * Send via PHPMailer SMTP (mail.smtp_* settings).
  *
  * @param list<string> $recipients
  * @return array{ok: bool, error: ?string}
  */
 function send_mail_via_smtp(array $recipients, string $subject, string $htmlBody, string $textBody): array
 {
-    if (!class_exists(PHPMailer::class)) {
+    if (!mail_ensure_phpmailer()) {
         return [
             'ok' => false,
-            'error' => 'PHPMailer is not installed. Run: composer install',
+            'error' => 'PHPMailer is not available. Deploy the PHPMailer/ folder or run composer install.',
         ];
     }
 
@@ -434,7 +480,7 @@ function send_mail_via_smtp(array $recipients, string $subject, string $htmlBody
 
         return ['ok' => true, 'error' => null];
     } catch (MailException | Throwable $e) {
-        error_log('[SDC] SMTP mail error: ' . $e->getMessage());
-        return ['ok' => false, 'error' => 'Email delivery failed. Check mail configuration and logs.'];
+        mail_log('PHPMailer SMTP FAIL to=' . implode(',', $recipients) . ' subject=' . $subject . ' error=' . $e->getMessage());
+        return ['ok' => false, 'error' => 'PHPMailer SMTP failed: ' . $e->getMessage()];
     }
 }

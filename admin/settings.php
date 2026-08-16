@@ -107,6 +107,7 @@ $mailDriver = strtolower((string) app_config('mail.driver', 'brevo'));
 $brevoKeySet = trim((string) app_config('mail.brevo_api_key', ''));
 $brevoKeyOk = $brevoKeySet !== '' && $brevoKeySet !== 'YOUR_BREVO_API_KEY';
 $fromEmail = (string) app_config('mail.from_email', 'noreply@example.com');
+$phpMailerOk = class_exists(\PHPMailer\PHPMailer\PHPMailer::class) || mail_ensure_phpmailer();
 
 $adminPageTitle = 'Website Settings';
 $adminActiveNav = 'settings';
@@ -165,8 +166,13 @@ require dirname(__DIR__) . '/includes/admin-header.php';
     Sends a short test via the configured mailer.
     Driver: <strong><?= e($mailDriver) ?></strong>
     · From: <strong><?= e($fromEmail) ?></strong>
+    · PHPMailer: <strong><?= $phpMailerOk ? 'loaded' : 'missing' ?></strong>
     <?php if ($mailDriver === 'brevo'): ?>
-      · Brevo API key: <strong><?= $brevoKeyOk ? 'set' : 'missing / placeholder' ?></strong>
+      · Brevo API key: <strong><?= $brevoKeyOk ? 'set' : 'missing (will skip Brevo)' ?></strong>
+      · SMTP host: <strong><?= mail_smtp_configured() ? e((string) app_config('mail.smtp_host', '')) : 'not set' ?></strong>
+      <br>Order when driver=brevo: Brevo (if key set) → PHPMailer SMTP (if host set) → PHPMailer mail transport.
+    <?php elseif ($mailDriver === 'smtp'): ?>
+      · SMTP host: <strong><?= mail_smtp_configured() ? e((string) app_config('mail.smtp_host', '')) : 'not set' ?></strong>
     <?php endif; ?>
   </p>
   <form method="post" action="#mail-test">

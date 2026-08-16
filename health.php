@@ -82,8 +82,10 @@ $brevoKey = trim((string) app_config('mail.brevo_api_key', ''));
 $mailOk = match ($mailDriver) {
     'log' => true,
     'brevo' => $brevoKey !== '' && (function_exists('curl_init') || ini_get('allow_url_fopen')),
-    'mail' => true,
-    'smtp' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class),
+    'mail' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class)
+        || is_readable(APP_ROOT . '/PHPMailer/PHPMailer.php'),
+    'smtp' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class)
+        || is_readable(APP_ROOT . '/PHPMailer/PHPMailer.php'),
     default => false,
 };
 $checks[] = [

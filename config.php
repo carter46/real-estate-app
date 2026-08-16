@@ -35,7 +35,8 @@ $config = [
         'admin_notify_email' => 'admin@example.com',
         // Brevo Transactional API — set in config.local.php for staging/production
         'brevo_api_key' => '',
-        // Optional legacy SMTP (unused when driver=brevo)
+        // Optional SMTP (used when mail.driver=smtp, or as fallback when driver=brevo
+        // and the Brevo API key is missing / Brevo send fails)
         'smtp_host' => '',
         'smtp_port' => 587,
         'smtp_encryption' => 'tls', // tls | ssl | ''
