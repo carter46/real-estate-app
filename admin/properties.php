@@ -50,7 +50,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
     </div>
 </form>
 
-<section class="admin-panel" style="padding:0;overflow:auto;">
+<section class="admin-panel" style="padding:0;overflow:visible;">
     <table class="admin-table">
         <thead>
             <tr>
@@ -95,8 +95,8 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                     <td><?= e((string) ($row['listed_at'] ?? '—')) ?></td>
                     <td>
                         <div class="admin-menu">
-                            <button type="button" class="admin-menu__toggle" aria-label="Actions">⋯</button>
-                            <div class="admin-menu__panel">
+                            <button type="button" class="admin-menu__toggle" aria-label="Actions" aria-haspopup="true">⋯</button>
+                            <div class="admin-menu__panel" hidden>
                                 <a href="<?= e(base_url('admin/property-form.php?id=' . $id)) ?>">Edit</a>
                                 <?php if ($public): ?>
                                     <a href="<?= e(base_url('property.php?slug=' . rawurlencode((string) $row['slug']))) ?>" target="_blank" rel="noopener">View on site</a>

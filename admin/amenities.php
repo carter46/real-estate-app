@@ -98,8 +98,8 @@ require dirname(__DIR__) . '/includes/admin-header.php';
           <td><?= e((string) taxonomy_amenity_usage_count((int) $row['id'])) ?></td>
           <td>
             <div class="admin-menu">
-              <button type="button" class="admin-menu__toggle" aria-label="Actions">⋯</button>
-              <div class="admin-menu__panel">
+              <button type="button" class="admin-menu__toggle" aria-label="Actions" aria-haspopup="true">⋯</button>
+              <div class="admin-menu__panel" hidden>
                 <a href="<?= e(base_url('admin/amenities.php?id=' . (int) $row['id'])) ?>">Edit</a>
                 <?php if (!empty($row['is_active'])): ?>
                   <form method="post" onsubmit="return confirm('Deactivate this amenity?');">

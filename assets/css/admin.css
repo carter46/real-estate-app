@@ -276,7 +276,12 @@ body.admin-body {
 .admin-table tr.is-selected td { background: #f6f3f2; }
 
 /* 3-dot action menu */
-.admin-menu { position: relative; display: inline-block; text-align: right; }
+.admin-menu {
+  position: relative;
+  display: inline-block;
+  text-align: right;
+  vertical-align: middle;
+}
 .admin-menu__toggle {
   display: inline-flex;
   align-items: center;
@@ -294,7 +299,6 @@ body.admin-body {
 }
 .admin-menu__toggle:hover { background: #f6f3f2; }
 .admin-menu__panel {
-  display: none;
   position: absolute;
   right: 0;
   top: calc(100% + 0.35rem);
@@ -302,10 +306,12 @@ body.admin-body {
   background: #fff;
   border: 1px solid rgba(215,193,197,0.55);
   box-shadow: 0 10px 28px rgba(55, 5, 24, 0.12);
-  z-index: 30;
+  z-index: 50;
   padding: 0.35rem 0;
 }
-.admin-menu.is-open .admin-menu__panel { display: block; }
+.admin-menu__panel[hidden] {
+  display: none !important;
+}
 .admin-menu__panel a,
 .admin-menu__panel button {
   display: block;
@@ -322,7 +328,7 @@ body.admin-body {
 }
 .admin-menu__panel a:hover,
 .admin-menu__panel button:hover { background: #f6f3f2; color: var(--primary); }
-.admin-menu__panel form { margin: 0; }
+.admin-menu__panel form { margin: 0; display: block; }
 
 /* Modal */
 .admin-modal {

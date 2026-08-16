@@ -5,9 +5,13 @@ declare(strict_types=1);
 </div>
 <script>
 (function () {
-  function closeMenus(except) {
-    document.querySelectorAll('.admin-menu.is-open').forEach(function (el) {
-      if (el !== except) el.classList.remove('is-open');
+  function closeMenus(exceptPanel) {
+    document.querySelectorAll('.admin-menu__panel').forEach(function (panel) {
+      if (panel !== exceptPanel) {
+        panel.hidden = true;
+        var menu = panel.closest('.admin-menu');
+        if (menu) menu.classList.remove('is-open');
+      }
     });
   }
   document.addEventListener('click', function (e) {
@@ -16,9 +20,14 @@ declare(strict_types=1);
       e.preventDefault();
       e.stopPropagation();
       var menu = toggle.closest('.admin-menu');
-      var open = menu.classList.contains('is-open');
+      var panel = menu ? menu.querySelector('.admin-menu__panel') : null;
+      if (!panel) return;
+      var willOpen = panel.hidden;
       closeMenus();
-      if (!open) menu.classList.add('is-open');
+      if (willOpen) {
+        panel.hidden = false;
+        menu.classList.add('is-open');
+      }
       return;
     }
     if (!e.target.closest('.admin-menu')) closeMenus();
