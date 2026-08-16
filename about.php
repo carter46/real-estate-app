@@ -5,7 +5,7 @@ $pageTitle = 'About Us — ' . site_name();
 $activeNav = 'about';
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.25), rgba(28,27,27,0.7)), url('<?= e(base_url('assets/img/about-hero.jpg')) ?>');">
+<section class="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden hero-photo -mt-20 pt-20" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.25), rgba(28,27,27,0.7)), url('<?= e(base_url('assets/img/beautiful-shot-rocky-mountains-cloudy-sky.jpg')) ?>');">
   <div class="relative z-10 text-center px-margin-mobile py-24">
     <p class="font-subheading text-subheading uppercase tracking-widest text-primary-fixed-dim mb-6">Since Our Founding</p>
     <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary max-w-4xl mx-auto drop-shadow-lg">

@@ -857,3 +857,29 @@ function offices_list_public(): array
 {
     return db()->query('SELECT * FROM offices WHERE is_active = 1 ORDER BY sort_order, name')->fetchAll() ?: [];
 }
+
+/**
+ * Resolve agent portrait URL from DB path or bundled assets/img/agent-{slug}.jpg fallback.
+ */
+function agent_photo_url(?string $photoPath, ?string $slug = null): string
+{
+    $photo = trim((string) $photoPath);
+    if ($photo !== '') {
+        $url = media_url($photo);
+        if ($url !== '') {
+            return $url;
+        }
+    }
+
+    $slug = preg_replace('/[^a-z0-9\-]+/', '', strtolower(trim((string) $slug))) ?: '';
+    if ($slug === '') {
+        return '';
+    }
+
+    $candidate = 'assets/img/agent-' . $slug . '.jpg';
+    if (is_readable(APP_ROOT . '/' . $candidate)) {
+        return media_url($candidate);
+    }
+
+    return '';
+}

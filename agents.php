@@ -55,17 +55,10 @@ require __DIR__ . '/includes/header.php';
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-gutter gap-y-16">
       <?php foreach ($agents as $agent): ?>
         <?php
-          $photo = trim((string) ($agent['photo_path'] ?? ''));
-          if ($photo === '') {
-              $slug = preg_replace('/[^a-z0-9\-]+/', '', strtolower((string) ($agent['slug'] ?? ''))) ?: '';
-              if ($slug !== '') {
-                  $candidate = 'assets/img/agent-' . $slug . '.jpg';
-                  if (is_readable(APP_ROOT . '/' . $candidate)) {
-                      $photo = $candidate;
-                  }
-              }
-          }
-          $photoUrl = $photo !== '' ? media_url($photo) : '';
+          $photoUrl = agent_photo_url(
+              isset($agent['photo_path']) ? (string) $agent['photo_path'] : null,
+              isset($agent['slug']) ? (string) $agent['slug'] : null
+          );
         ?>
         <article class="group">
           <div class="relative aspect-[3/4] overflow-hidden mb-6 img-placeholder">

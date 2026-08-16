@@ -249,9 +249,15 @@ require __DIR__ . '/includes/header.php';
       <div class="lg:col-span-4 relative">
         <div class="flex flex-col gap-8">
           <div class="bg-surface-container p-8 shadow-sm border border-outline-variant/20 flex flex-col items-center text-center">
-            <?php if (!empty($property['agent_photo'])): ?>
+            <?php
+              $agentPhotoUrl = agent_photo_url(
+                  isset($property['agent_photo']) ? (string) $property['agent_photo'] : null,
+                  isset($property['agent_slug']) ? (string) $property['agent_slug'] : null
+              );
+            ?>
+            <?php if ($agentPhotoUrl !== ''): ?>
               <div class="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-surface">
-                <img class="w-full h-full object-cover" src="<?= e(media_url((string) $property['agent_photo'])) ?>" alt="">
+                <img class="w-full h-full object-cover" src="<?= e($agentPhotoUrl) ?>" alt="<?= e((string) ($property['agent_name'] ?? '')) ?>">
               </div>
             <?php else: ?>
               <div class="w-32 h-32 rounded-full mb-6 border-4 border-surface img-placeholder" aria-hidden="true"></div>

@@ -41,7 +41,7 @@ try {
 require __DIR__ . '/includes/header.php';
 ?>
 <!-- 2. Hero -->
-<section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/home-hero.jpg')) ?>');">
+<section class="relative min-h-[78vh] flex items-center justify-center hero-photo" style="background-image: linear-gradient(180deg, rgba(28,27,27,0.2), rgba(28,27,27,0.72)), url('<?= e(base_url('assets/img/3d-rendering-contemporary.jpg')) ?>');">
   <div class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-24 text-center flex flex-col items-center">
     <div class="w-12 h-0.5 bg-primary-fixed-dim mb-6"></div>
     <h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-primary max-w-3xl mb-4">
@@ -132,7 +132,7 @@ require __DIR__ . '/includes/header.php';
       <p class="font-body-lg text-body-lg text-on-surface-variant font-light mb-8">Our advisors guide acquisitions and sales with discretion, clarity, and an eye for architectural significance.</p>
       <a href="<?= e(base_url('about.php')) ?>" class="inline-flex font-label-sm text-label-sm uppercase tracking-widest text-primary border border-primary px-8 py-3 hover:bg-primary hover:text-on-primary transition-colors">Read Our Latest Market Report</a>
     </div>
-    <div class="relative min-h-[28rem] bg-cover bg-center" style="background-image: url('<?= e(base_url('assets/img/editorial-expertise.jpg')) ?>');">
+    <div class="relative min-h-[28rem] bg-cover bg-center" style="background-image: url('<?= e(base_url('assets/img/3d-rendering-house-model.jpg')) ?>');">
       <div class="absolute left-4 bottom-4 bg-surface-container-lowest border border-outline-variant/40 p-5 shadow-md">
         <p class="font-display-lg text-[32px] text-on-surface">$2B+</p>
         <p class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">In Luxury Sales Volume</p>
