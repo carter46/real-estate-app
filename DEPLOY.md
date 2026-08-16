@@ -66,10 +66,14 @@ mysql -u USER -p real_estate < database/migrations_release_gate.sql
 
 ## 4. Database
 
+**Shared hosting (phpMyAdmin):** create the DB in the hosting panel first, open that database in phpMyAdmin, then Import `database/schema.sql`, then `database/seed.sql`. Do not run `CREATE DATABASE` — your user is not allowed to create DBs. Put the panel DB name/user/password in `config.local.php`.
+
+**CLI (full privileges):**
+
 ```bash
-mysql -u USER -p < database/schema.sql
+mysql -u USER -p YOUR_DB_NAME < database/schema.sql
 # Optional demo data (skip on clean production if preferred):
-mysql -u USER -p < database/seed.sql
+mysql -u USER -p YOUR_DB_NAME < database/seed.sql
 ```
 
 - No admin password is seeded. Create the first admin via `/admin/setup.php` once.

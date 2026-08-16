@@ -1,9 +1,6 @@
 <?php
 /**
- * Local secrets override — copy to config.local.php (gitignored).
- *
- * Never commit real credentials.
- * Production template: config.local.production.php.example — see DEPLOY.md.
+ * Copy to config.local.php for local use. Do not commit config.local.php.
  */
 
 declare(strict_types=1);
@@ -14,6 +11,7 @@ return [
         'debug' => true,
         'url' => 'http://localhost/real-estate-app',
         'name' => 'Sunview Development and Consultancy (SDC)',
+        'timezone' => 'America/Denver',
     ],
 
     'db' => [
@@ -22,10 +20,10 @@ return [
         'name' => 'real_estate',
         'user' => 'root',
         'pass' => 'YOUR_DB_PASSWORD',
+        'charset' => 'utf8mb4',
     ],
 
     'mail' => [
-        // Use "log" locally; staging/production: driver=brevo + brevo_api_key.
         'driver' => 'log',
         'from_email' => 'noreply@example.com',
         'from_name' => 'SDC',
@@ -34,8 +32,11 @@ return [
     ],
 
     'security' => [
-        'cookie_secure' => false, // local HTTP; set true (or null auto) on HTTPS
+        'cookie_secure' => false,
         'trust_forwarded_proto' => false,
-        'health_token' => '', // optional: ?token= for health.php without admin login
+        'health_token' => '',
+        'login_max_attempts' => 5,
+        'login_lockout_seconds' => 900,
+        'inquiry_max_per_hour' => 5,
     ],
 ];

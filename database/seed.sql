@@ -1,19 +1,19 @@
 -- Safe seed data — NO admin passwords.
--- Import after schema.sql.
--- Admin account is created via one-time setup in Phase 2 (admin/setup.php).
-
-USE `real_estate`;
+-- Import AFTER schema.sql into the SAME database (already selected in phpMyAdmin).
+-- Admin account is created via one-time setup (admin/setup.php).
+--
+-- Uses DELETE (not TRUNCATE) so phpMyAdmin / MariaDB foreign keys do not block re-seed.
 
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE `property_amenity`;
-TRUNCATE TABLE `property_images`;
-TRUNCATE TABLE `inquiries`;
-TRUNCATE TABLE `properties`;
-TRUNCATE TABLE `amenities`;
-TRUNCATE TABLE `property_types`;
-TRUNCATE TABLE `agents`;
-TRUNCATE TABLE `offices`;
-TRUNCATE TABLE `settings`;
+DELETE FROM `property_amenity`;
+DELETE FROM `property_images`;
+DELETE FROM `inquiries`;
+DELETE FROM `properties`;
+DELETE FROM `amenities`;
+DELETE FROM `property_types`;
+DELETE FROM `agents`;
+DELETE FROM `offices`;
+DELETE FROM `settings`;
 -- users intentionally left empty (no password seed)
 SET FOREIGN_KEY_CHECKS = 1;
 

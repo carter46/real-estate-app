@@ -1,9 +1,6 @@
 <?php
 /**
- * PRODUCTION secrets override — copy to config.local.php on the server.
- *
- * Never commit real credentials.
- * For local development use config.local.php.example instead (env=local, debug=true).
+ * Copy to config.local.php and fill in. Do not commit config.local.php.
  */
 
 declare(strict_types=1);
@@ -12,33 +9,32 @@ return [
     'app' => [
         'env' => 'production',
         'debug' => false,
-        'url' => 'https://YOUR_DOMAIN', // no trailing slash
+        'url' => 'https://YOUR_DOMAIN',
         'name' => 'Sunview Development and Consultancy (SDC)',
         'timezone' => 'America/Denver',
     ],
 
     'db' => [
-        'host' => '127.0.0.1',
+        'host' => 'localhost',
         'port' => 3306,
-        'name' => 'real_estate',
-        'user' => 'sdc_app',
-        'pass' => 'STRONG_DB_PASSWORD',
+        'name' => 'YOUR_DB_NAME',
+        'user' => 'YOUR_DB_USER',
+        'pass' => 'YOUR_DB_PASSWORD',
         'charset' => 'utf8mb4',
     ],
 
     'mail' => [
-        // brevo = Transactional API (primary); falls back to PHP mail() on API failure
-        'driver' => 'brevo', // use 'log' on staging until the API key is set
-        'from_email' => 'noreply@YOUR_DOMAIN', // must be a verified sender in Brevo
+        'driver' => 'brevo',
+        'from_email' => 'noreply@YOUR_DOMAIN',
         'from_name' => 'SDC',
         'admin_notify_email' => 'leads@YOUR_DOMAIN',
         'brevo_api_key' => 'YOUR_BREVO_API_KEY',
     ],
 
     'security' => [
-        'cookie_secure' => true, // or null to auto-detect HTTPS
-        'trust_forwarded_proto' => false, // true only behind trusted TLS proxy
-        'health_token' => 'GENERATE_A_LONG_RANDOM_TOKEN',
+        'cookie_secure' => true,
+        'trust_forwarded_proto' => false,
+        'health_token' => 'CHANGE_ME_TO_A_LONG_RANDOM_TOKEN',
         'login_max_attempts' => 5,
         'login_lockout_seconds' => 900,
         'inquiry_max_per_hour' => 5,

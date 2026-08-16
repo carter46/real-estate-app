@@ -1,16 +1,16 @@
 -- Real Estate Application Schema
 -- MySQL 8.0+ / MariaDB 10.4+ recommended
 -- Reproducible on a clean database. No seeded passwords.
+--
+-- Shared hosting (phpMyAdmin / Hostinger):
+--   1. Create the database in the hosting panel (you cannot CREATE DATABASE here).
+--   2. Open that database in phpMyAdmin (select it in the left sidebar).
+--   3. Import this file, then seed.sql.
+-- Local MySQL with full privileges: create/select the DB first, then import.
 
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 SET FOREIGN_KEY_CHECKS = 0;
-
-CREATE DATABASE IF NOT EXISTS `real_estate`
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE `real_estate`;
 
 DROP TABLE IF EXISTS `property_amenity`;
 DROP TABLE IF EXISTS `property_images`;
