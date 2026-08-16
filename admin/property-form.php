@@ -424,23 +424,22 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
               $isCover = $pendingCoverId > 0 ? ($imgId === $pendingCoverId) : !empty($img['is_cover']);
             ?>
             <figure class="admin-gallery__item<?= $isCover ? ' is-cover' : '' ?><?= $isPending ? ' is-pending-delete' : '' ?>" data-image-id="<?= $imgId ?>">
-                <img src="<?= e(media_url((string) $img['path'])) ?>" alt="">
-                <figcaption>
-                    <span class="admin-gallery__pending-label">Marked for deletion</span>
-                    <span class="admin-gallery__cover-label">Cover photo</span>
-                    <span class="admin-gallery__caption-text"><?= e((string) ($img['caption'] ?? '')) ?></span>
-                </figcaption>
-                <div class="admin-gallery__actions">
-                    <form method="post" action="#media">
+                <div class="admin-gallery__media">
+                  <img src="<?= e(media_url((string) $img['path'])) ?>" alt="">
+                  <span class="admin-gallery__badge admin-gallery__badge--cover">Cover</span>
+                  <span class="admin-gallery__badge admin-gallery__badge--pending">Will remove</span>
+                </div>
+                <div class="admin-gallery__body">
+                    <form method="post" action="#media" class="admin-gallery__caption-form">
                         <?= csrf_field() ?>
                         <input type="hidden" name="image_id" value="<?= $imgId ?>">
-                        <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Room label / caption">
-                        <button class="admin-gallery__btn" type="submit" name="image_action" value="caption">Save caption</button>
+                        <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Caption / room label" aria-label="Caption">
+                        <button class="admin-gallery__btn admin-gallery__btn--quiet" type="submit" name="image_action" value="caption">Save caption</button>
                     </form>
                     <div class="admin-gallery__toolbar">
-                      <button class="admin-gallery__btn admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Cover</button>
-                      <button class="admin-gallery__btn admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>"<?= $isPending ? ' hidden' : '' ?>>Remove</button>
-                      <button class="admin-gallery__btn admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>"<?= $isPending ? '' : ' hidden' ?>>Undo</button>
+                      <button class="admin-gallery__btn admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Set cover</button>
+                      <button class="admin-gallery__btn admin-gallery__btn--danger admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>"<?= $isPending ? ' hidden' : '' ?>>Remove</button>
+                      <button class="admin-gallery__btn admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>"<?= $isPending ? '' : ' hidden' ?>>Undo remove</button>
                     </div>
                 </div>
             </figure>
