@@ -29,7 +29,7 @@ $showLogo = site_has_logo();
         <?php if ($showLogo): ?>
           <img src="<?= e(site_logo_url()) ?>" alt="<?= e(site_name()) ?>" class="h-10 w-auto max-w-[12rem] object-contain"/>
         <?php else: ?>
-          <span class="font-display-lg text-[1.35rem] leading-none text-primary truncate"><?= e(site_name()) ?></span>
+          <span class="font-display-lg text-[1.35rem] leading-none text-primary truncate max-w-[10rem] sm:max-w-[14rem]" title="<?= e(site_name()) ?>"><?= e(site_name_short()) ?></span>
         <?php endif; ?>
       </a>
       <form action="<?= e(base_url('properties.php')) ?>" method="get" class="hidden lg:flex items-center bg-surface-container px-4 py-2 rounded-full border border-outline-variant/30 text-on-surface-variant">

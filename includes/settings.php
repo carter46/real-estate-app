@@ -36,6 +36,36 @@ function site_name(): string
     return (string) app_config('app.name', 'SDC');
 }
 
+/**
+ * Compact label for tight chrome (header brand).
+ * Long names like "Sunview Development and Consultancy" → "Sunview".
+ */
+function site_name_short(int $maxLen = 18): string
+{
+    $name = site_name();
+    $len = function_exists('mb_strlen') ? mb_strlen($name) : strlen($name);
+    if ($len <= $maxLen) {
+        return $name;
+    }
+
+    if (preg_match('/^[^\s]+/u', $name, $m)) {
+        $first = (string) $m[0];
+        $flen = function_exists('mb_strlen') ? mb_strlen($first) : strlen($first);
+        if ($flen <= $maxLen) {
+            return $first;
+        }
+        $cut = function_exists('mb_substr')
+            ? mb_substr($first, 0, max(1, $maxLen - 1))
+            : substr($first, 0, max(1, $maxLen - 1));
+        return rtrim((string) $cut) . '…';
+    }
+
+    $cut = function_exists('mb_substr')
+        ? mb_substr($name, 0, max(1, $maxLen - 1))
+        : substr($name, 0, max(1, $maxLen - 1));
+    return rtrim((string) $cut) . '…';
+}
+
 function site_phone(): string
 {
     $phone = trim((string) (setting_get('site_phone') ?? ''));
