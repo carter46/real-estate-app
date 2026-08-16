@@ -27,15 +27,12 @@ return [
     ],
 
     'mail' => [
-        'driver' => 'smtp', // or 'log' on staging only
-        'from_email' => 'noreply@YOUR_DOMAIN',
+        // brevo = Transactional API (primary); falls back to PHP mail() on API failure
+        'driver' => 'brevo', // use 'log' on staging until the API key is set
+        'from_email' => 'noreply@YOUR_DOMAIN', // must be a verified sender in Brevo
         'from_name' => 'SDC',
         'admin_notify_email' => 'leads@YOUR_DOMAIN',
-        'smtp_host' => 'smtp-relay.brevo.com',
-        'smtp_port' => 587,
-        'smtp_encryption' => 'tls',
-        'smtp_user' => 'YOUR_BREVO_SMTP_USER',
-        'smtp_pass' => 'YOUR_BREVO_SMTP_KEY',
+        'brevo_api_key' => 'YOUR_BREVO_API_KEY',
     ],
 
     'security' => [

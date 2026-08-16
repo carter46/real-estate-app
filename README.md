@@ -60,5 +60,5 @@ Tailwind CDN + reference tokens via `includes/stitch-head.php` (accepted for v1)
 ### Mail
 
 - Local default: `log` → `storage/logs/mail.log`
-- Production: `mail.driver=smtp` + Brevo/SMTP in `config.local.php`
+- Production/staging: `mail.driver=brevo` + `mail.brevo_api_key` in `config.local.php` (PHP mail is automatic fallback)
 - Admin notifications → `mail.admin_notify_email`

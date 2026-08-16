@@ -28,12 +28,15 @@ $config = [
     ],
 
     'mail' => [
-        'driver' => 'log', // smtp | mail | log — use log locally until SMTP is configured
+        // brevo (API, primary) | mail (PHP) | log | smtp (legacy, not Brevo API)
+        'driver' => 'log',
         'from_email' => 'noreply@example.com',
         'from_name' => 'SDC',
         'admin_notify_email' => 'admin@example.com',
-        // Brevo / SMTP
-        'smtp_host' => 'smtp-relay.brevo.com',
+        // Brevo Transactional API — set in config.local.php for staging/production
+        'brevo_api_key' => '',
+        // Optional legacy SMTP (unused when driver=brevo)
+        'smtp_host' => '',
         'smtp_port' => 587,
         'smtp_encryption' => 'tls', // tls | ssl | ''
         'smtp_user' => '',

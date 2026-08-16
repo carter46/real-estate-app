@@ -25,16 +25,12 @@ return [
     ],
 
     'mail' => [
-        // Use "log" until Brevo/SMTP credentials are ready; then switch to "smtp".
+        // Use "log" locally; staging/production: driver=brevo + brevo_api_key.
         'driver' => 'log',
         'from_email' => 'noreply@example.com',
         'from_name' => 'SDC',
         'admin_notify_email' => 'admin@example.com',
-        'smtp_host' => 'smtp-relay.brevo.com',
-        'smtp_port' => 587,
-        'smtp_encryption' => 'tls',
-        'smtp_user' => 'YOUR_BREVO_SMTP_USER',
-        'smtp_pass' => 'YOUR_BREVO_SMTP_KEY',
+        'brevo_api_key' => '',
     ],
 
     'security' => [

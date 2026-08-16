@@ -166,7 +166,7 @@ function inquiry_save_notes(int $id, string $notes): void
 }
 
 /**
- * Notify admin of a new inquiry. Uses mailer (log/smtp). Failure is logged but does not roll back insert.
+ * Notify admin of a new inquiry. Uses mailer (Brevo API / PHP mail / log). Failure is logged but does not roll back insert.
  *
  * @param array<string, mixed> $inquiry
  */

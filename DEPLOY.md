@@ -44,8 +44,9 @@ Copy the `real-estate-app/` tree to the server.
 | `app.debug` | `false` |
 | `app.url` | Public HTTPS origin, **no trailing slash** (e.g. `https://www.example.com`) |
 | `db.*` | Dedicated DB user/password (not empty root) |
-| `mail.driver` | `smtp` (or keep `log` only for staging) |
-| `mail.from_email` / `admin_notify_email` | Real addresses |
+| `mail.driver` | `brevo` (API primary + PHP mail fallback); use `log` on staging until the key works |
+| `mail.brevo_api_key` | Brevo **API** key (not SMTP login) |
+| `mail.from_email` / `admin_notify_email` | Real addresses; `from_email` must be verified in Brevo |
 | `security.cookie_secure` | `true` or `null` (auto HTTPS) |
 | `security.trust_forwarded_proto` | `true` **only** behind a trusted TLS-terminating proxy |
 | `security.health_token` | Long random string for monitoring |
@@ -83,7 +84,7 @@ cd /path/to/real-estate-app
 composer install --no-dev --optimize-autoloader
 ```
 
-Your staging host already runs Composer on deploy — keep `vendor/` out of git (see `.gitignore`) so install is clean. SMTP needs PHPMailer under `vendor/` after that install. The `log` mail driver can run without PHPMailer for smoke tests only.
+Your staging host already runs Composer on deploy — keep `vendor/` out of git (see `.gitignore`) so install is clean. Mail uses the **Brevo Transactional API** (`mail.driver=brevo` + `mail.brevo_api_key`); PHP `mail()` is the automatic fallback. PHPMailer under `vendor/` is only required for the optional legacy `smtp` driver. The `log` driver needs no external mail for smoke tests.
 
 If `composer.lock` is present, use it for reproducible installs. If absent, pin/commit a lock when available.
 
@@ -127,7 +128,7 @@ Nginx ignores `.htaccess` — the example replicates deny rules and turns off PH
 1. Open the site homepage (`app.url`).
 2. Visit `/admin/setup.php` → create admin (≥12 character password).
 3. Sign in → add/publish a property → confirm public listing + detail.
-4. Submit contact form → check `storage/logs/mail.log` (log driver) or inbox (SMTP).
+4. Submit contact form → check `storage/logs/mail.log` (log driver) or inbox (Brevo API).
 5. CLI:
 
 ```bash
@@ -187,7 +188,7 @@ Optional later hardening (not required to go live):
 - [ ] HTTPS everywhere; `app.url` matches the public origin
 - [ ] `app.env=production`, `debug=false`
 - [ ] Strong DB password; least-privilege DB user
-- [ ] SMTP credentials set; test inquiry email
+- [ ] Brevo API key set (`mail.driver=brevo`); test inquiry email (and PHP mail fallback if needed)
 - [ ] `uploads/` cannot execute PHP
 - [ ] `database/`, `storage/`, `vendor/`, `bin/`, `config.local.php` not publicly readable
 - [ ] `robots.txt` disallows `/admin/`

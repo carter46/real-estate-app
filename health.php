@@ -77,10 +77,19 @@ $checks[] = [
     'detail' => 'storage/logs',
 ];
 
+$mailDriver = strtolower((string) app_config('mail.driver', 'log'));
+$brevoKey = trim((string) app_config('mail.brevo_api_key', ''));
+$mailOk = match ($mailDriver) {
+    'log' => true,
+    'brevo' => $brevoKey !== '' && (function_exists('curl_init') || ini_get('allow_url_fopen')),
+    'mail' => true,
+    'smtp' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class),
+    default => false,
+};
 $checks[] = [
-    'name' => 'phpmailer',
-    'ok' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class) || (string) app_config('mail.driver') === 'log',
-    'detail' => (string) app_config('mail.driver', 'log'),
+    'name' => 'mail',
+    'ok' => $mailOk,
+    'detail' => $mailDriver . ($mailDriver === 'brevo' ? ($brevoKey !== '' ? '+api_key' : '+missing_api_key') : ''),
 ];
 
 $checks[] = [
