@@ -138,6 +138,9 @@ CREATE TABLE `properties` (
   `agent_id` INT UNSIGNED NULL DEFAULT NULL,
   `agent_quote` TEXT NULL DEFAULT NULL COMMENT 'Per-listing quote on property detail sticky agent card',
   `listed_at` DATE NULL DEFAULT NULL,
+  `source_name` VARCHAR(80) NULL DEFAULT NULL COMMENT 'Internal import source e.g. century_communities',
+  `source_url` VARCHAR(500) NULL DEFAULT NULL COMMENT 'Parent listing URL (admin/dev only)',
+  `source_reference` VARCHAR(120) NULL DEFAULT NULL COMMENT 'Stable source key e.g. plan slug',
   `created_by` INT UNSIGNED NULL DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -153,6 +156,7 @@ CREATE TABLE `properties` (
   KEY `idx_properties_created` (`created_at`),
   KEY `idx_properties_city` (`city`),
   KEY `idx_properties_address_city` (`address_line`(100), `city`),
+  KEY `idx_properties_source` (`source_name`, `source_reference`),
   CONSTRAINT `fk_properties_type`
     FOREIGN KEY (`property_type_id`) REFERENCES `property_types` (`id`)
     ON DELETE SET NULL ON UPDATE CASCADE,

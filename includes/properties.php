@@ -446,9 +446,9 @@ function property_insert(array $data, int $userId): int
             slug, reference_code, mls_number, title, description, property_type_id, listing_purpose,
             status, price, price_on_request, currency, address_line, city, region, state, postal_code, country,
             bedrooms, bathrooms, sqft, lot_acres, year_built, badge, is_featured, agent_id, agent_quote,
-            listed_at, created_by
+            listed_at, source_name, source_url, source_reference, created_by
          ) VALUES (
-            ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
          )'
     );
     $stmt->execute([
@@ -479,6 +479,9 @@ function property_insert(array $data, int $userId): int
         $data['agent_id'],
         $data['agent_quote'],
         $data['listed_at'],
+        $data['source_name'] ?? null,
+        $data['source_url'] ?? null,
+        $data['source_reference'] ?? null,
         $userId > 0 ? $userId : null,
     ]);
     $id = (int) db()->lastInsertId();

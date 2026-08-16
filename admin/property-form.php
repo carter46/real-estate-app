@@ -202,6 +202,20 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
                 <input id="reference_code" name="reference_code" type="text" value="<?= e((string) $form['reference_code']) ?>" placeholder="auto if blank">
             </div>
         </div>
+        <?php if ($isEdit && !empty($property['source_name'])): ?>
+        <div class="admin-field">
+          <label>Import source (internal)</label>
+          <p class="admin-note" style="margin:0;">
+            <?= e((string) $property['source_name']) ?>
+            <?php if (!empty($property['source_reference'])): ?>
+              · <?= e((string) $property['source_reference']) ?>
+            <?php endif; ?>
+            <?php if (!empty($property['source_url'])): ?>
+              · <a href="<?= e((string) $property['source_url']) ?>" target="_blank" rel="noopener noreferrer">Parent listing</a>
+            <?php endif; ?>
+          </p>
+        </div>
+        <?php endif; ?>
         <div class="admin-grid-2">
             <div class="admin-field">
                 <label for="mls_number">MLS number</label>
