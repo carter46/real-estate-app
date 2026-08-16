@@ -1,8 +1,8 @@
 <?php
 /**
  * Stitch-matched head assets (Tailwind CDN + reference tokens).
- * Source of truth: references/*/code.html Tailwind config (not DESIGN.md prose).
- * Compiled/local CSS can replace CDN later if desired (see DEPLOY.md §10).
+ * Source of truth: references Stitch code.html Tailwind config (not DESIGN.md prose).
+ * Compiled/local CSS can replace CDN later if desired (see DEPLOY.md section 10).
  *
  * @var string|null $pageTitle
  */
