@@ -42,7 +42,6 @@ if (is_post()) {
             $id,
             (string) ($_POST['name'] ?? ''),
             (string) ($_POST['slug'] ?? ''),
-            (int) ($_POST['sort_order'] ?? 0),
             !empty($_POST['is_active'])
         );
         if (!$result['ok']) {
@@ -51,7 +50,6 @@ if (is_post()) {
                 'id' => $id,
                 'name' => $_POST['name'] ?? '',
                 'slug' => $_POST['slug'] ?? '',
-                'sort_order' => (int) ($_POST['sort_order'] ?? 0),
                 'is_active' => !empty($_POST['is_active']) ? 1 : 0,
             ];
             $openModal = true;
@@ -144,10 +142,6 @@ require dirname(__DIR__) . '/includes/admin-header.php';
       <div class="admin-field">
         <label for="slug">Slug</label>
         <input id="slug" name="slug" value="<?= e((string) ($editing['slug'] ?? '')) ?>" placeholder="auto from name">
-      </div>
-      <div class="admin-field">
-        <label for="sort_order">Sort order</label>
-        <input id="sort_order" name="sort_order" type="number" value="<?= e((string) ($editing['sort_order'] ?? '0')) ?>">
       </div>
       <div class="admin-field">
         <label><input type="checkbox" name="is_active" value="1" <?= !isset($editing['is_active']) || !empty($editing['is_active']) ? 'checked' : '' ?>> Active (available for new assignments)</label>

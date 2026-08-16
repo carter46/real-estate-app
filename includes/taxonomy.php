@@ -5,6 +5,19 @@
 
 declare(strict_types=1);
 
+/**
+ * Next sort_order for taxonomy tables (10, 20, 30…).
+ */
+function taxonomy_next_sort_order(string $table): int
+{
+    $allowed = ['property_types', 'amenities', 'regions'];
+    if (!in_array($table, $allowed, true)) {
+        return 10;
+    }
+    $max = (int) db()->query('SELECT COALESCE(MAX(sort_order), 0) FROM `' . $table . '`')->fetchColumn();
+    return $max + 10;
+}
+
 function taxonomy_type_find(int $id): ?array
 {
     $stmt = db()->prepare('SELECT * FROM property_types WHERE id = ? LIMIT 1');
@@ -23,7 +36,7 @@ function taxonomy_type_usage_count(int $id): int
 /**
  * @return array{ok:bool, error:?string, id:?int}
  */
-function taxonomy_type_save(?int $id, string $name, string $slug, int $sortOrder, bool $isActive): array
+function taxonomy_type_save(?int $id, string $name, string $slug, bool $isActive): array
 {
     $name = trim($name);
     $slug = slugify($slug !== '' ? $slug : $name);
@@ -42,11 +55,12 @@ function taxonomy_type_save(?int $id, string $name, string $slug, int $sortOrder
 
     if ($id) {
         db()->prepare(
-            'UPDATE property_types SET name = ?, slug = ?, sort_order = ?, is_active = ? WHERE id = ?'
-        )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0, $id]);
+            'UPDATE property_types SET name = ?, slug = ?, is_active = ? WHERE id = ?'
+        )->execute([$name, $slug, $isActive ? 1 : 0, $id]);
         return ['ok' => true, 'error' => null, 'id' => $id];
     }
 
+    $sortOrder = taxonomy_next_sort_order('property_types');
     db()->prepare(
         'INSERT INTO property_types (name, slug, sort_order, is_active) VALUES (?, ?, ?, ?)'
     )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0]);
@@ -76,7 +90,7 @@ function taxonomy_amenity_usage_count(int $id): int
 /**
  * @return array{ok:bool, error:?string, id:?int}
  */
-function taxonomy_amenity_save(?int $id, string $name, string $slug, string $category, int $sortOrder, bool $isActive): array
+function taxonomy_amenity_save(?int $id, string $name, string $slug, string $category, bool $isActive): array
 {
     $name = trim($name);
     $slug = slugify($slug !== '' ? $slug : $name);
@@ -99,11 +113,12 @@ function taxonomy_amenity_save(?int $id, string $name, string $slug, string $cat
 
     if ($id) {
         db()->prepare(
-            'UPDATE amenities SET name = ?, slug = ?, category = ?, sort_order = ?, is_active = ? WHERE id = ?'
-        )->execute([$name, $slug, $category, $sortOrder, $isActive ? 1 : 0, $id]);
+            'UPDATE amenities SET name = ?, slug = ?, category = ?, is_active = ? WHERE id = ?'
+        )->execute([$name, $slug, $category, $isActive ? 1 : 0, $id]);
         return ['ok' => true, 'error' => null, 'id' => $id];
     }
 
+    $sortOrder = taxonomy_next_sort_order('amenities');
     db()->prepare(
         'INSERT INTO amenities (name, slug, category, sort_order, is_active) VALUES (?, ?, ?, ?, ?)'
     )->execute([$name, $slug, $category, $sortOrder, $isActive ? 1 : 0]);
@@ -141,7 +156,7 @@ function taxonomy_region_usage_count(int $id): int
 /**
  * @return array{ok:bool, error:?string, id:?int}
  */
-function taxonomy_region_save(?int $id, string $name, string $slug, int $sortOrder, bool $isActive): array
+function taxonomy_region_save(?int $id, string $name, string $slug, bool $isActive): array
 {
     $name = trim($name);
     $slug = slugify($slug !== '' ? $slug : $name);
@@ -168,8 +183,8 @@ function taxonomy_region_save(?int $id, string $name, string $slug, int $sortOrd
         $prev = taxonomy_region_find($id);
         $oldName = is_array($prev) ? (string) ($prev['name'] ?? '') : '';
         db()->prepare(
-            'UPDATE regions SET name = ?, slug = ?, sort_order = ?, is_active = ? WHERE id = ?'
-        )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0, $id]);
+            'UPDATE regions SET name = ?, slug = ?, is_active = ? WHERE id = ?'
+        )->execute([$name, $slug, $isActive ? 1 : 0, $id]);
         // Keep property.region text in sync when renaming.
         if ($oldName !== '' && $oldName !== $name) {
             db()->prepare('UPDATE properties SET region = ? WHERE region = ?')->execute([$name, $oldName]);
@@ -177,6 +192,7 @@ function taxonomy_region_save(?int $id, string $name, string $slug, int $sortOrd
         return ['ok' => true, 'error' => null, 'id' => $id];
     }
 
+    $sortOrder = taxonomy_next_sort_order('regions');
     db()->prepare(
         'INSERT INTO regions (name, slug, sort_order, is_active) VALUES (?, ?, ?, ?)'
     )->execute([$name, $slug, $sortOrder, $isActive ? 1 : 0]);
