@@ -7,6 +7,32 @@ declare(strict_types=1);
 
 define('APP_ROOT', dirname(__DIR__));
 
+// Always capture fatals/warnings to a file (even when display_errors is off).
+$sdcLogDir = APP_ROOT . '/storage/logs';
+if (!is_dir($sdcLogDir)) {
+    @mkdir($sdcLogDir, 0755, true);
+}
+ini_set('log_errors', '1');
+ini_set('error_log', $sdcLogDir . '/php-error.log');
+set_exception_handler(static function (Throwable $e): void {
+    error_log('[SDC uncaught] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/plain; charset=UTF-8');
+    }
+    $debug = false;
+    try {
+        if (function_exists('app_config')) {
+            $debug = (string) app_config('app.env', '') !== 'production' && !empty(app_config('app.debug'));
+        }
+    } catch (Throwable $ignored) {
+    }
+    echo $debug
+        ? ('Error: ' . $e->getMessage())
+        : 'A server error occurred. Check storage/logs/php-error.log';
+    exit(1);
+});
+
 $config = require APP_ROOT . '/config.php';
 
 date_default_timezone_set($config['app']['timezone'] ?? 'UTC');
