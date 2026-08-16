@@ -13,15 +13,15 @@ $activeNav = 'home';
 $featured = [];
 $dbOk = true;
 try {
-    $featured = property_list_public(['featured_only' => true], 'newest', 3, 0);
-    if (count($featured) < 3) {
-        $more = property_list_public([], 'newest', 3, 0);
+    $featured = property_list_public(['featured_only' => true], 'newest', 6, 0);
+    if (count($featured) < 6) {
+        $more = property_list_public([], 'newest', 6, 0);
         $ids = array_column($featured, 'id');
         foreach ($more as $row) {
             if (!in_array($row['id'], $ids, true)) {
                 $featured[] = $row;
             }
-            if (count($featured) >= 3) {
+            if (count($featured) >= 6) {
                 break;
             }
         }
