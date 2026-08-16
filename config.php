@@ -43,6 +43,11 @@ $config = [
         'smtp_pass' => '',
     ],
 
+    // Smartsupp live chat — set key in config.local.php (Settings → Chat box → Chat code)
+    'smartsupp' => [
+        'key' => '',
+    ],
+
     'security' => [
         'session_name' => 'sdc_re_session',
         'csrf_token_key' => '_csrf_token',

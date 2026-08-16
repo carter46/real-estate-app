@@ -47,6 +47,7 @@ Copy the `real-estate-app/` tree to the server.
 | `mail.driver` | `brevo` (API primary + PHP mail fallback); use `log` on staging until the key works |
 | `mail.brevo_api_key` | Brevo **API** key (not SMTP login) |
 | `mail.from_email` / `admin_notify_email` | Real addresses; `from_email` must be verified in Brevo |
+| `smartsupp.key` | Smartsupp chat key from Settings → Chat box → Chat code (leave empty to hide widget) |
 | `security.cookie_secure` | `true` or `null` (auto HTTPS) |
 | `security.trust_forwarded_proto` | `true` **only** behind a trusted TLS-terminating proxy |
 | `security.health_token` | Long random string for monitoring |

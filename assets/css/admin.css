@@ -275,4 +275,108 @@ body.admin-body {
 }
 .admin-table tr.is-selected td { background: #f6f3f2; }
 
+/* 3-dot action menu */
+.admin-menu { position: relative; display: inline-block; text-align: right; }
+.admin-menu__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(215,193,197,0.7);
+  background: #fff;
+  color: var(--primary);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0;
+}
+.admin-menu__toggle:hover { background: #f6f3f2; }
+.admin-menu__panel {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 10.5rem;
+  background: #fff;
+  border: 1px solid rgba(215,193,197,0.55);
+  box-shadow: 0 10px 28px rgba(55, 5, 24, 0.12);
+  z-index: 30;
+  padding: 0.35rem 0;
+}
+.admin-menu.is-open .admin-menu__panel { display: block; }
+.admin-menu__panel a,
+.admin-menu__panel button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.9rem;
+  border: 0;
+  background: none;
+  color: var(--on-surface);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.admin-menu__panel a:hover,
+.admin-menu__panel button:hover { background: #f6f3f2; color: var(--primary); }
+.admin-menu__panel form { margin: 0; }
+
+/* Modal */
+.admin-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+.admin-modal.is-open { display: flex; }
+.admin-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 27, 27, 0.45);
+}
+.admin-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(32rem, 100%);
+  max-height: calc(100vh - 2.5rem);
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid rgba(215,193,197,0.5);
+  box-shadow: 0 20px 50px rgba(55, 5, 24, 0.2);
+  padding: 1.5rem;
+}
+.admin-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.admin-modal__head h2 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; }
+.admin-modal__close {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem;
+}
+.admin-modal__close:hover { color: var(--primary); }
+
+.admin-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.admin-page-head .admin-page-title { margin-bottom: 0.25rem; }
 

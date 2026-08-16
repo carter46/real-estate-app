@@ -60,7 +60,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                 <th>Status</th>
                 <th>Featured</th>
                 <th>Listed</th>
-                <th>Actions</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -93,20 +93,23 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                     <td><span class="admin-badge"><?= e(str_replace('_', ' ', (string) $row['status'])) ?></span></td>
                     <td><?= !empty($row['is_featured']) ? 'Yes' : '—' ?></td>
                     <td><?= e((string) ($row['listed_at'] ?? '—')) ?></td>
-                    <td class="admin-table__actions">
-                        <a href="<?= e(base_url('admin/property-form.php?id=' . $id)) ?>">Edit</a>
-                        <?php if ($public): ?>
-                            · <a href="<?= e(base_url('property.php?slug=' . rawurlencode((string) $row['slug']))) ?>" target="_blank" rel="noopener">View</a>
-                        <?php else: ?>
-                            · <span class="admin-muted">Not on site</span>
-                        <?php endif; ?>
-                        <?php if (($row['status'] ?? '') !== 'archived'): ?>
-                            · <form method="post" action="<?= e(base_url('admin/property-archive.php')) ?>" style="display:inline;" onsubmit="return confirm('Archive this listing?');">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="id" value="<?= $id ?>">
-                                <button type="submit" class="admin-link-btn">Archive</button>
-                            </form>
-                        <?php endif; ?>
+                    <td>
+                        <div class="admin-menu">
+                            <button type="button" class="admin-menu__toggle" aria-label="Actions">⋯</button>
+                            <div class="admin-menu__panel">
+                                <a href="<?= e(base_url('admin/property-form.php?id=' . $id)) ?>">Edit</a>
+                                <?php if ($public): ?>
+                                    <a href="<?= e(base_url('property.php?slug=' . rawurlencode((string) $row['slug']))) ?>" target="_blank" rel="noopener">View on site</a>
+                                <?php endif; ?>
+                                <?php if (($row['status'] ?? '') !== 'archived'): ?>
+                                    <form method="post" action="<?= e(base_url('admin/property-archive.php')) ?>" onsubmit="return confirm('Archive this listing?');">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="id" value="<?= $id ?>">
+                                        <button type="submit">Archive</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>

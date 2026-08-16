@@ -158,10 +158,21 @@ $adminActiveNav = 'properties';
 require dirname(__DIR__) . '/includes/admin-header.php';
 
 $regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowmass', 'Steamboat'];
+$viewSlug = $isEdit ? trim((string) ($property['slug'] ?? $form['slug'] ?? '')) : '';
+$canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((string) ($form['status'] ?? $property['status'] ?? 'draft'));
 ?>
-<span class="admin-eyebrow">Property Sections</span>
-<h1 class="admin-page-title"><?= e($adminPageTitle) ?></h1>
-<p class="admin-page-lead"><?= $isEdit ? 'Update listing #' . e((string) $id) . ' · ' . e((string) ($property['reference_code'] ?? '')) : 'Create a new listing in MySQL.' ?></p>
+<div class="admin-page-head">
+  <div>
+    <span class="admin-eyebrow">Property Sections</span>
+    <h1 class="admin-page-title"><?= e($adminPageTitle) ?></h1>
+    <p class="admin-page-lead"><?= $isEdit ? 'Update listing #' . e((string) $id) . ' · ' . e((string) ($property['reference_code'] ?? '')) : 'Create a new listing in MySQL.' ?></p>
+  </div>
+  <?php if ($isEdit && $viewSlug !== ''): ?>
+    <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('property.php?slug=' . rawurlencode($viewSlug))) ?>" target="_blank" rel="noopener">
+      <?= $canViewPublic ? 'View property' : 'Preview URL' ?>
+    </a>
+  <?php endif; ?>
+</div>
 
 <?php if ($flashOk): ?><div class="admin-alert admin-alert--ok"><?= e($flashOk) ?></div><?php endif; ?>
 <?php if ($flashErr): ?><div class="admin-alert admin-alert--error"><?= e($flashErr) ?></div><?php endif; ?>
@@ -172,7 +183,7 @@ $regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowm
     <div class="admin-alert"><?= e($warning) ?></div>
 <?php endif; ?>
 
-<form method="post" action="">
+<form id="property-main-form" method="post" action="">
     <?= csrf_field() ?>
 
     <section class="admin-panel" id="basic-info">
@@ -330,12 +341,6 @@ $regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowm
             Confirm save despite possible duplicate address
         </label>
     </div>
-
-    <div class="admin-actions">
-        <button class="admin-btn admin-btn--ghost" type="submit" name="save_action" value="draft" onclick="document.getElementById('status').value='draft';">Save Draft</button>
-        <button class="admin-btn" type="submit" name="save_action" value="publish" onclick="var s=document.getElementById('status'); if(s.value==='draft'){s.value='available';}">Publish / Save</button>
-        <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('admin/properties.php')) ?>">Back to list</a>
-    </div>
 </form>
 
 <?php if ($isEdit): ?>
@@ -381,9 +386,15 @@ $regions = ['Aspen', 'Vail', 'Telluride', 'Denver Metro', 'Beaver Creek', 'Snowm
 <?php else: ?>
 <section class="admin-panel" id="media">
     <h2>Media Gallery</h2>
-    <p class="admin-note">Save the property first, then upload gallery images on the edit screen.</p>
+    <p class="admin-note">Save the property first, then upload gallery images on this screen.</p>
 </section>
 <?php endif; ?>
+
+<div class="admin-actions">
+    <button class="admin-btn admin-btn--ghost" type="submit" form="property-main-form" name="save_action" value="draft" onclick="document.getElementById('status').value='draft';">Save Draft</button>
+    <button class="admin-btn" type="submit" form="property-main-form" name="save_action" value="publish" onclick="var s=document.getElementById('status'); if(s.value==='draft'){s.value='available';}">Publish / Save</button>
+    <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('admin/properties.php')) ?>">Back to list</a>
+</div>
 
 <?php
 require dirname(__DIR__) . '/includes/admin-footer.php';

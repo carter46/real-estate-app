@@ -39,4 +39,8 @@ return [
         'login_lockout_seconds' => 900,
         'inquiry_max_per_hour' => 5,
     ],
+
+    'smartsupp' => [
+        'key' => 'YOUR_SMARTSUPP_KEY',
+    ],
 ];
