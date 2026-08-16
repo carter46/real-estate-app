@@ -413,7 +413,7 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
 <?php if ($isEdit): ?>
 <section class="admin-panel" id="media">
     <h2>Media Gallery</h2>
-    <p class="admin-note">JPEG, PNG, or WebP. Use <strong>Set as cover</strong> and <strong>Delete</strong> without reloading — both apply when you Save Draft or Publish. You can upload multiple images at once.</p>
+    <p class="admin-note">JPEG, PNG, or WebP. <strong>Cover</strong> / <strong>Remove</strong> apply on Save (no reload). <strong>Undo</strong> only appears after Remove. Upload multiple images at once.</p>
     <p id="gallery-pending-note" class="admin-alert<?= ($pendingDeleteIds === [] && !($pendingCoverId > 0)) ? '' : ' is-visible' ?>"<?= ($pendingDeleteIds === [] && !($pendingCoverId > 0)) ? ' hidden' : '' ?> style="margin-top:0.75rem;">Gallery changes (cover / deletions) are applied when you save this property.</p>
 
     <div class="admin-gallery" id="admin-gallery">
@@ -435,11 +435,13 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
                         <?= csrf_field() ?>
                         <input type="hidden" name="image_id" value="<?= $imgId ?>">
                         <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Room label / caption">
-                        <button class="admin-btn admin-btn--ghost" type="submit" name="image_action" value="caption">Save caption</button>
+                        <button class="admin-btn admin-btn--ghost admin-btn--sm" type="submit" name="image_action" value="caption">Save caption</button>
                     </form>
-                    <button class="admin-btn admin-btn--ghost admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Set as cover</button>
-                    <button class="admin-btn admin-btn--ghost admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>">Delete</button>
-                    <button class="admin-btn admin-btn--ghost admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>">Undo delete</button>
+                    <div class="admin-gallery__toolbar">
+                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Cover</button>
+                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>">Remove</button>
+                      <button class="admin-btn admin-btn--ghost admin-btn--sm admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>">Undo</button>
+                    </div>
                 </div>
             </figure>
         <?php endforeach; ?>
@@ -457,7 +459,7 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
             <label for="caption_new">Caption / room label (optional, applied to all in this upload)</label>
             <input id="caption_new" name="caption" type="text" placeholder="e.g. GREAT ROOM">
         </div>
-        <button class="admin-btn" type="submit">Upload</button>
+        <button class="admin-btn admin-btn--sm" type="submit">Upload</button>
     </form>
 </section>
 <script>

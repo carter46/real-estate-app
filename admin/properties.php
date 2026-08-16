@@ -10,17 +10,26 @@ auth_require();
 
 $q = trim((string) ($_GET['q'] ?? ''));
 $status = trim((string) ($_GET['status'] ?? ''));
-$total = property_count_admin($q, $status);
-$rows = property_list_admin($q, $status, 50, 0);
+// Default view = active (non-archived). Explicit status=archived shows archive list.
+$viewArchived = ($status === 'archived');
+if ($status === '' && !isset($_GET['all'])) {
+    // Active list: everything except archived
+    $total = property_count_admin_excluding_archived($q);
+    $rows = property_list_admin_excluding_archived($q, 50, 0);
+} else {
+    $total = property_count_admin($q, $status);
+    $rows = property_list_admin($q, $status, 50, 0);
+}
+
 $flashOk = flash_get('property_ok');
 $flashErr = flash_get('property_error');
 
-$adminPageTitle = 'Manage Properties';
+$adminPageTitle = $viewArchived ? 'Archived Properties' : 'Manage Properties';
 $adminActiveNav = 'properties';
 require dirname(__DIR__) . '/includes/admin-header.php';
 ?>
 <span class="admin-eyebrow">Portfolio Manager</span>
-<h1 class="admin-page-title">Manage Properties</h1>
+<h1 class="admin-page-title"><?= e($adminPageTitle) ?></h1>
 <p class="admin-page-lead">Showing <?= e((string) count($rows)) ?> of <?= e((string) $total) ?> matching listings.</p>
 
 <?php if ($flashOk): ?><div class="admin-alert admin-alert--ok"><?= e($flashOk) ?></div><?php endif; ?>
@@ -28,6 +37,11 @@ require dirname(__DIR__) . '/includes/admin-header.php';
 
 <div class="admin-actions">
     <a class="admin-btn" href="<?= e(base_url('admin/property-form.php')) ?>">New Listing</a>
+    <?php if ($viewArchived): ?>
+      <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('admin/properties.php')) ?>">Active listings</a>
+    <?php else: ?>
+      <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('admin/properties.php?status=archived')) ?>">Archived listings</a>
+    <?php endif; ?>
 </div>
 
 <form class="admin-panel" method="get" action="">
@@ -36,19 +50,28 @@ require dirname(__DIR__) . '/includes/admin-header.php';
             <label for="q">Search</label>
             <input id="q" name="q" type="search" value="<?= e($q) ?>" placeholder="Address, MLS #, reference, title…">
         </div>
+        <?php if ($viewArchived): ?>
+          <input type="hidden" name="status" value="archived">
+        <?php else: ?>
         <div class="admin-field" style="min-width:10rem;margin:0;">
             <label for="status">Status</label>
             <select id="status" name="status">
-                <option value="">All statuses</option>
+                <option value="">All active statuses</option>
                 <?php foreach (property_statuses() as $st): ?>
+                    <?php if ($st === 'archived') { continue; } ?>
                     <option value="<?= e($st) ?>" <?= $status === $st ? 'selected' : '' ?>><?= e(ucwords(str_replace('_', ' ', $st))) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
+        <?php endif; ?>
         <button class="admin-btn" type="submit" style="align-self:end;">Filter</button>
-        <a class="admin-btn admin-btn--ghost" style="align-self:end;" href="<?= e(base_url('admin/properties.php')) ?>">Clear</a>
+        <a class="admin-btn admin-btn--ghost" style="align-self:end;" href="<?= e(base_url($viewArchived ? 'admin/properties.php?status=archived' : 'admin/properties.php')) ?>">Clear</a>
     </div>
 </form>
+
+<?php if ($viewArchived): ?>
+  <p class="admin-note" style="margin-top:-0.5rem;">Archived listings are hidden from the public site. Permanent delete removes the property, gallery rows, and image files from the server.</p>
+<?php endif; ?>
 
 <section class="admin-panel" style="padding:0;overflow:visible;">
     <table class="admin-table">
@@ -65,7 +88,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
         </thead>
         <tbody>
         <?php if ($rows === []): ?>
-            <tr><td colspan="7" class="admin-note" style="padding:1.25rem;">No properties match these filters.</td></tr>
+            <tr><td colspan="7" class="admin-note" style="padding:1.25rem;"><?= $viewArchived ? 'No archived properties.' : 'No properties match these filters.' ?></td></tr>
         <?php else: ?>
             <?php foreach ($rows as $row): ?>
                 <?php
@@ -77,6 +100,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                     (string) ($row['currency'] ?? 'USD')
                 );
                 $public = is_property_status_public((string) $row['status']);
+                $isArchived = ((string) ($row['status'] ?? '')) === 'archived';
                 ?>
                 <tr>
                     <td class="admin-table__thumb">
@@ -101,11 +125,18 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                                 <?php if ($public): ?>
                                     <a href="<?= e(base_url('property.php?slug=' . rawurlencode((string) $row['slug']))) ?>" target="_blank" rel="noopener">View on site</a>
                                 <?php endif; ?>
-                                <?php if (($row['status'] ?? '') !== 'archived'): ?>
+                                <?php if (!$isArchived): ?>
                                     <form method="post" action="<?= e(base_url('admin/property-archive.php')) ?>" onsubmit="return confirm('Archive this listing?');">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="id" value="<?= $id ?>">
                                         <button type="submit">Archive</button>
+                                    </form>
+                                <?php else: ?>
+                                    <form method="post" action="<?= e(base_url('admin/property-delete.php')) ?>" onsubmit="var t=prompt('This permanently deletes the property and all images. Type DELETE to confirm.'); if(t!=='DELETE'){return false;} this.querySelector('[name=confirm]').value=t; return true;">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="id" value="<?= $id ?>">
+                                        <input type="hidden" name="confirm" value="">
+                                        <button type="submit">Delete permanently</button>
                                     </form>
                                 <?php endif; ?>
                             </div>

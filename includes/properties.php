@@ -159,6 +159,48 @@ function property_count_admin(string $q = '', string $status = ''): int
 }
 
 /**
+ * Admin list excluding archived (default "active" portfolio view).
+ *
+ * @return list<array<string, mixed>>
+ */
+function property_list_admin_excluding_archived(string $q = '', int $limit = 50, int $offset = 0): array
+{
+    $where = ["p.status != 'archived'"];
+    $params = [];
+    if ($q !== '') {
+        $where[] = '(p.title LIKE ? OR p.address_line LIKE ? OR p.city LIKE ? OR p.reference_code LIKE ? OR p.mls_number LIKE ?)';
+        $like = '%' . $q . '%';
+        array_push($params, $like, $like, $like, $like, $like);
+    }
+
+    $sql = 'SELECT p.*, t.name AS type_name,
+            (SELECT path FROM property_images pi WHERE pi.property_id = p.id AND pi.is_cover = 1 ORDER BY pi.id ASC LIMIT 1) AS cover_path
+            FROM properties p
+            LEFT JOIN property_types t ON t.id = p.property_type_id
+            WHERE ' . implode(' AND ', $where) . '
+            ORDER BY p.updated_at DESC
+            LIMIT ' . (int) $limit . ' OFFSET ' . (int) $offset;
+
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll() ?: [];
+}
+
+function property_count_admin_excluding_archived(string $q = ''): int
+{
+    $where = ["status != 'archived'"];
+    $params = [];
+    if ($q !== '') {
+        $where[] = '(title LIKE ? OR address_line LIKE ? OR city LIKE ? OR reference_code LIKE ? OR mls_number LIKE ?)';
+        $like = '%' . $q . '%';
+        array_push($params, $like, $like, $like, $like, $like);
+    }
+    $stmt = db()->prepare('SELECT COUNT(*) FROM properties WHERE ' . implode(' AND ', $where));
+    $stmt->execute($params);
+    return (int) $stmt->fetchColumn();
+}
+
+/**
  * @return list<array<string, mixed>>
  */
 function property_types_all(bool $activeOnly = false): array
@@ -556,6 +598,72 @@ function property_archive(int $id): void
 {
     $stmt = db()->prepare("UPDATE properties SET status = 'archived', is_featured = 0 WHERE id = ?");
     $stmt->execute([$id]);
+}
+
+/**
+ * Permanently delete an archived property, its DB rows, and local image files.
+ * Returns false if missing or not archived.
+ */
+function property_purge_permanent(int $id): bool
+{
+    $property = property_find($id);
+    if (!$property || (string) ($property['status'] ?? '') !== 'archived') {
+        return false;
+    }
+
+    $images = property_images($id);
+    $dirs = [];
+    foreach ($images as $img) {
+        $path = (string) ($img['path'] ?? '');
+        property_delete_image_file($path);
+        if ($path !== '' && !preg_match('#^https?://#i', $path)) {
+            $dir = dirname(APP_ROOT . '/' . ltrim(str_replace('\\', '/', $path), '/'));
+            $dirs[$dir] = true;
+        }
+    }
+
+    // Also clear common upload folders for this listing (id-based and slug-based).
+    $uploadsProps = (string) app_config('uploads.properties_dir', APP_ROOT . '/uploads/properties');
+    $dirs[rtrim($uploadsProps, '/\\') . DIRECTORY_SEPARATOR . $id] = true;
+    $slug = trim((string) ($property['slug'] ?? ''));
+    if ($slug !== '') {
+        $dirs[rtrim($uploadsProps, '/\\') . DIRECTORY_SEPARATOR . $slug] = true;
+    }
+
+    db()->prepare('DELETE FROM properties WHERE id = ? AND status = \'archived\'')->execute([$id]);
+
+    foreach (array_keys($dirs) as $dir) {
+        property_remove_empty_upload_dir($dir);
+    }
+
+    return true;
+}
+
+/**
+ * Remove an empty directory under uploads/properties only.
+ */
+function property_remove_empty_upload_dir(string $dir): void
+{
+    $uploadsRoot = realpath(APP_ROOT . '/uploads/properties');
+    if ($uploadsRoot === false || !is_dir($dir)) {
+        return;
+    }
+    $real = realpath($dir);
+    if ($real === false) {
+        return;
+    }
+    $prefix = $uploadsRoot . DIRECTORY_SEPARATOR;
+    if ($real === $uploadsRoot || !str_starts_with($real, $prefix)) {
+        return;
+    }
+    $files = @scandir($real);
+    if (!is_array($files)) {
+        return;
+    }
+    $remaining = array_diff($files, ['.', '..']);
+    if ($remaining === []) {
+        @rmdir($real);
+    }
 }
 
 function property_ensure_single_cover(int $propertyId, ?int $coverImageId = null): void
