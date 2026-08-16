@@ -582,6 +582,37 @@ function property_ensure_single_cover(int $propertyId, ?int $coverImageId = null
 }
 
 /**
+ * Delete gallery rows (and local files) for a property. Returns how many were removed.
+ *
+ * @param list<int> $imageIds
+ */
+function property_delete_images_by_ids(int $propertyId, array $imageIds): int
+{
+    $ids = array_values(array_unique(array_filter(array_map('intval', $imageIds), static fn (int $v): bool => $v > 0)));
+    if ($propertyId < 1 || $ids === []) {
+        return 0;
+    }
+
+    $removed = 0;
+    $stmt = db()->prepare('SELECT id, path FROM property_images WHERE property_id = ? AND id = ? LIMIT 1');
+    $del = db()->prepare('DELETE FROM property_images WHERE id = ? AND property_id = ?');
+    foreach ($ids as $imageId) {
+        $stmt->execute([$propertyId, $imageId]);
+        $img = $stmt->fetch();
+        if (!is_array($img)) {
+            continue;
+        }
+        $del->execute([$imageId, $propertyId]);
+        property_delete_image_file((string) ($img['path'] ?? ''));
+        $removed++;
+    }
+    if ($removed > 0) {
+        property_ensure_single_cover($propertyId);
+    }
+    return $removed;
+}
+
+/**
  * Escape % and _ for SQL LIKE (keep user input literal).
  */
 function property_like_escape(string $value): string

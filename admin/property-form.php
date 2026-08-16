@@ -66,8 +66,19 @@ if ($property) {
 }
 
 $form = $defaults;
+$pendingDeleteIds = [];
+$pendingCoverId = 0;
+if ($isEdit) {
+    foreach ($images as $imgRow) {
+        if (!empty($imgRow['is_cover'])) {
+            $pendingCoverId = (int) ($imgRow['id'] ?? 0);
+            break;
+        }
+    }
+}
 
-// Image actions (edit only)
+// Image actions (edit only) — multi-upload + caption post immediately.
+// Cover + deletes are deferred until property save (no reload per click).
 if ($isEdit && is_post() && isset($_POST['image_action'])) {
     if (!csrf_verify()) {
         flash_set('property_error', 'Invalid security token.');
@@ -76,40 +87,55 @@ if ($isEdit && is_post() && isset($_POST['image_action'])) {
     $action = (string) $_POST['image_action'];
     $imageId = (int) ($_POST['image_id'] ?? 0);
 
-    if ($action === 'upload' && !empty($_FILES['image'])) {
-        $up = property_upload_image($_FILES['image'], $id);
-        if (!$up['ok']) {
-            flash_set('property_error', (string) $up['error']);
-        } else {
-            $st = db()->prepare('SELECT COALESCE(MAX(sort_order), -1) FROM property_images WHERE property_id = ?');
-            $st->execute([$id]);
-            $maxSort = (int) $st->fetchColumn();
-            $caption = trim((string) ($_POST['caption'] ?? ''));
-            $ins = db()->prepare(
-                'INSERT INTO property_images (property_id, path, caption, sort_order, is_cover) VALUES (?, ?, ?, ?, 0)'
-            );
-            $ins->execute([$id, $up['path'], $caption !== '' ? $caption : null, $maxSort + 1]);
-            property_ensure_single_cover($id);
-            flash_set('property_ok', 'Image uploaded.');
+    if ($action === 'upload') {
+        $fileField = [];
+        if (!empty($_FILES['images']) && is_array($_FILES['images'])) {
+            $fileField = $_FILES['images'];
+        } elseif (!empty($_FILES['image']) && is_array($_FILES['image'])) {
+            $fileField = $_FILES['image'];
         }
-        redirect('admin/property-form.php?id=' . $id . '#media');
-    }
+        $files = property_uploaded_files_list($fileField);
+        if ($files === []) {
+            flash_set('property_error', 'No files selected.');
+            redirect('admin/property-form.php?id=' . $id . '#media');
+        }
 
-    if ($action === 'cover' && $imageId > 0) {
-        property_ensure_single_cover($id, $imageId);
-        flash_set('property_ok', 'Cover image updated.');
-        redirect('admin/property-form.php?id=' . $id . '#media');
-    }
+        $st = db()->prepare('SELECT COALESCE(MAX(sort_order), -1) FROM property_images WHERE property_id = ?');
+        $st->execute([$id]);
+        $maxSort = (int) $st->fetchColumn();
+        $caption = trim((string) ($_POST['caption'] ?? ''));
+        $ins = db()->prepare(
+            'INSERT INTO property_images (property_id, path, caption, sort_order, is_cover) VALUES (?, ?, ?, ?, 0)'
+        );
 
-    if ($action === 'delete' && $imageId > 0) {
-        $stmt = db()->prepare('SELECT * FROM property_images WHERE id = ? AND property_id = ? LIMIT 1');
-        $stmt->execute([$imageId, $id]);
-        $img = $stmt->fetch();
-        if ($img) {
-            db()->prepare('DELETE FROM property_images WHERE id = ?')->execute([$imageId]);
-            property_delete_image_file((string) ($img['path'] ?? ''));
-            property_ensure_single_cover($id);
-            flash_set('property_ok', 'Image deleted.');
+        $uploaded = 0;
+        $errorsUpload = [];
+        foreach ($files as $file) {
+            $up = property_upload_image($file, $id);
+            if (!$up['ok']) {
+                $label = trim((string) ($file['name'] ?? 'file'));
+                $errorsUpload[] = ($label !== '' ? $label . ': ' : '') . (string) $up['error'];
+                continue;
+            }
+            $maxSort++;
+            $ins->execute([
+                $id,
+                $up['path'],
+                $caption !== '' ? $caption : null,
+                $maxSort,
+            ]);
+            $uploaded++;
+        }
+        property_ensure_single_cover($id);
+
+        if ($uploaded > 0) {
+            $msg = $uploaded === 1 ? '1 image uploaded.' : $uploaded . ' images uploaded.';
+            if ($errorsUpload !== []) {
+                $msg .= ' Some failed: ' . implode(' ', array_slice($errorsUpload, 0, 3));
+            }
+            flash_set('property_ok', $msg);
+        } else {
+            flash_set('property_error', $errorsUpload !== [] ? implode(' ', $errorsUpload) : 'Upload failed.');
         }
         redirect('admin/property-form.php?id=' . $id . '#media');
     }
@@ -121,6 +147,9 @@ if ($isEdit && is_post() && isset($_POST['image_action'])) {
         flash_set('property_ok', 'Caption saved.');
         redirect('admin/property-form.php?id=' . $id . '#media');
     }
+
+    // Legacy cover/delete posts are ignored; use deferred actions on save.
+    redirect('admin/property-form.php?id=' . $id . '#media');
 }
 
 if (is_post() && !isset($_POST['image_action'])) {
@@ -128,14 +157,31 @@ if (is_post() && !isset($_POST['image_action'])) {
         $errors[] = 'Invalid security token. Please try again.';
     } else {
         $form = array_merge($form, $_POST);
+        $rawDelete = $_POST['delete_image_ids'] ?? [];
+        if (!is_array($rawDelete)) {
+            $rawDelete = [];
+        }
+        $pendingDeleteIds = array_values(array_unique(array_filter(array_map('intval', $rawDelete), static fn (int $v): bool => $v > 0)));
+        $pendingCoverId = (int) ($_POST['cover_image_id'] ?? 0);
+
         $validated = property_validate_input($_POST, $isEdit ? $id : null);
         $errors = $validated['errors'];
         $warning = $validated['warning'];
         if ($validated['ok']) {
             try {
                 if ($isEdit) {
+                    $removed = property_delete_images_by_ids($id, $pendingDeleteIds);
+                    if ($pendingCoverId > 0 && !in_array($pendingCoverId, $pendingDeleteIds, true)) {
+                        property_ensure_single_cover($id, $pendingCoverId);
+                    } else {
+                        property_ensure_single_cover($id);
+                    }
                     property_update($id, $validated['data']);
-                    flash_set('property_ok', 'Property updated.');
+                    $msg = 'Property updated.';
+                    if ($removed > 0) {
+                        $msg .= ' Removed ' . $removed . ' gallery image' . ($removed === 1 ? '' : 's') . '.';
+                    }
+                    flash_set('property_ok', $msg);
                     redirect('admin/property-form.php?id=' . $id);
                 } else {
                     $newId = property_insert($validated['data'], $userId);
@@ -185,6 +231,12 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
 
 <form id="property-main-form" method="post" action="">
     <?= csrf_field() ?>
+    <div id="pending-image-deletes" hidden>
+      <?php foreach ($pendingDeleteIds as $pendingId): ?>
+        <input type="hidden" name="delete_image_ids[]" value="<?= (int) $pendingId ?>" data-image-id="<?= (int) $pendingId ?>">
+      <?php endforeach; ?>
+    </div>
+    <input type="hidden" name="cover_image_id" id="cover-image-id" value="<?= (int) $pendingCoverId ?>">
 
     <section class="admin-panel" id="basic-info">
         <h2>Basic Info</h2>
@@ -361,25 +413,34 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
 <?php if ($isEdit): ?>
 <section class="admin-panel" id="media">
     <h2>Media Gallery</h2>
-    <p class="admin-note">JPEG, PNG, or WebP. One cover image is maintained automatically.</p>
+    <p class="admin-note">JPEG, PNG, or WebP. Use <strong>Set as cover</strong> and <strong>Delete</strong> without reloading — both apply when you Save Draft or Publish. You can upload multiple images at once.</p>
+    <p id="gallery-pending-note" class="admin-alert<?= ($pendingDeleteIds === [] && !($pendingCoverId > 0)) ? '' : ' is-visible' ?>"<?= ($pendingDeleteIds === [] && !($pendingCoverId > 0)) ? ' hidden' : '' ?> style="margin-top:0.75rem;">Gallery changes (cover / deletions) are applied when you save this property.</p>
 
-    <div class="admin-gallery">
+    <div class="admin-gallery" id="admin-gallery">
         <?php foreach ($images as $img): ?>
-            <figure class="admin-gallery__item<?= !empty($img['is_cover']) ? ' is-cover' : '' ?>">
+            <?php
+              $imgId = (int) $img['id'];
+              $isPending = in_array($imgId, $pendingDeleteIds, true);
+              $isCover = $pendingCoverId > 0 ? ($imgId === $pendingCoverId) : !empty($img['is_cover']);
+            ?>
+            <figure class="admin-gallery__item<?= $isCover ? ' is-cover' : '' ?><?= $isPending ? ' is-pending-delete' : '' ?>" data-image-id="<?= $imgId ?>">
                 <img src="<?= e(media_url((string) $img['path'])) ?>" alt="">
                 <figcaption>
-                    <?= !empty($img['is_cover']) ? 'Cover · ' : '' ?><?= e((string) ($img['caption'] ?? '')) ?>
+                    <span class="admin-gallery__pending-label">Marked for deletion</span>
+                    <span class="admin-gallery__cover-label">Cover photo</span>
+                    <span class="admin-gallery__caption-text"><?= e((string) ($img['caption'] ?? '')) ?></span>
                 </figcaption>
-                <form method="post" action="#media" class="admin-gallery__actions">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>">
-                    <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Room label / caption">
-                    <button class="admin-btn admin-btn--ghost" type="submit" name="image_action" value="caption">Save caption</button>
-                    <?php if (empty($img['is_cover'])): ?>
-                        <button class="admin-btn admin-btn--ghost" type="submit" name="image_action" value="cover">Set cover</button>
-                    <?php endif; ?>
-                    <button class="admin-btn admin-btn--ghost" type="submit" name="image_action" value="delete" onclick="return confirm('Delete this image?');">Delete</button>
-                </form>
+                <div class="admin-gallery__actions">
+                    <form method="post" action="#media">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="image_id" value="<?= $imgId ?>">
+                        <input type="text" name="caption" value="<?= e((string) ($img['caption'] ?? '')) ?>" placeholder="Room label / caption">
+                        <button class="admin-btn admin-btn--ghost" type="submit" name="image_action" value="caption">Save caption</button>
+                    </form>
+                    <button class="admin-btn admin-btn--ghost admin-gallery__cover-btn" type="button" data-gallery-cover="<?= $imgId ?>">Set as cover</button>
+                    <button class="admin-btn admin-btn--ghost admin-gallery__delete-btn" type="button" data-gallery-delete="<?= $imgId ?>">Delete</button>
+                    <button class="admin-btn admin-btn--ghost admin-gallery__undo-btn" type="button" data-gallery-undo="<?= $imgId ?>">Undo delete</button>
+                </div>
             </figure>
         <?php endforeach; ?>
     </div>
@@ -388,16 +449,108 @@ $canViewPublic = $isEdit && $viewSlug !== '' && is_property_status_public((strin
         <?= csrf_field() ?>
         <input type="hidden" name="image_action" value="upload">
         <div class="admin-field">
-            <label for="image">Upload image</label>
-            <input id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required>
+            <label for="images">Upload images</label>
+            <input id="images" name="images[]" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple required>
+            <p class="admin-note">Select one or many files (Ctrl/Cmd+click or Shift+click). Max size per file applies individually.</p>
         </div>
         <div class="admin-field">
-            <label for="caption_new">Caption / room label</label>
+            <label for="caption_new">Caption / room label (optional, applied to all in this upload)</label>
             <input id="caption_new" name="caption" type="text" placeholder="e.g. GREAT ROOM">
         </div>
         <button class="admin-btn" type="submit">Upload</button>
     </form>
 </section>
+<script>
+(function () {
+  var box = document.getElementById('pending-image-deletes');
+  var coverInput = document.getElementById('cover-image-id');
+  var note = document.getElementById('gallery-pending-note');
+  if (!box || !coverInput) return;
+
+  function syncNote() {
+    var deletes = box.querySelectorAll('input[name="delete_image_ids[]"]').length;
+    if (!note) return;
+    if (deletes > 0) {
+      note.hidden = false;
+      note.classList.add('is-visible');
+      note.textContent = 'Gallery changes (cover / deletions) are applied when you save this property.';
+    } else {
+      note.hidden = false;
+      note.classList.add('is-visible');
+      note.textContent = 'Cover and delete marks apply when you Save Draft or Publish. Uploads save immediately.';
+    }
+  }
+
+  function setCover(id) {
+    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    if (!item || item.classList.contains('is-pending-delete')) return;
+    document.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
+      el.classList.remove('is-cover');
+    });
+    item.classList.add('is-cover');
+    coverInput.value = String(id);
+    syncNote();
+  }
+
+  function markDelete(id) {
+    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    if (!item || item.classList.contains('is-pending-delete')) return;
+    item.classList.add('is-pending-delete');
+    if (!box.querySelector('input[data-image-id="' + id + '"]')) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'delete_image_ids[]';
+      input.value = String(id);
+      input.setAttribute('data-image-id', String(id));
+      box.appendChild(input);
+    }
+    if (coverInput.value === String(id)) {
+      var next = document.querySelector('.admin-gallery__item:not(.is-pending-delete)');
+      if (next) {
+        setCover(next.getAttribute('data-image-id'));
+      } else {
+        coverInput.value = '0';
+        document.querySelectorAll('.admin-gallery__item.is-cover').forEach(function (el) {
+          el.classList.remove('is-cover');
+        });
+      }
+    }
+    syncNote();
+  }
+
+  function undoDelete(id) {
+    var item = document.querySelector('.admin-gallery__item[data-image-id="' + id + '"]');
+    if (item) item.classList.remove('is-pending-delete');
+    box.querySelectorAll('input[data-image-id="' + id + '"]').forEach(function (el) { el.remove(); });
+    syncNote();
+  }
+
+  var gallery = document.getElementById('admin-gallery');
+  if (gallery) {
+    gallery.addEventListener('click', function (e) {
+      var cover = e.target.closest('[data-gallery-cover]');
+      if (cover) {
+        e.preventDefault();
+        setCover(cover.getAttribute('data-gallery-cover'));
+        return;
+      }
+      var del = e.target.closest('[data-gallery-delete]');
+      if (del) {
+        e.preventDefault();
+        markDelete(del.getAttribute('data-gallery-delete'));
+        return;
+      }
+      var undo = e.target.closest('[data-gallery-undo]');
+      if (undo) {
+        e.preventDefault();
+        undoDelete(undo.getAttribute('data-gallery-undo'));
+      }
+    });
+  }
+
+  syncNote();
+})();
+</script>
 <?php else: ?>
 <section class="admin-panel" id="media">
     <h2>Media Gallery</h2>

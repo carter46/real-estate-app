@@ -6,6 +6,50 @@
 declare(strict_types=1);
 
 /**
+ * Normalize a single-file or multi-file $_FILES field into a list of single-file arrays.
+ *
+ * @param array<string, mixed> $fileField
+ * @return list<array{name:string,type:string,tmp_name:string,error:int,size:int}>
+ */
+function property_uploaded_files_list(array $fileField): array
+{
+    if ($fileField === []) {
+        return [];
+    }
+    // Single file shape: name is a string
+    if (!isset($fileField['name']) || !is_array($fileField['name'])) {
+        $err = (int) ($fileField['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($err === UPLOAD_ERR_NO_FILE) {
+            return [];
+        }
+        return [[
+            'name' => (string) ($fileField['name'] ?? ''),
+            'type' => (string) ($fileField['type'] ?? ''),
+            'tmp_name' => (string) ($fileField['tmp_name'] ?? ''),
+            'error' => $err,
+            'size' => (int) ($fileField['size'] ?? 0),
+        ]];
+    }
+
+    $out = [];
+    $count = count($fileField['name']);
+    for ($i = 0; $i < $count; $i++) {
+        $err = (int) ($fileField['error'][$i] ?? UPLOAD_ERR_NO_FILE);
+        if ($err === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+        $out[] = [
+            'name' => (string) ($fileField['name'][$i] ?? ''),
+            'type' => (string) ($fileField['type'][$i] ?? ''),
+            'tmp_name' => (string) ($fileField['tmp_name'][$i] ?? ''),
+            'error' => $err,
+            'size' => (int) ($fileField['size'][$i] ?? 0),
+        ];
+    }
+    return $out;
+}
+
+/**
  * @return array{ok:bool, error:?string, path:?string}
  */
 function property_upload_image(array $file, int $propertyId): array
