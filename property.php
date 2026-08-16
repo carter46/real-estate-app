@@ -60,6 +60,7 @@ $priceLabel = format_price(
 $locationEyebrow = trim(($property['city'] ?? '') . (($property['state'] ?? '') !== '' ? ', ' . $property['state'] : ''));
 $pageTitle = (string) $property['title'] . ' — ' . site_name();
 $activeNav = 'properties';
+$bodyClass = 'property-detail-page';
 
 $byCat = [];
 foreach ($amenities as $am) {
@@ -148,7 +149,7 @@ require __DIR__ . '/includes/header.php';
         </div>
       </div>
       <div class="flex gap-4 md:flex-col md:text-right">
-        <a href="#inquiry" class="bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm px-8 py-4 hover:bg-primary-fixed-dim transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
+        <a href="#inquiry" class="js-scroll-inquiry bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm px-8 py-4 hover:bg-primary-fixed-dim transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
           Buy Now <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </a>
         <a href="<?= e($contactHref) ?>" class="bg-transparent border border-on-primary/30 text-on-primary font-label-sm text-label-sm px-8 py-4 hover:bg-on-primary/10 transition-colors uppercase tracking-widest text-center no-underline">
@@ -246,8 +247,8 @@ require __DIR__ . '/includes/header.php';
         </div>
       </div>
 
-      <div class="lg:col-span-4 relative">
-        <div class="flex flex-col gap-8">
+      <div class="lg:col-span-4">
+        <div class="flex flex-col gap-8 h-full">
           <div class="bg-surface-container p-8 shadow-sm border border-outline-variant/20 flex flex-col items-center text-center">
             <?php
               $agentPhotoUrl = agent_photo_url(
@@ -272,17 +273,17 @@ require __DIR__ . '/includes/header.php';
               <p class="font-body-md text-body-md text-on-surface-variant mb-8 italic">“<?= e((string) $property['agent_quote']) ?>”</p>
             <?php endif; ?>
             <div class="w-full flex flex-col gap-4">
-              <a href="#inquiry" class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-4 hover:bg-primary-container transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
+              <a href="#inquiry" class="js-scroll-inquiry w-full bg-primary text-on-primary font-label-sm text-label-sm py-4 hover:bg-primary-container transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
                 <span class="material-symbols-outlined text-[18px]">shopping_bag</span> Buy Now
               </a>
-              <a href="#inquiry" class="w-full bg-transparent border border-primary text-primary font-label-sm text-label-sm py-4 hover:bg-primary/5 transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
+              <a href="#inquiry" class="js-scroll-inquiry w-full bg-transparent border border-primary text-primary font-label-sm text-label-sm py-4 hover:bg-primary/5 transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
                 <span class="material-symbols-outlined text-[18px]">mail</span> Request Details
               </a>
             </div>
             <p class="mt-6 font-label-sm text-label-sm text-on-surface-variant">Ref <?= e((string) $property['reference_code']) ?><?= !empty($property['mls_number']) ? ' · MLS# ' . e((string) $property['mls_number']) : '' ?></p>
           </div>
 
-          <div id="inquiry" class="bg-surface-container-lowest border border-outline-variant/30 p-6">
+          <div id="inquiry" class="property-inquiry-card bg-surface-container-lowest border border-outline-variant/30 p-6 lg:sticky lg:top-28 lg:z-10">
             <p class="font-subheading text-subheading text-primary mb-3 uppercase tracking-widest">Inquire</p>
             <h3 class="font-headline-md text-[24px] text-on-surface mb-4">Request a private purchase</h3>
             <?php if ($inquirySuccess): ?>
@@ -334,5 +335,53 @@ require __DIR__ . '/includes/header.php';
     </div>
   </div>
 </section>
+
+<div class="property-mobile-cta lg:hidden" id="property-mobile-cta" role="region" aria-label="Property actions">
+  <div class="property-mobile-cta__inner">
+    <div class="property-mobile-cta__price">
+      <p class="property-mobile-cta__price-label">Price</p>
+      <p class="property-mobile-cta__price-value"><?= e($priceLabel) ?></p>
+    </div>
+    <div class="property-mobile-cta__actions">
+      <a href="#inquiry" class="js-scroll-inquiry property-mobile-cta__btn property-mobile-cta__btn--primary">Enquire</a>
+      <a href="#inquiry" class="js-scroll-inquiry property-mobile-cta__btn property-mobile-cta__btn--ghost">Buy</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var inquiry = document.getElementById('inquiry');
+  var bar = document.getElementById('property-mobile-cta');
+  if (!inquiry) return;
+
+  function scrollToInquiry(e) {
+    if (e) e.preventDefault();
+    var top = inquiry.getBoundingClientRect().top + window.pageYOffset - 96;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+    try {
+      history.replaceState(null, '', '#inquiry');
+    } catch (err) {}
+    var focusEl = inquiry.querySelector('input, textarea, select, button');
+    if (focusEl) {
+      window.setTimeout(function () { focusEl.focus({ preventScroll: true }); }, 400);
+    }
+  }
+
+  document.querySelectorAll('.js-scroll-inquiry').forEach(function (link) {
+    link.addEventListener('click', scrollToInquiry);
+  });
+
+  if (bar && 'IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) bar.classList.add('is-hidden');
+        else bar.classList.remove('is-hidden');
+      });
+    }, { root: null, threshold: 0.15 });
+    io.observe(inquiry);
+  }
+})();
+</script>
 <?php
 require __DIR__ . '/includes/footer.php';
