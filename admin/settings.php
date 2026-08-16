@@ -11,10 +11,32 @@ auth_require();
 $errors = [];
 $ok = flash_get('settings_ok');
 $testToPrefill = '';
+$mailTestMessage = '';
+$mailTestOk = false;
+
+$wantsJson = str_contains(strtolower((string) ($_SERVER['HTTP_ACCEPT'] ?? '')), 'application/json')
+    || strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'xmlhttprequest';
+
+/**
+ * @param array{ok:bool,message:string,error?:?string,driver?:string,to?:string} $payload
+ */
+function settings_mail_test_respond(bool $wantsJson, array $payload): void
+{
+    if (!$wantsJson) {
+        return;
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code($payload['ok'] ? 200 : 422);
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
 
 if (is_post()) {
     if (!csrf_verify()) {
         $errors[] = 'Invalid security token.';
+        if ($wantsJson && (string) ($_POST['action'] ?? '') === 'test_mail') {
+            settings_mail_test_respond(true, ['ok' => false, 'message' => 'Invalid security token.', 'error' => 'csrf']);
+        }
     } else {
         $action = (string) ($_POST['action'] ?? 'save');
 
@@ -22,11 +44,15 @@ if (is_post()) {
             $testTo = strtolower(trim((string) ($_POST['test_email'] ?? '')));
             $testToPrefill = $testTo;
             if ($testTo === '' || !filter_var($testTo, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = 'Enter a valid recipient email for the test.';
+                $mailTestMessage = 'Enter a valid recipient email for the test.';
+                settings_mail_test_respond($wantsJson, ['ok' => false, 'message' => $mailTestMessage]);
+                $errors[] = $mailTestMessage;
             } else {
                 $limit = rate_limit_hit('admin_mail_test', 10, 3600);
                 if (!$limit['allowed']) {
-                    $errors[] = 'Too many test emails. Try again later.';
+                    $mailTestMessage = 'Too many test emails. Try again later.';
+                    settings_mail_test_respond($wantsJson, ['ok' => false, 'message' => $mailTestMessage]);
+                    $errors[] = $mailTestMessage;
                 } else {
                     $brand = site_name();
                     $driver = strtolower((string) app_config('mail.driver', 'brevo'));
@@ -38,14 +64,25 @@ if (is_post()) {
                         . '<p>Driver: <code>' . e($driver) . '</code><br>Sent at: ' . e(date('c')) . '</p>';
                     $result = send_mail($testTo, $subject, $html, $text);
                     if ($result['ok']) {
-                        flash_set(
-                            'settings_ok',
-                            'Test email sent to ' . $testTo . ' via ' . $driver . '. Check the inbox (and spam). Details: storage/logs/mail.log'
-                        );
-                        redirect('admin/settings.php');
+                        $mailTestOk = true;
+                        $mailTestMessage = 'Test email sent to ' . $testTo . ' via ' . $driver
+                            . '. Check the inbox (and spam).';
+                        settings_mail_test_respond($wantsJson, [
+                            'ok' => true,
+                            'message' => $mailTestMessage,
+                            'driver' => $driver,
+                            'to' => $testTo,
+                        ]);
+                    } else {
+                        $mailTestMessage = 'Test email failed: ' . (string) ($result['error'] ?? 'Unknown error')
+                            . ' Check storage/logs/mail.log on the server.';
+                        settings_mail_test_respond($wantsJson, [
+                            'ok' => false,
+                            'message' => $mailTestMessage,
+                            'error' => (string) ($result['error'] ?? 'Unknown error'),
+                        ]);
+                        $errors[] = $mailTestMessage;
                     }
-                    $errors[] = 'Test email failed: ' . (string) ($result['error'] ?? 'Unknown error')
-                        . ' Check storage/logs/mail.log on the server.';
                 }
             }
         } else {
@@ -175,7 +212,8 @@ require dirname(__DIR__) . '/includes/admin-header.php';
       · SMTP host: <strong><?= mail_smtp_configured() ? e((string) app_config('mail.smtp_host', '')) : 'not set' ?></strong>
     <?php endif; ?>
   </p>
-  <form method="post" action="#mail-test">
+  <div id="mail-test-status" class="admin-alert<?= $mailTestMessage === '' ? '' : ($mailTestOk ? ' admin-alert--ok' : ' admin-alert--error') ?>"<?= $mailTestMessage === '' ? ' hidden' : '' ?> role="status" aria-live="polite"><?= e($mailTestMessage) ?></div>
+  <form id="mail-test-form" method="post" action="">
     <?= csrf_field() ?>
     <input type="hidden" name="action" value="test_mail">
     <div class="admin-field">
@@ -184,7 +222,68 @@ require dirname(__DIR__) . '/includes/admin-header.php';
              value="<?= e($testToPrefill !== '' ? $testToPrefill : (string) (auth_user()['email'] ?? '')) ?>"
              placeholder="you@example.com">
     </div>
-    <button class="admin-btn" type="submit">Send test email</button>
+    <button class="admin-btn" type="submit" id="mail-test-submit">Send test email</button>
   </form>
 </section>
+<script>
+(function () {
+  var form = document.getElementById('mail-test-form');
+  var statusEl = document.getElementById('mail-test-status');
+  var submitBtn = document.getElementById('mail-test-submit');
+  if (!form || !statusEl || !submitBtn) return;
+
+  function showStatus(ok, message) {
+    statusEl.hidden = false;
+    statusEl.classList.remove('admin-alert--ok', 'admin-alert--error');
+    statusEl.classList.add(ok ? 'admin-alert--ok' : 'admin-alert--error');
+    statusEl.textContent = message;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = (form.querySelector('#test_email') || {}).value || '';
+    if (!email.trim()) {
+      showStatus(false, 'Enter a valid recipient email for the test.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    var previousLabel = submitBtn.textContent;
+    submitBtn.textContent = 'Sending…';
+    showStatus(true, 'Sending test email…');
+    statusEl.classList.remove('admin-alert--ok', 'admin-alert--error');
+
+    fetch(window.location.href, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin'
+    })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          return { okHttp: res.ok, data: data || {} };
+        }).catch(function () {
+          return { okHttp: res.ok, data: { ok: false, message: 'Unexpected server response.' } };
+        });
+      })
+      .then(function (result) {
+        var data = result.data;
+        var ok = !!(data && data.ok);
+        var message = (data && data.message) ? String(data.message)
+          : (ok ? 'Test email sent.' : 'Test email failed.');
+        showStatus(ok, message);
+      })
+      .catch(function () {
+        showStatus(false, 'Could not reach the server. Try again.');
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = previousLabel;
+      });
+  });
+})();
+</script>
 <?php require dirname(__DIR__) . '/includes/admin-footer.php';

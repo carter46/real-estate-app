@@ -24,11 +24,18 @@ return [
     ],
 
     'mail' => [
+        // log | brevo | smtp | mail
         'driver' => 'log',
         'from_email' => 'noreply@example.com',
         'from_name' => 'SDC',
         'admin_notify_email' => 'admin@example.com',
         'brevo_api_key' => '',
+        // PHPMailer SMTP (used when driver=smtp, or as fallback if driver=brevo and Brevo key is missing/fails)
+        'smtp_host' => '',
+        'smtp_port' => 587,
+        'smtp_encryption' => 'tls', // tls | ssl | ''
+        'smtp_user' => '',
+        'smtp_pass' => '',
     ],
 
     'security' => [
