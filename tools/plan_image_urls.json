@@ -1,0 +1,856 @@
+{
+  "generated": "2026-08-16T23:07:15.918Z",
+  "unique_cover_hashes": 25,
+  "duplicate_cover_groups": [],
+  "properties": [
+    {
+      "slug": "cc-az-coolidge-gateway-aguila",
+      "plan": "Aguila",
+      "url": "https://www.centurycommunities.com/find-your-new-home/arizona/phoenix-metro/coolidge/coolidge-gateway-manor/plans/aguila/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---great-room-and-kitchen.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---great-room.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/aguila-great-room.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---dining-and-kitchen.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---great-room-and-kitchen.jpg",
+          "bytes": 337632
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---great-room.jpg",
+          "bytes": 340167
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/aguila-great-room.jpg",
+          "bytes": 334523
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/aguila---furnished/entrada-del-toro-aguila-model---dining-and-kitchen.jpg",
+          "bytes": 273548
+        }
+      ]
+    },
+    {
+      "slug": "cc-az-coolidge-gateway-jasmine",
+      "plan": "Jasmine",
+      "url": "https://www.centurycommunities.com/find-your-new-home/arizona/phoenix-metro/coolidge/coolidge-gateway-manor/plans/jasmine/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/jasmine-2016-coolidge-gateway-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 580598
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 547846
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/coolidge-jasmine-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 1372493
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/jasmine/jasmine-2016-coolidge-gateway-floor-1.jpg",
+          "bytes": 33914
+        }
+      ]
+    },
+    {
+      "slug": "cc-az-coolidge-gateway-sage",
+      "plan": "Sage",
+      "url": "https://www.centurycommunities.com/find-your-new-home/arizona/phoenix-metro/coolidge/coolidge-gateway-manor/plans/sage/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-2179-coolidge-gateway-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 547868
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 540536
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 612186
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/sage/sage-2179-coolidge-gateway-floor-1.jpg",
+          "bytes": 32058
+        }
+      ]
+    },
+    {
+      "slug": "cc-az-coolidge-gateway-troon",
+      "plan": "Troon",
+      "url": "https://www.centurycommunities.com/find-your-new-home/arizona/phoenix-metro/coolidge/coolidge-gateway-manor/plans/troon/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-2.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-3.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---kitchen-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-1.jpg",
+          "bytes": 432038
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-2.jpg",
+          "bytes": 381817
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---great-room-3.jpg",
+          "bytes": 394421
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/arizona/troon---furnished/entrada-del-toro-troon-model---kitchen-1.jpg",
+          "bytes": 268892
+        }
+      ]
+    },
+    {
+      "slug": "cc-az-coolidge-gateway-ocotillo",
+      "plan": "Ocotillo",
+      "url": "https://www.centurycommunities.com/find-your-new-home/arizona/phoenix-metro/coolidge/coolidge-gateway-manor/plans/ocotillo/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/ocotillo-2658-coolidge-gateway-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-a-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 572415
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-b-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 549421
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/coolidge-ocotillo-c-shingle-no-glass-garage-door-gen3-elev_dsk.jpg",
+          "bytes": 1391180
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-az/az---coolidge-gateway-manor/ocotillo/ocotillo-2658-coolidge-gateway-floor-1.jpg",
+          "bytes": 36144
+        }
+      ]
+    },
+    {
+      "slug": "cc-co-windler-monroe-21221",
+      "plan": "The Monroe",
+      "url": "https://www.centurycommunities.com/find-your-new-home/colorado/denver-metro/aurora/windler/windler-alley-21s/plans/21221/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-a-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-b-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-c-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21221/21221-windler-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-a-gen3-elev_dsk.jpg",
+          "bytes": 297271
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-b-gen3-elev_dsk.jpg",
+          "bytes": 323900
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/monroe---21221/21221-c-gen3-elev_dsk.jpg",
+          "bytes": 297425
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21221/21221-windler-floor-1.jpg",
+          "bytes": 25191
+        }
+      ]
+    },
+    {
+      "slug": "cc-co-windler-cambridge-21222",
+      "plan": "The Cambridge",
+      "url": "https://www.centurycommunities.com/find-your-new-home/colorado/denver-metro/aurora/windler/windler-alley-21s/plans/21222/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-a-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-c-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-b-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21222/21222-windler-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-a-gen3-elev_dsk.jpg",
+          "bytes": 308594
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-c-gen3-elev_dsk.jpg",
+          "bytes": 300372
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/cambridge---21222/21222-b-gen3-elev_dsk.jpg",
+          "bytes": 307604
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21222/21222-windler-floor-1.jpg",
+          "bytes": 24713
+        }
+      ]
+    },
+    {
+      "slug": "cc-co-windler-bellmont-21224",
+      "plan": "The Bellmont",
+      "url": "https://www.centurycommunities.com/find-your-new-home/colorado/denver-metro/aurora/windler/windler-alley-21s/plans/21224/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-a-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-b-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-c-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21224/21224-windler-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-a-gen3-elev_dsk.jpg",
+          "bytes": 287159
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-b-gen3-elev_dsk.jpg",
+          "bytes": 306297
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/belmont---21224/21224-c-gen3-elev_dsk.jpg",
+          "bytes": 284164
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21224/21224-windler-floor-1.jpg",
+          "bytes": 24209
+        }
+      ]
+    },
+    {
+      "slug": "cc-co-windler-rosewood-21225",
+      "plan": "The Rosewood",
+      "url": "https://www.centurycommunities.com/find-your-new-home/colorado/denver-metro/aurora/windler/windler-alley-21s/plans/21225/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-a-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-c-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-b-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21225/21225-windler-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-a-gen3-elev_dsk.jpg",
+          "bytes": 279002
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-c-gen3-elev_dsk.jpg",
+          "bytes": 315729
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/rosewood---21225/21225-b-gen3-elev_dsk.jpg",
+          "bytes": 306451
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21225/21225-windler-floor-1.jpg",
+          "bytes": 24020
+        }
+      ]
+    },
+    {
+      "slug": "cc-co-windler-winslow-21325",
+      "plan": "The Winslow",
+      "url": "https://www.centurycommunities.com/find-your-new-home/colorado/denver-metro/aurora/windler/windler-alley-21s/plans/21325/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/winslow---21325/21325-a-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/winslow---21325/21325-b-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21325/21325-windler-floor-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21325/21325-windler-floor-2.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/winslow---21325/21325-a-gen3-elev_dsk.jpg",
+          "bytes": 291234
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/elevations/winslow---21325/21325-b-gen3-elev_dsk.jpg",
+          "bytes": 305706
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21325/21325-windler-floor-1.jpg",
+          "bytes": 25327
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-co/windler/22-alley---boulevard-i/floorplans/21325/21325-windler-floor-2.jpg",
+          "bytes": 33864
+        }
+      ]
+    },
+    {
+      "slug": "cc-tx-stallion-run-dartford",
+      "plan": "Dartford",
+      "url": "https://www.centurycommunities.com/find-your-new-home/texas/austin-metro/buda/stallion-run/glen-at-stallion-run/plans/dartford/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-a.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-b.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-c.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-d.png"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-a.png",
+          "bytes": 564000
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-b.png",
+          "bytes": 566446
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-c.png",
+          "bytes": 802947
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/dartford/dartford-elev-d.png",
+          "bytes": 792540
+        }
+      ]
+    },
+    {
+      "slug": "cc-tx-stallion-run-lexington",
+      "plan": "Lexington",
+      "url": "https://www.centurycommunities.com/find-your-new-home/texas/austin-metro/buda/stallion-run/glen-at-stallion-run/plans/lexington/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-c4-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-b2-gen3-elev_dsk-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-a1-gen3-elev_dsk-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-c4-gen3-elev_dsk.jpg",
+          "bytes": 524995
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-b2-gen3-elev_dsk-1.jpg",
+          "bytes": 69994
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-a1-gen3-elev_dsk-1.jpg",
+          "bytes": 1230219
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-ridge-at-trinity-ranch/lexington/lexington-floor-1.jpg",
+          "bytes": 32555
+        }
+      ]
+    },
+    {
+      "slug": "cc-tx-stallion-run-pinion",
+      "plan": "Pinion",
+      "url": "https://www.centurycommunities.com/find-your-new-home/texas/austin-metro/buda/stallion-run/glen-at-stallion-run/plans/pinion/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/21_pinion_overlook.trinityranch_kitchen.dining.like.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/24_pinion_overlook.trinityranch_dining.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/01_pinion_overlook.trinityranch_primary-suite.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/11_pinion_overlook.trinityranch_primarycloset.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/21_pinion_overlook.trinityranch_kitchen.dining.like.jpg",
+          "bytes": 50062
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/24_pinion_overlook.trinityranch_dining.jpg",
+          "bytes": 307892
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/01_pinion_overlook.trinityranch_primary-suite.jpg",
+          "bytes": 56677
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/the-overlook-at-trinity-ranch/pinion/11_pinion_overlook.trinityranch_primarycloset.jpg",
+          "bytes": 24971
+        }
+      ]
+    },
+    {
+      "slug": "cc-tx-stallion-run-laurel",
+      "plan": "Laurel",
+      "url": "https://www.centurycommunities.com/find-your-new-home/texas/austin-metro/buda/stallion-run/glen-at-stallion-run/plans/laurel/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-c2-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-b2-gen3-elev_dsk-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-a1-gen3-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-stallionrun-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-c2-gen3-elev_dsk.jpg",
+          "bytes": 234455
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-b2-gen3-elev_dsk-1.jpg",
+          "bytes": 64132
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-a1-gen3-elev_dsk.jpg",
+          "bytes": 228042
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/stallion-run/stallion-run-the-glen/laurel/laurel-stallionrun-floor-1.jpg",
+          "bytes": 34037
+        }
+      ]
+    },
+    {
+      "slug": "cc-tx-stallion-run-heron",
+      "plan": "Heron",
+      "url": "https://www.centurycommunities.com/find-your-new-home/texas/austin-metro/buda/stallion-run/glen-at-stallion-run/plans/heron/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-a.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-c.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-b.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-2-car-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-a.png",
+          "bytes": 594841
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-c.png",
+          "bytes": 633754
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-elev-b.png",
+          "bytes": 605764
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/ccs/ccs-tx/austin/01-elevations/heron/heron-2-car-floor-1.jpg",
+          "bytes": 35641
+        }
+      ]
+    },
+    {
+      "slug": "cc-fl-grand-oaks-prescott",
+      "plan": "Prescott",
+      "url": "https://www.centurycommunities.com/find-your-new-home/florida/central-florida/avon-park/grand-oaks/plans/prescott/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/prescott-a-elev_dsk-1-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/prescott-b-elev_dsk_resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/12-web-or-mls-2127-nw-23rd-loop-012.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/13-web-or-mls-2127-nw-23rd-loop-013.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/prescott-a-elev_dsk-1-1-resized.jpg",
+          "bytes": 69845
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/prescott-b-elev_dsk_resized.jpg",
+          "bytes": 78719
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/12-web-or-mls-2127-nw-23rd-loop-012.jpg",
+          "bytes": 280844
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/prescott/13-web-or-mls-2127-nw-23rd-loop-013.jpg",
+          "bytes": 283693
+        }
+      ]
+    },
+    {
+      "slug": "cc-fl-grand-oaks-quail-ridge",
+      "plan": "Quail Ridge",
+      "url": "https://www.centurycommunities.com/find-your-new-home/florida/central-florida/avon-park/grand-oaks/plans/quail-ridge/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/quail-ridge-a-coach-elev_dsk.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/quail-ridge-b-coach-elev_dsk-3.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/1-grandview-dr_photoshopped-quincy_no_house_number.png",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/marion-oaks-blvd-015resized.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/quail-ridge-a-coach-elev_dsk.jpg",
+          "bytes": 71541
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/quail-ridge-b-coach-elev_dsk-3.jpg",
+          "bytes": 73115
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/1-grandview-dr_photoshopped-quincy_no_house_number.png",
+          "bytes": 552251
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/quail-ridge/marion-oaks-blvd-015resized.jpg",
+          "bytes": 292044
+        }
+      ]
+    },
+    {
+      "slug": "cc-fl-grand-oaks-coryell",
+      "plan": "Coryell",
+      "url": "https://www.centurycommunities.com/find-your-new-home/florida/central-florida/avon-park/grand-oaks/plans/coryell/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-a-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-b-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-floor-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/636-grand-oaks.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-a-elev_dsk-1-resized.jpg",
+          "bytes": 68006
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-b-elev_dsk-1-resized.jpg",
+          "bytes": 69328
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/coryell/coryell-floor-1.jpg",
+          "bytes": 40628
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/636-grand-oaks.jpg",
+          "bytes": 552263
+        }
+      ]
+    },
+    {
+      "slug": "cc-fl-grand-oaks-cambria",
+      "plan": "Cambria",
+      "url": "https://www.centurycommunities.com/find-your-new-home/florida/central-florida/avon-park/grand-oaks/plans/cambria/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/11-web-or-mls-dahlia-dr-s2506-011.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/12-web-or-mls-dahlia-dr-s2506-012.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/15-web-or-mls-dahlia-dr-s2506-015.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/25-web-or-mls-dahlia-dr-s2506-025.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/11-web-or-mls-dahlia-dr-s2506-011.jpg",
+          "bytes": 31637
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/12-web-or-mls-dahlia-dr-s2506-012.jpg",
+          "bytes": 28868
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/15-web-or-mls-dahlia-dr-s2506-015.jpg",
+          "bytes": 34177
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/cambria/unfurnished-interior/25-web-or-mls-dahlia-dr-s2506-025.jpg",
+          "bytes": 24340
+        }
+      ]
+    },
+    {
+      "slug": "cc-fl-grand-oaks-edinburg",
+      "plan": "Edinburg",
+      "url": "https://www.centurycommunities.com/find-your-new-home/florida/central-florida/avon-park/grand-oaks/plans/edinburg/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-a-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-b-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-floor-1.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-a-elev_dsk-1-resized.jpg",
+          "bytes": 66321
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-b-elev_dsk-1-resized.jpg",
+          "bytes": 69201
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-floor-1.jpg",
+          "bytes": 45274
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-fl/fl-grand-oaks/edinburg/edinburg-a-elev_dsk-1-resized.jpg",
+          "bytes": 66321
+        }
+      ]
+    },
+    {
+      "slug": "cc-ga-garden-walk-auburn",
+      "plan": "Auburn",
+      "url": "https://www.centurycommunities.com/find-your-new-home/georgia/atlanta-metro/jackson/garden-walk/plans/auburn/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn/2nd-floor-bedroom-2.2.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn/2nd-floor-bedroom-3.1-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn-a2-elev-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn-b2s-elev-resized.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn/2nd-floor-bedroom-2.2.jpg",
+          "bytes": 582326
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn/2nd-floor-bedroom-3.1-1.jpg",
+          "bytes": 682862
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn-a2-elev-resized.jpg",
+          "bytes": 506811
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/auburn-b2s-elev-resized.jpg",
+          "bytes": 464043
+        }
+      ]
+    },
+    {
+      "slug": "cc-ga-garden-walk-dupont",
+      "plan": "Dupont",
+      "url": "https://www.centurycommunities.com/find-your-new-home/georgia/atlanta-metro/jackson/garden-walk/plans/dupont/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont-a2-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont-b2s-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont/054-221-purple-martin-drive-toney-al-16.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont/055-221-purple-martin-drive-toney-al-19.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont-a2-elev_dsk-1-resized.jpg",
+          "bytes": 72676
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont-b2s-elev_dsk-1-resized.jpg",
+          "bytes": 77494
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont/054-221-purple-martin-drive-toney-al-16.jpg",
+          "bytes": 52043
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/dupont/055-221-purple-martin-drive-toney-al-19.jpg",
+          "bytes": 50231
+        }
+      ]
+    },
+    {
+      "slug": "cc-ga-garden-walk-essex",
+      "plan": "Essex",
+      "url": "https://www.centurycommunities.com/find-your-new-home/georgia/atlanta-metro/jackson/garden-walk/plans/essex/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex-a2-elev_dsk-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex-b2s-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex/110-newland-dr--008.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex/110-newland-dr--009.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex-a2-elev_dsk-resized.jpg",
+          "bytes": 71817
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex-b2s-elev_dsk-1-resized.jpg",
+          "bytes": 73996
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex/110-newland-dr--008.jpg",
+          "bytes": 237866
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/essex/110-newland-dr--009.jpg",
+          "bytes": 282054
+        }
+      ]
+    },
+    {
+      "slug": "cc-ga-garden-walk-gardner",
+      "plan": "Gardner",
+      "url": "https://www.centurycommunities.com/find-your-new-home/georgia/atlanta-metro/jackson/garden-walk/plans/gardner/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-a2-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-b2s-elev_dsk-1-resized.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-floor-1.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-floor-2.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-a2-elev_dsk-1-resized.jpg",
+          "bytes": 75061
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-b2s-elev_dsk-1-resized.jpg",
+          "bytes": 72425
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-floor-1.jpg",
+          "bytes": 36446
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/cmp-ga/ga-garden-walk/gardner-floor-2.jpg",
+          "bytes": 34274
+        }
+      ]
+    },
+    {
+      "slug": "cc-ga-twin-rivers-kingston",
+      "plan": "Kingston",
+      "url": "https://www.centurycommunities.com/find-your-new-home/georgia/atlanta-metro/covington/the-ridge-at-twin-rivers/plans/kingston/",
+      "ok": true,
+      "image_urls": [
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/9-web-or-mls-newland-dr-0805-009.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/10-web-or-mls-newland-dr-0805-010.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/12-web-or-mls-newland-dr-0805-012.jpg",
+        "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/13-web-or-mls-newland-dr-0805-013.jpg"
+      ],
+      "saved": [
+        {
+          "file": "cover.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/9-web-or-mls-newland-dr-0805-009.jpg",
+          "bytes": 42966
+        },
+        {
+          "file": "01.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/10-web-or-mls-newland-dr-0805-010.jpg",
+          "bytes": 43050
+        },
+        {
+          "file": "02.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/12-web-or-mls-newland-dr-0805-012.jpg",
+          "bytes": 49112
+        },
+        {
+          "file": "03.jpg",
+          "url": "https://www.centurycommunities.com/globalassets/century/assets/elevations--amenities/cmp/a---interior-photos/kingston/furnished-model/13-web-or-mls-newland-dr-0805-013.jpg",
+          "bytes": 44591
+        }
+      ]
+    }
+  ]
+}

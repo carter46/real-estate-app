@@ -49,6 +49,11 @@ Images: `uploads/properties/cc-*/` and `uploads/regions/{slug}.jpg`
 
 Each slug has: `cover.jpg`, `01.jpg`, `02.jpg`, `03.jpg` under `uploads/properties/{slug}/`.
 
+**Important:** Images are **per floor plan** (unique elevations / plan photos). Do not reuse one community gallery across all plans in a community.
+
+Re-download tool: `node tools/redownload_plan_images.js`  
+Elevation overrides: `node tools/apply_plan_image_overrides.js`
+
 ## Deploy steps
 
 1. Upload `uploads/properties/cc-*` and `uploads/regions/*.jpg` to the server.

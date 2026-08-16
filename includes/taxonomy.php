@@ -247,12 +247,23 @@ function regions_all(bool $activeOnly = false): array
     if ($activeOnly) {
         $sql .= ' WHERE is_active = 1';
     }
-    $sql .= ' ORDER BY sort_order, name';
+    $sql .= ' ORDER BY sort_order ASC, name ASC';
     try {
         return db()->query($sql)->fetchAll() ?: [];
     } catch (Throwable $e) {
         return [];
     }
+}
+
+/**
+ * Every active region for the public Markets page (no featured filter, no limit).
+ * New/updated regions in Admin → Regions appear here automatically while Active.
+ *
+ * @return list<array<string, mixed>>
+ */
+function regions_for_markets(): array
+{
+    return regions_all(true);
 }
 
 /**

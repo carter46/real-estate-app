@@ -10,7 +10,8 @@ require_once __DIR__ . '/includes/bootstrap.php';
 $markets = [];
 $dbOk = true;
 try {
-    $markets = regions_all(true);
+    // Live query: every Active region from Admin → Regions (create + update).
+    $markets = regions_for_markets();
 } catch (Throwable $e) {
     $dbOk = false;
     $markets = [];

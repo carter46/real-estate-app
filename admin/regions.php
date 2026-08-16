@@ -41,6 +41,8 @@ if (is_post()) {
         $sortRaw = trim((string) ($_POST['sort_order'] ?? ''));
         $sortOrder = $sortRaw === '' ? null : (int) $sortRaw;
         $isFeatured = !empty($_POST['is_featured']);
+        // New regions always go live on Markets; edits keep the Active checkbox.
+        $isActive = $id === null ? true : !empty($_POST['is_active']);
         $clearImage = !empty($_POST['clear_image']);
         $imagePath = null;
 
@@ -66,7 +68,7 @@ if (is_post()) {
                 $id,
                 (string) ($_POST['name'] ?? ''),
                 (string) ($_POST['slug'] ?? ''),
-                !empty($_POST['is_active']),
+                $isActive,
                 $isFeatured,
                 $sortOrder,
                 $imagePath,
@@ -75,7 +77,16 @@ if (is_post()) {
             if (!$result['ok']) {
                 $errors[] = (string) $result['error'];
             } else {
-                flash_set('region_ok', $id ? 'Region updated.' : 'Region created.');
+                if ($id) {
+                    flash_set(
+                        'region_ok',
+                        $isActive
+                            ? 'Region updated. Changes are live on the Markets page.'
+                            : 'Region updated. It is inactive, so it is hidden from the Markets page.'
+                    );
+                } else {
+                    flash_set('region_ok', 'Region created. It now appears on the Markets page.');
+                }
                 redirect('admin/regions.php');
             }
         }
@@ -86,7 +97,7 @@ if (is_post()) {
                 'name' => $_POST['name'] ?? '',
                 'slug' => $_POST['slug'] ?? '',
                 'sort_order' => $sortOrder ?? ($editing['sort_order'] ?? 0),
-                'is_active' => !empty($_POST['is_active']) ? 1 : 0,
+                'is_active' => $isActive ? 1 : 0,
                 'is_featured' => $isFeatured ? 1 : 0,
                 'image_path' => $imagePath ?? ($editing['image_path'] ?? $prevImage),
             ];
@@ -104,9 +115,12 @@ require dirname(__DIR__) . '/includes/admin-header.php';
   <div>
     <span class="admin-eyebrow">Taxonomy</span>
     <h1 class="admin-page-title">Regions</h1>
-    <p class="admin-page-lead">Destinations for listings and filters. Mark regions as featured and add an image for Exclusive Collections (homepage shows the first 3 by sort order). All active regions appear on the public Markets page.</p>
+    <p class="admin-page-lead">Destinations for listings and filters. Every <strong>Active</strong> region is listed on the public Markets page automatically (including new and updated ones). Featured + image controls the homepage Exclusive Collections preview (first 3 by sort order).</p>
   </div>
-  <button type="button" class="admin-btn" data-modal-open="region-modal">Add region</button>
+  <div class="admin-actions" style="gap:0.5rem;">
+    <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('markets.php')) ?>" target="_blank" rel="noopener">View Markets page</a>
+    <button type="button" class="admin-btn" data-modal-open="region-modal">Add region</button>
+  </div>
 </div>
 
 <?php if ($ok): ?><div class="admin-alert admin-alert--ok"><?= e($ok) ?></div><?php endif; ?>
@@ -192,10 +206,10 @@ require dirname(__DIR__) . '/includes/admin-header.php';
       <div class="admin-field">
         <label for="sort_order">Display order</label>
         <input id="sort_order" name="sort_order" type="number" value="<?= e((string) ($editing['sort_order'] ?? '')) ?>" placeholder="auto on create">
-        <p class="admin-note">Lower numbers appear first on the homepage featured row.</p>
+        <p class="admin-note">Lower numbers appear first on the Markets page and the homepage featured row.</p>
       </div>
       <div class="admin-field">
-        <label><input type="checkbox" name="is_featured" value="1" <?= !empty($editing['is_featured']) ? 'checked' : '' ?>> Show on homepage (Exclusive Collections)</label>
+        <label><input type="checkbox" name="is_featured" value="1" <?= !empty($editing['is_featured']) ? 'checked' : '' ?>> Featured on homepage (Exclusive Collections, top 3 by order)</label>
       </div>
       <div class="admin-field">
         <label for="image">Collection image</label>
@@ -210,7 +224,11 @@ require dirname(__DIR__) . '/includes/admin-header.php';
         <p class="admin-note">JPEG, PNG, or WebP. Recommended wide landscape photo.</p>
       </div>
       <div class="admin-field">
-        <label><input type="checkbox" name="is_active" value="1" <?= !isset($editing['is_active']) || !empty($editing['is_active']) ? 'checked' : '' ?>> Active</label>
+        <label><input type="checkbox" name="is_active" value="1" <?= !isset($editing['is_active']) || !empty($editing['is_active']) ? 'checked' : '' ?><?= empty($editing['id']) ? ' disabled' : '' ?>> Active (shown on Markets page and in listing filters)</label>
+        <?php if (empty($editing['id'])): ?>
+          <input type="hidden" name="is_active" value="1">
+          <p class="admin-note">New regions are always Active and appear on the Markets page immediately. You can deactivate later from the list.</p>
+        <?php endif; ?>
       </div>
       <div class="admin-actions">
         <button class="admin-btn" type="submit"><?= $editing ? 'Update' : 'Create' ?></button>
