@@ -59,13 +59,22 @@ function site_mail_from_name(): string
 
 function site_logo_path(): string
 {
-    $path = trim((string) (setting_get('site_logo_path') ?? ''));
-    return $path !== '' ? $path : 'assets/img/logo-sdc.svg';
+    return trim((string) (setting_get('site_logo_path') ?? ''));
+}
+
+/** True when an admin-uploaded logo is set (not the bundled placeholder). */
+function site_has_logo(): bool
+{
+    return site_logo_path() !== '';
 }
 
 function site_logo_url(): string
 {
-    return media_url(site_logo_path());
+    $path = site_logo_path();
+    if ($path === '') {
+        $path = 'assets/img/logo-sdc.svg';
+    }
+    return media_url($path);
 }
 
 function site_favicon_path(): ?string

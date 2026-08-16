@@ -27,7 +27,11 @@ if ($offices === []) {
   <div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
       <div class="col-span-1">
-        <img src="<?= e(site_logo_url()) ?>" alt="<?= e(site_name()) ?>" class="h-8 w-auto mb-6 opacity-90 brightness-0 invert"/>
+        <?php if (site_has_logo()): ?>
+          <img src="<?= e(site_logo_url()) ?>" alt="<?= e(site_name()) ?>" class="h-8 w-auto mb-6 opacity-90 brightness-0 invert"/>
+        <?php else: ?>
+          <p class="font-display-lg text-[1.5rem] text-white mb-6"><?= e(site_name()) ?></p>
+        <?php endif; ?>
         <p class="font-body-md text-body-md text-white/75"><?= e(site_name()) ?> — luxury property listing with an editorial standard.</p>
       </div>
       <div class="flex flex-col gap-4">

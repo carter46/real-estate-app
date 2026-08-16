@@ -73,7 +73,7 @@ $inquiryForm = [
     'last_name' => '',
     'email' => '',
     'phone' => '',
-    'interest' => 'Schedule Tour',
+    'interest' => 'Buy Now',
     'message' => '',
 ];
 
@@ -93,7 +93,7 @@ if (is_post() && ($_POST['form'] ?? '') === 'property_inquiry') {
                 'last_name' => (string) ($_POST['last_name'] ?? ''),
                 'email' => (string) ($_POST['email'] ?? ''),
                 'phone' => (string) ($_POST['phone'] ?? ''),
-                'interest' => (string) ($_POST['interest'] ?? 'Schedule Tour'),
+                'interest' => (string) ($_POST['interest'] ?? 'Buy Now'),
                 'message' => (string) ($_POST['message'] ?? ''),
                 'property_id' => (int) $property['id'],
             ];
@@ -111,7 +111,7 @@ if (is_post() && ($_POST['form'] ?? '') === 'property_inquiry') {
                         'last_name' => '',
                         'email' => '',
                         'phone' => '',
-                        'interest' => 'Schedule Tour',
+                        'interest' => 'Buy Now',
                         'message' => '',
                     ];
                 } catch (Throwable $e) {
@@ -149,7 +149,7 @@ require __DIR__ . '/includes/header.php';
       </div>
       <div class="flex gap-4 md:flex-col md:text-right">
         <a href="#inquiry" class="bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm px-8 py-4 hover:bg-primary-fixed-dim transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
-          Schedule Tour <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          Buy Now <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </a>
         <a href="<?= e($contactHref) ?>" class="bg-transparent border border-on-primary/30 text-on-primary font-label-sm text-label-sm px-8 py-4 hover:bg-on-primary/10 transition-colors uppercase tracking-widest text-center no-underline">
           Request Details
@@ -159,7 +159,7 @@ require __DIR__ . '/includes/header.php';
   </div>
 </section>
 
-<section class="w-full bg-surface-container-low border-b border-outline-variant/20 py-8 sticky top-20 z-40 backdrop-blur-xl bg-surface-container-low/90">
+<section class="w-full bg-surface-container-low border-b border-outline-variant/20 py-8">
   <div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop">
     <div class="flex flex-wrap items-center justify-between gap-8 md:gap-12">
       <div class="flex items-center gap-4">
@@ -247,7 +247,7 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="lg:col-span-4 relative">
-        <div class="sticky top-40 flex flex-col gap-8">
+        <div class="flex flex-col gap-8">
           <div class="bg-surface-container p-8 shadow-sm border border-outline-variant/20 flex flex-col items-center text-center">
             <?php if (!empty($property['agent_photo'])): ?>
               <div class="w-32 h-32 rounded-full overflow-hidden mb-6 border-4 border-surface">
@@ -267,7 +267,7 @@ require __DIR__ . '/includes/header.php';
             <?php endif; ?>
             <div class="w-full flex flex-col gap-4">
               <a href="#inquiry" class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-4 hover:bg-primary-container transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
-                <span class="material-symbols-outlined text-[18px]">calendar_today</span> Schedule a Tour
+                <span class="material-symbols-outlined text-[18px]">shopping_bag</span> Buy Now
               </a>
               <a href="#inquiry" class="w-full bg-transparent border border-primary text-primary font-label-sm text-label-sm py-4 hover:bg-primary/5 transition-colors uppercase tracking-widest inline-flex items-center justify-center gap-2 no-underline">
                 <span class="material-symbols-outlined text-[18px]">mail</span> Request Details
@@ -317,7 +317,7 @@ require __DIR__ . '/includes/header.php';
                 <div class="relative pt-5">
                   <label class="absolute top-0 left-0 font-label-sm text-label-sm text-on-surface-variant uppercase" for="inq_interest">Interest</label>
                   <select id="inq_interest" name="interest" class="w-full bg-transparent border-0 border-b border-outline-variant/50 focus:border-primary py-2 font-body-md outline-none">
-                    <?php foreach (['Schedule Tour', 'Request Details', 'General Inquiry'] as $opt): ?>
+                    <?php foreach (['Buy Now', 'Request Details', 'General Inquiry'] as $opt): ?>
                       <option value="<?= e($opt) ?>" <?= $inquiryForm['interest'] === $opt ? 'selected' : '' ?>><?= e($opt) ?></option>
                     <?php endforeach; ?>
                   </select>

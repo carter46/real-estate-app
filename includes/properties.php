@@ -579,6 +579,82 @@ function property_ensure_single_cover(int $propertyId, ?int $coverImageId = null
 }
 
 /**
+ * Escape % and _ for SQL LIKE (keep user input literal).
+ */
+function property_like_escape(string $value): string
+{
+    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+}
+
+/**
+ * Parse free-text search for bedroom/bathroom hints and remaining keywords.
+ *
+ * @return array{bedrooms:?float, bathrooms:?float, tokens:list<string>}
+ */
+function property_parse_public_query(string $q): array
+{
+    $q = trim(preg_replace('/\s+/u', ' ', $q) ?? '');
+    $bedrooms = null;
+    $bathrooms = null;
+
+    if ($q === '') {
+        return ['bedrooms' => null, 'bathrooms' => null, 'tokens' => []];
+    }
+
+    if (preg_match('/\b(\d+(?:\.\d+)?)\s*[+\-]?\s*(?:bed(?:room)?s?|brs?|bdrs?|bdrms?)\b/iu', $q, $m)) {
+        $bedrooms = (float) $m[1];
+        $q = trim(preg_replace('/' . preg_quote($m[0], '/') . '/iu', ' ', $q) ?? '');
+    } elseif (preg_match('/\b(\d+(?:\.\d+)?)(?:bed(?:room)?s?|brs?)\b/iu', $q, $m)) {
+        $bedrooms = (float) $m[1];
+        $q = trim(preg_replace('/' . preg_quote($m[0], '/') . '/iu', ' ', $q) ?? '');
+    }
+
+    if (preg_match('/\b(\d+(?:\.\d+)?)\s*[+\-]?\s*(?:bath(?:room)?s?|ba)\b/iu', $q, $m)) {
+        $bathrooms = (float) $m[1];
+        $q = trim(preg_replace('/' . preg_quote($m[0], '/') . '/iu', ' ', $q) ?? '');
+    } elseif (preg_match('/\b(\d+(?:\.\d+)?)(?:bath(?:room)?s?|ba)\b/iu', $q, $m)) {
+        $bathrooms = (float) $m[1];
+        $q = trim(preg_replace('/' . preg_quote($m[0], '/') . '/iu', ' ', $q) ?? '');
+    }
+
+    $stop = ['a', 'an', 'the', 'in', 'at', 'near', 'with', 'for', 'of', 'and', 'or', 'to'];
+    $tokens = [];
+    if ($q !== '') {
+        foreach (preg_split('/[\s,\/|+]+/u', $q) ?: [] as $tok) {
+            $tok = trim($tok);
+            $lower = function_exists('mb_strtolower') ? mb_strtolower($tok) : strtolower($tok);
+            if ($tok === '' || in_array($lower, $stop, true)) {
+                continue;
+            }
+            $tokens[] = $tok;
+        }
+    }
+
+    return ['bedrooms' => $bedrooms, 'bathrooms' => $bathrooms, 'tokens' => $tokens];
+}
+
+/**
+ * SQL fragment: token matches common property text fields (and type name).
+ *
+ * @return array{0: string, 1: list<string>}
+ */
+function property_public_text_match_sql(string $token): array
+{
+    $like = '%' . property_like_escape($token) . '%';
+    $sql = '(p.title LIKE ? ESCAPE \'\\\\\'
+        OR p.address_line LIKE ? ESCAPE \'\\\\\'
+        OR p.city LIKE ? ESCAPE \'\\\\\'
+        OR p.region LIKE ? ESCAPE \'\\\\\'
+        OR p.state LIKE ? ESCAPE \'\\\\\'
+        OR p.description LIKE ? ESCAPE \'\\\\\'
+        OR p.badge LIKE ? ESCAPE \'\\\\\'
+        OR p.reference_code LIKE ? ESCAPE \'\\\\\'
+        OR p.mls_number LIKE ? ESCAPE \'\\\\\'
+        OR t.name LIKE ? ESCAPE \'\\\\\')';
+    return [$sql, array_fill(0, 10, $like)];
+}
+
+/**
  * @return array{0: string, 1: list<mixed>}
  */
 function property_public_where_sql(array $filters = []): array
@@ -589,16 +665,53 @@ function property_public_where_sql(array $filters = []): array
 
     $q = trim((string) ($filters['q'] ?? ''));
     if ($q !== '') {
-        $where[] = '(p.title LIKE ? OR p.address_line LIKE ? OR p.city LIKE ? OR p.region LIKE ? OR p.description LIKE ?)';
-        $like = '%' . $q . '%';
-        array_push($params, $like, $like, $like, $like, $like);
+        $parsed = property_parse_public_query($q);
+
+        if ($parsed['bedrooms'] !== null) {
+            // Whole numbers match 5 and 5.0; decimals match exactly.
+            if (fmod($parsed['bedrooms'], 1.0) < 0.001) {
+                $where[] = 'p.bedrooms IS NOT NULL AND FLOOR(p.bedrooms) = ?';
+                $params[] = (int) $parsed['bedrooms'];
+            } else {
+                $where[] = 'p.bedrooms = ?';
+                $params[] = $parsed['bedrooms'];
+            }
+        }
+
+        if ($parsed['bathrooms'] !== null) {
+            if (fmod($parsed['bathrooms'], 1.0) < 0.001) {
+                $where[] = 'p.bathrooms IS NOT NULL AND FLOOR(p.bathrooms) = ?';
+                $params[] = (int) $parsed['bathrooms'];
+            } else {
+                $where[] = 'p.bathrooms = ?';
+                $params[] = $parsed['bathrooms'];
+            }
+        }
+
+        $tokens = $parsed['tokens'];
+        if ($tokens === [] && $parsed['bedrooms'] === null && $parsed['bathrooms'] === null) {
+            // Fallback: full phrase text search (unchanged intent).
+            $tokens = [$q];
+        }
+
+        foreach ($tokens as $token) {
+            [$frag, $fragParams] = property_public_text_match_sql($token);
+            $where[] = $frag;
+            array_push($params, ...$fragParams);
+        }
     }
 
     $location = trim((string) ($filters['location'] ?? ''));
     if ($location !== '') {
-        $where[] = '(p.city LIKE ? OR p.region LIKE ? OR p.address_line LIKE ?)';
-        $like = '%' . $location . '%';
-        array_push($params, $like, $like, $like);
+        $locTokens = property_parse_public_query($location)['tokens'];
+        if ($locTokens === []) {
+            $locTokens = [$location];
+        }
+        foreach ($locTokens as $token) {
+            $like = '%' . property_like_escape($token) . '%';
+            $where[] = '(p.city LIKE ? ESCAPE \'\\\\\' OR p.region LIKE ? ESCAPE \'\\\\\' OR p.address_line LIKE ? ESCAPE \'\\\\\' OR p.state LIKE ? ESCAPE \'\\\\\')';
+            array_push($params, $like, $like, $like, $like);
+        }
     }
 
     $region = trim((string) ($filters['region'] ?? ''));

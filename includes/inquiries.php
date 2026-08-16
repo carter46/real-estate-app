@@ -68,6 +68,7 @@ function inquiry_validate(array $input, string $type = 'contact'): array
         'Luxury Rentals',
         'General Inquiry',
         'Schedule Tour',
+        'Buy Now',
         'Request Details',
     ];
     if (!in_array($interest, $allowedInterest, true)) {

@@ -34,6 +34,9 @@ if ($favicon !== ''):
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
+body:has(#site-nav:checked) {
+  overflow: hidden;
+}
 </style>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
