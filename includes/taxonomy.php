@@ -256,11 +256,11 @@ function regions_all(bool $activeOnly = false): array
 }
 
 /**
- * Active featured regions for homepage Exclusive Collections (ordered).
+ * Active featured regions for homepage Exclusive Collections (ordered; homepage uses 3).
  *
  * @return list<array<string, mixed>>
  */
-function regions_featured_home(int $limit = 12): array
+function regions_featured_home(int $limit = 3): array
 {
     $limit = max(1, min(24, $limit));
     try {

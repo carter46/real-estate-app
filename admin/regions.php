@@ -104,7 +104,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
   <div>
     <span class="admin-eyebrow">Taxonomy</span>
     <h1 class="admin-page-title">Regions</h1>
-    <p class="admin-page-lead">Destinations for listings and filters. Mark regions as featured and add an image to show them on the homepage Exclusive Collections section (ordered by sort).</p>
+    <p class="admin-page-lead">Destinations for listings and filters. Mark regions as featured and add an image for Exclusive Collections (homepage shows the first 3 by sort order). All active regions appear on the public Markets page.</p>
   </div>
   <button type="button" class="admin-btn" data-modal-open="region-modal">Add region</button>
 </div>
