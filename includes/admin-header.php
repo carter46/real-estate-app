@@ -26,7 +26,7 @@ $user = auth_user();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/admin.css')) ?>?v=6">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/admin.css')) ?>?v=7">
 </head>
 <body class="admin-body">
 <header class="admin-topbar">

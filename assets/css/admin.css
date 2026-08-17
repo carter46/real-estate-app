@@ -48,6 +48,17 @@ body.admin-body {
 @media (min-width: 1024px) {
   .admin-topbar { padding: 0 4rem; }
 }
+@media (min-width: 900px) {
+  .admin-topbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+  body.admin-body {
+    padding-top: 5rem;
+  }
+}
 
 .admin-topbar__brand { display: flex; align-items: center; gap: 1.25rem; }
 .admin-topbar__mark {
@@ -76,13 +87,29 @@ body.admin-body {
   min-height: calc(100vh - 5rem);
 }
 @media (min-width: 900px) {
-  .admin-shell { grid-template-columns: 16rem 1fr; }
+  .admin-shell {
+    display: block;
+    margin-left: 16rem;
+    min-height: calc(100vh - 5rem);
+  }
 }
 
 .admin-sidebar {
   background: var(--surface);
   border-right: 1px solid rgba(215,193,197,0.4);
   padding: 1.5rem 1rem;
+}
+@media (min-width: 900px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 5rem;
+    left: 0;
+    bottom: 0;
+    width: 16rem;
+    z-index: 30;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 .admin-sidebar__nav { display: flex; flex-direction: column; gap: 0.35rem; }
 .admin-sidebar__link {
