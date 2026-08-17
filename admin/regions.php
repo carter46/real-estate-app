@@ -12,6 +12,7 @@ $editId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $editing = $editId > 0 ? taxonomy_region_find($editId) : null;
 $errors = [];
 $ok = flash_get('region_ok');
+$flashErr = flash_get('region_error');
 $openModal = $editing !== null || $errors !== [];
 
 if (is_post()) {
@@ -23,8 +24,12 @@ if (is_post()) {
         if ($action === 'deactivate') {
             $id = (int) ($_POST['id'] ?? 0);
             if ($id > 0) {
-                taxonomy_region_deactivate($id);
-                flash_set('region_ok', 'Region deactivated. Existing listings keep their region text.');
+                $result = taxonomy_region_deactivate_safe($id);
+                if ($result['ok']) {
+                    flash_set('region_ok', 'Region deactivated.');
+                } else {
+                    flash_set('region_error', (string) $result['error']);
+                }
             }
             redirect('admin/regions.php');
         }
@@ -33,6 +38,18 @@ if (is_post()) {
             if ($id > 0) {
                 db()->prepare('UPDATE regions SET is_active = 1 WHERE id = ?')->execute([$id]);
                 flash_set('region_ok', 'Region activated.');
+            }
+            redirect('admin/regions.php');
+        }
+        if ($action === 'delete') {
+            $id = (int) ($_POST['id'] ?? 0);
+            if ($id > 0) {
+                $result = taxonomy_region_delete_permanent($id);
+                if ($result['ok']) {
+                    flash_set('region_ok', 'Region permanently deleted.');
+                } else {
+                    flash_set('region_error', (string) $result['error']);
+                }
             }
             redirect('admin/regions.php');
         }
@@ -47,9 +64,16 @@ if (is_post()) {
         $imagePath = null;
 
         $prevImage = '';
+        $prevActive = true;
         if ($id) {
             $prev = taxonomy_region_find($id);
             $prevImage = is_array($prev) ? (string) ($prev['image_path'] ?? '') : '';
+            $prevActive = is_array($prev) ? !empty($prev['is_active']) : true;
+            // Cannot deactivate via edit form while listings still use this region.
+            if ($prevActive && !$isActive && taxonomy_region_usage_count($id) > 0) {
+                $errors[] = 'Cannot deactivate: listings still use this region. Reassign or remove those listings first.';
+                $isActive = true;
+            }
         }
 
         $file = $_FILES['image'] ?? null;
@@ -115,7 +139,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
   <div>
     <span class="admin-eyebrow">Taxonomy</span>
     <h1 class="admin-page-title">Regions</h1>
-    <p class="admin-page-lead">Destinations for listings and filters. Every <strong>Active</strong> region is listed on the public Markets page automatically (including new and updated ones). Featured + image controls the homepage Exclusive Collections preview (first 3 by sort order).</p>
+    <p class="admin-page-lead">Destinations for listings and filters. Every <strong>Active</strong> region appears on Markets. A region can be deactivated only when it has <strong>no listings</strong>. Deactivated regions with no listings can be permanently deleted.</p>
   </div>
   <div class="admin-actions" style="gap:0.5rem;">
     <a class="admin-btn admin-btn--ghost" href="<?= e(base_url('markets.php')) ?>" target="_blank" rel="noopener">View Markets page</a>
@@ -124,6 +148,7 @@ require dirname(__DIR__) . '/includes/admin-header.php';
 </div>
 
 <?php if ($ok): ?><div class="admin-alert admin-alert--ok"><?= e($ok) ?></div><?php endif; ?>
+<?php if ($flashErr): ?><div class="admin-alert admin-alert--error"><?= e($flashErr) ?></div><?php endif; ?>
 <?php foreach ($errors as $err): ?><div class="admin-alert admin-alert--error"><?= e($err) ?></div><?php endforeach; ?>
 
 <div class="admin-panel">
@@ -138,6 +163,8 @@ require dirname(__DIR__) . '/includes/admin-header.php';
         <?php
           $thumb = trim((string) ($row['image_path'] ?? ''));
           $thumbUrl = $thumb !== '' ? media_url($thumb) : '';
+          $usage = taxonomy_region_usage_count((int) $row['id']);
+          $isActiveRow = !empty($row['is_active']);
         ?>
         <tr>
           <td style="width:3.5rem;">
@@ -150,20 +177,24 @@ require dirname(__DIR__) . '/includes/admin-header.php';
           <td><?= e((string) $row['name']) ?></td>
           <td><?= e((string) $row['sort_order']) ?></td>
           <td><?= !empty($row['is_featured']) ? 'Featured' : '—' ?></td>
-          <td><?= !empty($row['is_active']) ? 'Active' : 'Inactive' ?></td>
-          <td><?= e((string) taxonomy_region_usage_count((int) $row['id'])) ?></td>
+          <td><?= $isActiveRow ? 'Active' : 'Inactive' ?></td>
+          <td><?= e((string) $usage) ?></td>
           <td>
             <div class="admin-menu">
               <button type="button" class="admin-menu__toggle" aria-label="Actions" aria-haspopup="true">⋯</button>
               <div class="admin-menu__panel" hidden>
                 <a href="<?= e(base_url('admin/regions.php?id=' . (int) $row['id'])) ?>">Edit</a>
-                <?php if (!empty($row['is_active'])): ?>
-                  <form method="post" onsubmit="return confirm('Deactivate this region?');">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="action" value="deactivate">
-                    <input type="hidden" name="id" value="<?= e((string) $row['id']) ?>">
-                    <button type="submit">Deactivate</button>
-                  </form>
+                <?php if ($isActiveRow): ?>
+                  <?php if ($usage === 0): ?>
+                    <form method="post" onsubmit="return confirm('Deactivate this region?');">
+                      <?= csrf_field() ?>
+                      <input type="hidden" name="action" value="deactivate">
+                      <input type="hidden" name="id" value="<?= e((string) $row['id']) ?>">
+                      <button type="submit">Deactivate</button>
+                    </form>
+                  <?php else: ?>
+                    <span class="admin-note" style="display:block;padding:0.5rem 0.85rem;">Has listings — cannot deactivate</span>
+                  <?php endif; ?>
                 <?php else: ?>
                   <form method="post">
                     <?= csrf_field() ?>
@@ -171,6 +202,14 @@ require dirname(__DIR__) . '/includes/admin-header.php';
                     <input type="hidden" name="id" value="<?= e((string) $row['id']) ?>">
                     <button type="submit">Activate</button>
                   </form>
+                  <?php if ($usage === 0): ?>
+                    <form method="post" onsubmit="return confirm('Permanently delete this deactivated region? This cannot be undone.');">
+                      <?= csrf_field() ?>
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="id" value="<?= e((string) $row['id']) ?>">
+                      <button type="submit">Delete permanently</button>
+                    </form>
+                  <?php endif; ?>
                 <?php endif; ?>
               </div>
             </div>
@@ -227,7 +266,9 @@ require dirname(__DIR__) . '/includes/admin-header.php';
         <label><input type="checkbox" name="is_active" value="1" <?= !isset($editing['is_active']) || !empty($editing['is_active']) ? 'checked' : '' ?><?= empty($editing['id']) ? ' disabled' : '' ?>> Active (shown on Markets page and in listing filters)</label>
         <?php if (empty($editing['id'])): ?>
           <input type="hidden" name="is_active" value="1">
-          <p class="admin-note">New regions are always Active and appear on the Markets page immediately. You can deactivate later from the list.</p>
+          <p class="admin-note">New regions are always Active and appear on the Markets page immediately. You can deactivate later only if no listings use the region.</p>
+        <?php else: ?>
+          <p class="admin-note">Uncheck Active only when this region has no listings. Deactivated regions can then be permanently deleted from the list.</p>
         <?php endif; ?>
       </div>
       <div class="admin-actions">

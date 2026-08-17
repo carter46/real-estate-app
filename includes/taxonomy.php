@@ -239,6 +239,58 @@ function taxonomy_region_deactivate(int $id): void
 }
 
 /**
+ * Soft-deactivate only when no properties use this region name.
+ *
+ * @return array{ok:bool, error:?string}
+ */
+function taxonomy_region_deactivate_safe(int $id): array
+{
+    $row = taxonomy_region_find($id);
+    if ($row === null) {
+        return ['ok' => false, 'error' => 'Region not found.'];
+    }
+    $used = taxonomy_region_usage_count($id);
+    if ($used > 0) {
+        return [
+            'ok' => false,
+            'error' => 'Cannot deactivate: ' . $used . ' listing' . ($used === 1 ? '' : 's') . ' still use this region. Reassign or remove those listings first.',
+        ];
+    }
+    taxonomy_region_deactivate($id);
+    return ['ok' => true, 'error' => null];
+}
+
+/**
+ * Permanently delete an inactive region with no listings. Removes local collection image when present.
+ *
+ * @return array{ok:bool, error:?string}
+ */
+function taxonomy_region_delete_permanent(int $id): array
+{
+    $row = taxonomy_region_find($id);
+    if ($row === null) {
+        return ['ok' => false, 'error' => 'Region not found.'];
+    }
+    if (!empty($row['is_active'])) {
+        return ['ok' => false, 'error' => 'Only deactivated regions can be deleted. Deactivate it first.'];
+    }
+    $used = taxonomy_region_usage_count($id);
+    if ($used > 0) {
+        return [
+            'ok' => false,
+            'error' => 'Cannot delete: ' . $used . ' listing' . ($used === 1 ? '' : 's') . ' still use this region.',
+        ];
+    }
+
+    $imagePath = trim((string) ($row['image_path'] ?? ''));
+    db()->prepare('DELETE FROM regions WHERE id = ? AND is_active = 0')->execute([$id]);
+    if ($imagePath !== '' && str_starts_with($imagePath, 'uploads/regions/')) {
+        property_delete_image_file($imagePath);
+    }
+    return ['ok' => true, 'error' => null];
+}
+
+/**
  * @return list<array<string, mixed>>
  */
 function regions_all(bool $activeOnly = false): array
